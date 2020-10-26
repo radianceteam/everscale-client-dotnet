@@ -1,0 +1,14 @@
+{
+  "name": "ton-client-dotnet-modules-generator",
+  "version": "1.0.0",
+  "description": "Generate TON Client .NET Wrapper modules from `api.json`.",
+  "scripts": {
+    "generate": "node node_modules/@yellicode/cli/dist/es6/index.js"
+  },
+  "devDependencies": {
+    "@yellicode/cli": "^1.3.0",
+    "@yellicode/core": "^1.3.0",
+    "@yellicode/csharp": "^1.9.2",
+    "@yellicode/templating": "^1.6.0"
+  }
+}

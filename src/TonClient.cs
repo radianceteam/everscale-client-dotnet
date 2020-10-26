@@ -15,10 +15,10 @@ namespace TonSdk
 
         internal ILogger Logger => Config.Logger ?? DummyLogger.Instance;
 
-        public static async Task<ITonClient> CreateAsync(TonClientConfig config = default)
+        public static ITonClient Create(TonClientConfig config = default)
         {
             var client = new TonClient(config ?? new TonClientConfig());
-            await client.InitAsync().ConfigureAwait(false);
+            client.Init();
             return client;
         }
 
@@ -27,13 +27,9 @@ namespace TonSdk
             Config = config ?? throw new ArgumentNullException(nameof(config));
         }
 
-        private async Task InitAsync()
+        private void Init()
         {
-            if (_initialized)
-            {
-                return;
-            }
-            _context = await CreateContextAsync();
+            _context = CreateContext();
             _initialized = true;
         }
 
@@ -45,12 +41,22 @@ namespace TonSdk
             }
         }
 
-        public Task<string> CallFunction(string functionName, string functionParamsJson = "")
+        public async Task<T> CallFunctionAsync<T>(string functionName, object @params = null)
         {
-            if (functionParamsJson == null)
-            {
-                functionParamsJson = "";
-            }
+            var result = await GetJsonResponse(functionName, @params);
+            return Deserialize<T>(result);
+        }
+
+        public async Task CallFunctionAsync(string functionName, object @params = null)
+        {
+            await GetJsonResponse(functionName, @params);
+        }
+
+        private async Task<string> GetJsonResponse(string functionName, object @params)
+        {
+            var functionParamsJson = @params != null
+                ? Serialize(@params)
+                : "";
 
             Logger.Debug($"Calling function {functionName} with parameters {functionParamsJson}");
 
@@ -113,21 +119,16 @@ namespace TonSdk
                 SuccessHandler,
                 ErrorHandler);
 
-            return tcs.Task;
+            var result = await tcs.Task;
+            return result;
         }
 
-        private Task<uint> CreateContextAsync()
+        private uint CreateContext()
         {
-            var tcs = new TaskCompletionSource<uint>();
-
             Logger.Debug("Init context");
 
-            var jsonConfig = JsonConvert.SerializeObject(new
-            {
-                // TODO: fill?
-            });
-
-            var callbackHandle = default(GCHandle);
+            uint context = 0;
+            Exception exception = null;
 
             void NativeCallback(IntPtr jsonPtr, int len)
             {
@@ -136,7 +137,7 @@ namespace TonSdk
                     if (jsonPtr == IntPtr.Zero)
                     {
                         Logger.Error("Init context returned null");
-                        tcs.SetException(new TonClientException($"{nameof(Interop.tc_bridge_create_context)} returned null"));
+                        exception = new TonClientException($"{nameof(Interop.tc_bridge_create_context)} returned null");
                     }
                     else
                     {
@@ -146,38 +147,61 @@ namespace TonSdk
                         if (token.TryGetValue("result", out var contextToken) && contextToken != null)
                         {
                             Logger.Debug($"Init context succeeded: {contextToken}");
-                            tcs.SetResult(contextToken.Value<uint>());
+                            context = contextToken.Value<uint>();
                         }
                         else
                         {
                             if (token.TryGetValue("error", out var errorToken) && errorToken != null)
                             {
                                 Logger.Debug($"throwing exception with error {errorToken}");
-                                tcs.SetException(new TonClientException($"{nameof(Interop.tc_bridge_create_context)} returned error: {errorToken}"));
+                                exception = new TonClientException($"{nameof(Interop.tc_bridge_create_context)} returned error: {errorToken}");
                             }
                             else
                             {
                                 Logger.Debug($"throwing exception with the returned JSON: {json}");
-                                tcs.SetException(new TonClientException($"{nameof(Interop.tc_bridge_create_context)} returned unsuccessful result: {json}"));
+                                exception = new TonClientException($"{nameof(Interop.tc_bridge_create_context)} returned unsuccessful result: {json}");
                             }
                         }
                     }
                 }
-                finally
+                catch (Exception e)
                 {
-                    if (callbackHandle.IsAllocated)
-                    {
-                        callbackHandle.Free();
-                    }
+                    exception = e;
                 }
             }
 
-            callbackHandle = GCHandle.Alloc((Interop.tc_bridge_json_callback_t)NativeCallback);
+            var configStr = new Utf8String(JsonConvert.SerializeObject(new
+            {
+                // TODO: fill?
+            }));
 
-            var configStr = new Utf8String(jsonConfig);
             Interop.tc_bridge_create_context(configStr.Ptr, configStr.Length, NativeCallback);
 
-            return tcs.Task;
+            if (exception != null)
+            {
+                throw exception;
+            }
+
+            return context;
+        }
+
+        private T Deserialize<T>(string json)
+        {
+            if (string.IsNullOrEmpty(json))
+            {
+                Logger.Warning("Empty JSON passed to deserialize method");
+                return default;
+            }
+            return JsonConvert.DeserializeObject<T>(json);
+        }
+
+        private string Serialize(object any)
+        {
+            if (any == null)
+            {
+                Logger.Warning("Null passed to serialize method");
+            }
+            return JsonConvert.SerializeObject(any);
         }
     }
 

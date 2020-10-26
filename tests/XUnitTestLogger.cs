@@ -1,8 +1,7 @@
 ﻿using System;
-using TonSdk;
 using Xunit.Abstractions;
 
-namespace ton_client_dotnet_tests
+namespace TonSdk.Tests
 {
     public class XUnitTestLogger : ILogger
     {

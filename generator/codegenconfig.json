@@ -1,0 +1,9 @@
+{
+    "templates": [
+        {
+            "templateFile": "./modules.template.ts",
+            "modelFile": "./api.json"
+        }
+    ],
+    "compileTypeScript": true
+}

@@ -5,7 +5,7 @@ namespace TonSdk
 {
     internal static class Interop
     {
-        private const string DllName = "tonclient_dotnet_bridge.dll";
+        private const string DllName = "tonclient_dotnet_bridge";
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void tc_bridge_json_callback_t(

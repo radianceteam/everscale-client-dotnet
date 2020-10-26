@@ -17,6 +17,20 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ContentWithTargetPath Include="..\lib\ton_client.dylib">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>ton_client.dylib</TargetPath>
+    </ContentWithTargetPath>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ContentWithTargetPath Include="..\lib\ton_client.so">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>ton_client.so</TargetPath>
+    </ContentWithTargetPath>
+  </ItemGroup>
+
+  <ItemGroup>
     <ContentWithTargetPath Include="..\lib\tonclient_dotnet_bridge.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>tonclient_dotnet_bridge.dll</TargetPath>

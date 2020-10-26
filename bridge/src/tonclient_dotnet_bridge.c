@@ -12,7 +12,7 @@
 tc_bridge_response_handler_t success_handlers[REQUEST_POOL_SIZE];
 tc_bridge_response_handler_t error_handlers[REQUEST_POOL_SIZE];
 
-uint32_t next_request_id = 1;
+uint32_t next_request_id = 0;
 
 void bridge_response_handler(
         uint32_t request_id,
@@ -61,9 +61,9 @@ void tc_bridge_request(
     assert(function_name_len);
     assert(function_params_json);
 
-    int request_id = next_request_id++;
+    int request_id = ++next_request_id; // start from 1, to ensure 0 is not passed as request_id (maybe it's treated as NULL)
     if (request_id >= REQUEST_POOL_SIZE) {
-        request_id = 1; // re-start request counter
+        next_request_id = request_id = 1; // re-start request counter
     }
 
     success_handlers[request_id] = success_handler;
