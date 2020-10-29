@@ -1,6 +1,7 @@
 #include "tonclient_dotnet_bridge.h"
 #include "tonclient.h"
 
+#include <stddef.h>
 #include <assert.h>
 
 #define REQUEST_POOL_SIZE 4096

@@ -26,7 +26,9 @@ https://visualstudio.microsoft.com/downloads/
 
 ### Linux/MacOS
 
-TBD
+```
+./install.sh
+```
 
 ## Build
 

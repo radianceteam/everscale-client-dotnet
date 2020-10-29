@@ -20,4 +20,16 @@ enable_testing()
 add_subdirectory(include)
 add_subdirectory(lib)
 add_subdirectory(src)
-add_subdirectory(tests)
+
+if (NOT TON_SKIP_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif ()
+
+if (TON_FIND_LEAKS)
+    include(CTest)
+    find_program(MEMORYCHECK_COMMAND valgrind)
+    set(MEMORYCHECK_COMMAND_OPTIONS "--trace-children=yes --leak-check=full")
+    set(MEMORYCHECK_SUPPRESSIONS_FILE "${PROJECT_SOURCE_DIR}/valgrind_suppress.txt")
+endif ()
+

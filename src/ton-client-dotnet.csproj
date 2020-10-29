@@ -37,7 +37,13 @@
     </ContentWithTargetPath>
   </ItemGroup>
 
+  <ItemGroup>
+    <ContentWithTargetPath Include="..\lib\libtonclient_dotnet_bridge.so.1.0.0">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libtonclient_dotnet_bridge.so</TargetPath>
+    </ContentWithTargetPath>
+  </ItemGroup>
+
   <!-- TODO: copy libtonclient_dotnet_bridge.dylib -->
-  <!-- TODO: copy libtonclient_dotnet_bridge.so -->
 
 </Project>

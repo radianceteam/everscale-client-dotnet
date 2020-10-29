@@ -3,8 +3,8 @@
 ## Native bridge library for .NET
 
 Sources are in `bridge` directory. 
-Windows binaries are pre-built and placed into `lib` directory located in the project root. 
-Windows build script is written in `bridge/install.bat`.
+Windows and Linux binaries are pre-built and placed into `lib` directory located in the project root. 
+Build script is written in `bridge/install.bat` (Windows) and `bridge/install.sh` (Linux/macOS).
 
 ## .NET module code generator
 
@@ -36,12 +36,11 @@ Functions (methods) covered with tests:
 12. crypto.sha256
 13. crypto.sha512
 
-To build project and run all tests:
+## Build
 
-Clone this repo. Then run:
+To build project and run all tests, clone this repo and then run:
 
 ```
-cd src
 dotnet restore
 dotnet test
 ```
@@ -50,6 +49,6 @@ dotnet test
  - Complex type serialization/deserialization (EnumOfTypes).
  - Client configuration options.
  - More Tests.
- - Linux/Mac support.
+ - Mac support.
  - GitHub workflow script which runs tests and publishes NuGet packages.
  - Readmes.

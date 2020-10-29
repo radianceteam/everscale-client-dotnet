@@ -12,7 +12,7 @@
 #include <unistd.h>
 #endif
 
-void sleep(int ms) {
+void ton_sleep(int ms) {
 #ifdef TON_WINDOWS
     Sleep(ms);
 #else
@@ -69,7 +69,7 @@ int main() {
                 test_error_response_handler);
         while (!completed) {
             printf("Sleeping for 1000ms\n");
-            sleep(1000);
+            ton_sleep(1000);
         }
         tc_bridge_destroy_context(context);
         return success ? 0 : -1; // version wasn't retrieved

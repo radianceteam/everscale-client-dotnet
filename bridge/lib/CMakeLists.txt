@@ -2,6 +2,7 @@ include(ExternalProject)
 
 set(LIB_HEADER_FILE_NAME "tonclient.h")
 set(LIB_HEADER_FILE "https://raw.githubusercontent.com/tonlabs/TON-SDK/master/ton_client/client/${LIB_HEADER_FILE_NAME}")
+set(LIB_HEADER_FILE_PATH "${TC_LIB_DIR}/${LIB_HEADER_FILE_NAME}")
 set(LIB_SOURCE_HOST "http://sdkbinaries-ws.tonlabs.io/")
 set(LIB_PREFIX "tonclient_${TC_VERSION_MAJOR}")
 set(LIB_DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/lib)
@@ -39,4 +40,8 @@ elseif (WIN32)
     ton_copy_lib(win32_dll ton_client.dll)
 endif ()
 
-file(DOWNLOAD "${LIB_HEADER_FILE}" "${TC_LIB_DIR}/${LIB_HEADER_FILE_NAME}")
+if (NOT EXISTS "${LIB_HEADER_FILE_PATH}")
+    message(STATUS "Downloading ${LIB_HEADER_FILE} into ${LIB_HEADER_FILE_PATH}")
+    file(DOWNLOAD "${LIB_HEADER_FILE}" "${LIB_HEADER_FILE_PATH}")
+endif ()
+
