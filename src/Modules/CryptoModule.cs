@@ -572,6 +572,18 @@ namespace TonSdk.Modules
         /// </summary>
         [JsonProperty("phrase")]
         public string Phrase { get; set; }
+
+        /// <summary>
+        ///  Dictionary identifier
+        /// </summary>
+        [JsonProperty("dictionary")]
+        public int? Dictionary { get; set; }
+
+        /// <summary>
+        ///  Mnemonic word count
+        /// </summary>
+        [JsonProperty("word_count")]
+        public int? WordCount { get; set; }
     }
 
     public class ResultOfHDKeyXPrvFromMnemonic

@@ -38,6 +38,44 @@ namespace TonSdk.Modules
         public BigInteger TransactionLt { get; set; }
     }
 
+    public abstract class AccountForExecutor
+    {
+        /// <summary>
+        ///  Non-existing account to run a creation internal message.
+        ///  Should be used with `skip_transaction_check = true` if the message has no deploy data
+        ///  since transaction on the unitialized account are always aborted
+        /// </summary>
+        public class None : AccountForExecutor
+        {
+        }
+
+        /// <summary>
+        ///  Emulate unitialized account to run deploy message
+        /// </summary>
+        public class Uninit : AccountForExecutor
+        {
+        }
+
+        /// <summary>
+        ///  Account state to run message
+        /// </summary>
+        public class Account : AccountForExecutor
+        {
+            /// <summary>
+            ///  Account BOC. Encoded as base64.
+            /// </summary>
+            [JsonProperty("boc")]
+            public string Boc { get; set; }
+
+            /// <summary>
+            ///  Flag for running account with the unlimited balance. Can be used to calculate
+            ///  transaction fees without balance check
+            /// </summary>
+            [JsonProperty("unlimited_balance")]
+            public bool? UnlimitedBalance { get; set; }
+        }
+    }
+
     public class ParamsOfRunExecutor
     {
         /// <summary>
@@ -47,10 +85,10 @@ namespace TonSdk.Modules
         public string Message { get; set; }
 
         /// <summary>
-        ///  Account BOC. Must be encoded as base64.
+        ///  Account to run on executor
         /// </summary>
         [JsonProperty("account")]
-        public string Account { get; set; }
+        public AccountForExecutor Account { get; set; }
 
         /// <summary>
         ///  Execution options.
@@ -59,10 +97,16 @@ namespace TonSdk.Modules
         public ExecutionOptions ExecutionOptions { get; set; }
 
         /// <summary>
-        ///  Contract ABI for dedcoding output messages
+        ///  Contract ABI for decoding output messages
         /// </summary>
         [JsonProperty("abi")]
         public Abi Abi { get; set; }
+
+        /// <summary>
+        ///  Skip transaction check flag
+        /// </summary>
+        [JsonProperty("skip_transaction_check")]
+        public bool? SkipTransactionCheck { get; set; }
     }
 
     public class ResultOfRunExecutor

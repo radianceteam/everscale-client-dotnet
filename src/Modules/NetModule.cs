@@ -141,8 +141,8 @@ namespace TonSdk.Modules
     {
         /// <summary>
         ///  Queries collection data
-        ///  
-        ///  Queries data that satisfies the `filter` conditions, 
+        /// 
+        ///  Queries data that satisfies the `filter` conditions,
         ///  limits the number of returned records and orders them.
         ///  The projection fields are limited to  `result` fields
         /// </summary>
@@ -150,19 +150,19 @@ namespace TonSdk.Modules
 
         /// <summary>
         ///  Returns an object that fulfills the conditions or waits for its appearance
-        ///  
-        ///  Triggers only once. 
-        ///  If object that satisfies the `filter` conditions 
-        ///  already exists - returns it immediately. 
+        /// 
+        ///  Triggers only once.
+        ///  If object that satisfies the `filter` conditions
+        ///  already exists - returns it immediately.
         ///  If not - waits for insert/update of data withing the specified `timeout`,
-        ///  and returns it. 
+        ///  and returns it.
         ///  The projection fields are limited to  `result` fields
         /// </summary>
         Task<ResultOfWaitForCollection> WaitForCollectionAsync(ParamsOfWaitForCollection @params);
 
         /// <summary>
         ///  Cancels a subscription
-        ///  
+        /// 
         ///  Cancels a subscription specified by its handle.
         /// </summary>
         Task UnsubscribeAsync(ResultOfSubscribeCollection @params);
