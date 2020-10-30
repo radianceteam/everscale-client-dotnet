@@ -152,8 +152,22 @@ function getReturnType(result: TonApiSpec.Result): string {
 function writeStructDefinition(module: TonApiSpec.Module, type: TonApiSpec.Type, writer: CSharpWriter, parent: TonApiSpec.Type = null): boolean {
     if (type.struct_fields.length && !type.struct_fields[0].name) {
         // special handling for a few of builtin types
-        if (parent && parent.name == 'Abi') {
-            type.struct_fields[0].name = 'value';
+        if (parent && 'Abi' === parent.name) {
+            type.struct_fields[0].name = 'value'; // this is the missing part in api.json the 'value' property name
+        } else if (parent && 'MessageSource' === parent.name &&
+            'ParamsOfEncodeMessage' === type.struct_fields[0].ref_name) {
+
+            const baseType = module.types.filter(t => 'ParamsOfEncodeMessage' === t.name)[0];
+            if (!baseType) {
+                return false;
+            }
+
+            // this is actually must be inheritance, but since we can't inherit
+            // from abstract 'MessageSource 'superclass and from 'ParamsOfEncodeMessage',
+            // we're just copying all class members from 'ParamsOfEncodeMessage'.
+
+            type.struct_fields = baseType.struct_fields;
+
         } else {
             return false;
         }
