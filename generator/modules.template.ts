@@ -68,11 +68,13 @@ function toCSharpValueType(value: TonApiSpec.HasValue, optional: boolean = false
             // FIXME: no concrete types are defined for these API types in api.json; returning raw JSON.
             if ('API' === value.ref_name ||
                 'Value' === value.ref_name ||
-                'TransactionFees' === value.ref_name) {
+                'TransactionFees' === value.ref_name ||
+                'AbiContract' === value.ref_name) {
                 return 'Newtonsoft.Json.Linq.JToken';
             }
             // FIXME: SigningBoxHandle is a number
-            if ('SigningBoxHandle' === value.ref_name) {
+            if ('SigningBoxHandle' === value.ref_name ||
+                'AbiHandle' === value.ref_name) {
                 return 'decimal';
             }
             return value.ref_name;
@@ -149,7 +151,12 @@ function getReturnType(result: TonApiSpec.Result): string {
 
 function writeStructDefinition(module: TonApiSpec.Module, type: TonApiSpec.Type, writer: CSharpWriter, parent: TonApiSpec.Type = null): boolean {
     if (type.struct_fields.length && !type.struct_fields[0].name) {
-        return false;
+        // special handling for a few of builtin types
+        if (parent && parent.name == 'Abi') {
+            type.struct_fields[0].name = 'value';
+        } else {
+            return false;
+        }
     }
 
     writer.writeClassBlock({

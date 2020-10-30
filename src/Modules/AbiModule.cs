@@ -13,7 +13,17 @@ namespace TonSdk.Modules
 {
     public abstract class Abi
     {
+        public class Serialized : Abi
+        {
+            [JsonProperty("value")]
+            public Newtonsoft.Json.Linq.JToken Value { get; set; }
+        }
 
+        public class Handle : Abi
+        {
+            [JsonProperty("value")]
+            public decimal Value { get; set; }
+        }
     }
 
     /// <summary>
