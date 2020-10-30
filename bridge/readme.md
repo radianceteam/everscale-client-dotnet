@@ -26,9 +26,7 @@ https://visualstudio.microsoft.com/downloads/
 
 ### Linux/MacOS
 
-```
-./install.sh
-```
+TBD: prerequisites
 
 ## Build
 
@@ -42,7 +40,9 @@ Library files are built and installed into `lib` directory of the _project root_
 
 ### Linux/MacOS
 
-TBD
+```
+./install.sh
+```
 
 ## TODO
 
