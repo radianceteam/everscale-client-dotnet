@@ -94,7 +94,7 @@ namespace TonSdk
                     var json = Utf8String.ToString(jsonPtr, len);
                     Logger.Debug($"{functionName} executed with error");
                     Logger.Debug($"Error JSON returned by {functionName}: {json}");
-                    tcs.SetException(new TonClientException(json));
+                    tcs.SetException(TonClientException.FromJson(json));
                 }
                 finally
                 {
@@ -144,22 +144,22 @@ namespace TonSdk
                         var json = Utf8String.ToString(jsonPtr, len);
                         Logger.Debug($"Init context returned JSON: {json}");
                         var token = JObject.Parse(json);
-                        if (token.TryGetValue("result", out var contextToken) && contextToken != null)
+                        if (token.TryGetValue("result", out var contextToken))
                         {
                             Logger.Debug($"Init context succeeded: {contextToken}");
                             context = contextToken.Value<uint>();
                         }
                         else
                         {
-                            if (token.TryGetValue("error", out var errorToken) && errorToken != null)
+                            if (token.TryGetValue("error", out var errorToken))
                             {
                                 Logger.Debug($"throwing exception with error {errorToken}");
-                                exception = new TonClientException($"{nameof(Interop.tc_bridge_create_context)} returned error: {errorToken}");
+                                exception = TonClientException.FromJson(errorToken.Value<JToken>());
                             }
                             else
                             {
                                 Logger.Debug($"throwing exception with the returned JSON: {json}");
-                                exception = new TonClientException($"{nameof(Interop.tc_bridge_create_context)} returned unsuccessful result: {json}");
+                                exception = TonClientException.FromJson(json);
                             }
                         }
                     }

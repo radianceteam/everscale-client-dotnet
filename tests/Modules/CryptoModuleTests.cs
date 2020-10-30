@@ -25,7 +25,7 @@ namespace TonSdk.Tests.Modules
         }
 
         [Fact]
-        public async Task TestFactorize()
+        public async Task ShouldFactorize()
         {
             var result = await _client.Crypto.FactorizeAsync(new ParamsOfFactorize
             {
@@ -37,17 +37,25 @@ namespace TonSdk.Tests.Modules
         }
 
         [Fact]
-        public async Task TestFactorize_Prime_Number()
+        public async Task Should_Not_Factorize_Prime_Number()
         {
-            await Assert.ThrowsAsync<TonClientException>(() =>
+            var e = await Assert.ThrowsAsync<TonClientException>(() =>
                 _client.Crypto.FactorizeAsync(new ParamsOfFactorize
                 {
                     Composite = "b"
                 }));
+
+            Assert.Equal(106, e.Code);
+            Assert.Contains("Invalid factorize challenge: Composite number can't be factorized", e.Message);
+            Assert.True(e.Data.Contains("core_version"));
+
+            var versionString = e.Data["core_version"]?.ToString();
+            Assert.NotNull(versionString);
+            Assert.Matches(@"\d+\.\d+\.\d+", versionString);
         }
 
         [Fact]
-        public async Task TestModularPower()
+        public async Task Should_Calculate_Modular_Power()
         {
             var result = await _client.Crypto.ModularPowerAsync(new ParamsOfModularPower
             {
@@ -61,7 +69,7 @@ namespace TonSdk.Tests.Modules
         }
 
         [Fact]
-        public async Task TestTonCrc16()
+        public async Task Should_Calculate_TonCrc16()
         {
             var result = await _client.Crypto.TonCrc16Async(new ParamsOfTonCrc16
             {
@@ -73,7 +81,7 @@ namespace TonSdk.Tests.Modules
         }
 
         [Fact]
-        public async Task TestGenerateRandomBytes()
+        public async Task Should_Generate_Random_Bytes()
         {
             var result = await _client.Crypto.GenerateRandomBytesAsync(new ParamsOfGenerateRandomBytes
             {
@@ -85,7 +93,7 @@ namespace TonSdk.Tests.Modules
         }
 
         [Fact]
-        public async Task TestConvertPublicKeyToTonSafeFormat()
+        public async Task Should_ConvertPublicKeyToTonSafeFormat()
         {
             var key = "1114676765926380121143944239225577351517094772360684970410316804";
             var result = await _client.Crypto.ConvertPublicKeyToTonSafeFormatAsync(new ParamsOfConvertPublicKeyToTonSafeFormat
@@ -99,7 +107,7 @@ namespace TonSdk.Tests.Modules
         }
 
         [Fact]
-        public async Task TestGenerateRandomSignKeys()
+        public async Task Should_GenerateRandomSignKeys()
         {
             var result = await _client.Crypto.GenerateRandomSignKeysAsync();
             Assert.NotNull(result);
@@ -108,7 +116,7 @@ namespace TonSdk.Tests.Modules
         }
 
         [Fact]
-        public async Task TestSignVerify()
+        public async Task Should_Verify_Signed_String()
         {
             var keys = await _client.Crypto.GenerateRandomSignKeysAsync();
             var result = await _client.Crypto.SignAsync(new ParamsOfSign
@@ -133,7 +141,34 @@ namespace TonSdk.Tests.Modules
         }
 
         [Fact]
-        public async Task TestSha256()
+        public async Task Should_Not_Verify_String_Signed_With_Other_Key_Pair()
+        {
+            var keys = await _client.Crypto.GenerateRandomSignKeysAsync();
+            var otherKeys = await _client.Crypto.GenerateRandomSignKeysAsync();
+
+            var result = await _client.Crypto.SignAsync(new ParamsOfSign
+            {
+                Unsigned = Convert.ToBase64String(Encoding.UTF8.GetBytes("test")),
+                Keys = keys
+            });
+
+            Assert.NotNull(result);
+            Assert.NotEmpty(result.Signed);
+            Assert.NotEmpty(result.Signature);
+
+            var exception = await Assert.ThrowsAsync<TonClientException>(() =>
+                _client.Crypto.VerifySignatureAsync(new ParamsOfVerifySignature
+                {
+                    Public = otherKeys.Public,
+                    Signed = result.Signed
+                }));
+
+            Assert.Equal(112, exception.Code);
+            Assert.Contains("verify signature failed", exception.Message);
+        }
+
+        [Fact]
+        public async Task Should_Calculate_Sha256()
         {
             var result = await _client.Crypto.Sha256Async(new ParamsOfHash
             {
@@ -146,7 +181,7 @@ namespace TonSdk.Tests.Modules
         }
 
         [Fact]
-        public async Task TestSha512()
+        public async Task Should_Calculate_Sha512()
         {
             var result = await _client.Crypto.Sha512Async(new ParamsOfHash
             {

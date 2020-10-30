@@ -23,7 +23,7 @@ namespace TonSdk.Tests.Modules
         }
 
         [Fact]
-        public async Task TestVersion()
+        public async Task ShouldReturnVersion()
         {
             var result = await _client.Client.VersionAsync();
             Assert.NotEmpty(result.Version);
@@ -31,14 +31,14 @@ namespace TonSdk.Tests.Modules
         }
 
         [Fact]
-        public async Task TestGetApiReferenceAsync()
+        public async Task ShouldReturnGetApiReference()
         {
             var result = await _client.Client.GetApiReferenceAsync();
             Assert.NotNull(result.Api);
         }
 
         [Fact]
-        public async Task TestBuildInfo()
+        public async Task ShouldReturnBuildInfo()
         {
             var result = await _client.Client.BuildInfoAsync();
             Assert.NotNull(result.BuildInfo);
