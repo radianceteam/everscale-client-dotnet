@@ -119,7 +119,7 @@ namespace TonSdk.Modules
         ///  transaction BOC.
         /// </summary>
         [JsonProperty("transaction")]
-        public Newtonsoft.Json.Linq.JRaw Transaction { get; set; }
+        public Newtonsoft.Json.Linq.JToken Transaction { get; set; }
 
         /// <summary>
         ///  List of output messages' BOCs. Encoded as `base64`
@@ -144,7 +144,7 @@ namespace TonSdk.Modules
         ///  Transaction fees
         /// </summary>
         [JsonProperty("fees")]
-        public Newtonsoft.Json.Linq.JRaw Fees { get; set; }
+        public Newtonsoft.Json.Linq.JToken Fees { get; set; }
     }
 
     public class ParamsOfRunTvm
@@ -215,7 +215,7 @@ namespace TonSdk.Modules
         ///  Input parameters
         /// </summary>
         [JsonProperty("input")]
-        public Newtonsoft.Json.Linq.JRaw Input { get; set; }
+        public Newtonsoft.Json.Linq.JToken Input { get; set; }
 
         [JsonProperty("execution_options")]
         public ExecutionOptions ExecutionOptions { get; set; }
@@ -227,7 +227,7 @@ namespace TonSdk.Modules
         ///  Values returned by getmethod on stack
         /// </summary>
         [JsonProperty("output")]
-        public Newtonsoft.Json.Linq.JRaw Output { get; set; }
+        public Newtonsoft.Json.Linq.JToken Output { get; set; }
     }
 
     public interface ITvmModule

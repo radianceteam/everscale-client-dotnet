@@ -44,6 +44,10 @@
     </ContentWithTargetPath>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
   <!-- TODO: copy libtonclient_dotnet_bridge.dylib -->
 
 </Project>

@@ -67,7 +67,7 @@ namespace TonSdk.Modules
         ///  Function input parameters according to ABI.
         /// </summary>
         [JsonProperty("input")]
-        public Newtonsoft.Json.Linq.JRaw Input { get; set; }
+        public Newtonsoft.Json.Linq.JToken Input { get; set; }
     }
 
     public class DeploySet
@@ -88,7 +88,7 @@ namespace TonSdk.Modules
         ///  List of initial values for contract's public variables.
         /// </summary>
         [JsonProperty("initial_data")]
-        public Newtonsoft.Json.Linq.JRaw InitialData { get; set; }
+        public Newtonsoft.Json.Linq.JToken InitialData { get; set; }
     }
 
     public abstract class Signer
@@ -210,7 +210,7 @@ namespace TonSdk.Modules
         public Abi Abi { get; set; }
 
         [JsonProperty("value")]
-        public Newtonsoft.Json.Linq.JRaw Value { get; set; }
+        public Newtonsoft.Json.Linq.JToken Value { get; set; }
     }
 
     public abstract class MessageSource
@@ -490,7 +490,7 @@ namespace TonSdk.Modules
         ///  Parameters or result value.
         /// </summary>
         [JsonProperty("value")]
-        public Newtonsoft.Json.Linq.JRaw Value { get; set; }
+        public Newtonsoft.Json.Linq.JToken Value { get; set; }
 
         /// <summary>
         ///  Function header.

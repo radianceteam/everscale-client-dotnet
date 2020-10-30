@@ -13,10 +13,7 @@ namespace TonSdk.Tests.Modules
 
         public CryptoModuleTests(ITestOutputHelper outputHelper)
         {
-            _client = TonClient.Create(new TonClientConfig
-            {
-                Logger = new XUnitTestLogger(outputHelper)
-            });
+            _client = TonClient.Create(new XUnitTestLogger(outputHelper));
         }
 
         public void Dispose()

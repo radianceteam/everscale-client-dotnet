@@ -26,7 +26,7 @@ namespace TonSdk.Modules
         ///  JSON containing parsed BOC
         /// </summary>
         [JsonProperty("parsed")]
-        public Newtonsoft.Json.Linq.JRaw Parsed { get; set; }
+        public Newtonsoft.Json.Linq.JToken Parsed { get; set; }
     }
 
     public class ParamsOfGetBlockchainConfig

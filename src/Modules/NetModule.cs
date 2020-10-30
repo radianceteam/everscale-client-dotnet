@@ -38,7 +38,7 @@ namespace TonSdk.Modules
         ///  Collection filter
         /// </summary>
         [JsonProperty("filter")]
-        public Newtonsoft.Json.Linq.JRaw Filter { get; set; }
+        public Newtonsoft.Json.Linq.JToken Filter { get; set; }
 
         /// <summary>
         ///  Projection (result) string
@@ -65,7 +65,7 @@ namespace TonSdk.Modules
         ///  Objects that match the provided criteria
         /// </summary>
         [JsonProperty("result")]
-        public Newtonsoft.Json.Linq.JRaw[] Result { get; set; }
+        public Newtonsoft.Json.Linq.JToken[] Result { get; set; }
     }
 
     public class ParamsOfWaitForCollection
@@ -80,7 +80,7 @@ namespace TonSdk.Modules
         ///  Collection filter
         /// </summary>
         [JsonProperty("filter")]
-        public Newtonsoft.Json.Linq.JRaw Filter { get; set; }
+        public Newtonsoft.Json.Linq.JToken Filter { get; set; }
 
         /// <summary>
         ///  Projection (result) string
@@ -101,7 +101,7 @@ namespace TonSdk.Modules
         ///  First found object that matches the provided criteria
         /// </summary>
         [JsonProperty("result")]
-        public Newtonsoft.Json.Linq.JRaw Result { get; set; }
+        public Newtonsoft.Json.Linq.JToken Result { get; set; }
     }
 
     public class ResultOfSubscribeCollection
@@ -125,7 +125,7 @@ namespace TonSdk.Modules
         ///  Collection filter
         /// </summary>
         [JsonProperty("filter")]
-        public Newtonsoft.Json.Linq.JRaw Filter { get; set; }
+        public Newtonsoft.Json.Linq.JToken Filter { get; set; }
 
         /// <summary>
         ///  Projection (result) string

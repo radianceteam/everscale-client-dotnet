@@ -20,7 +20,7 @@ namespace TonSdk.Modules
         public string Message { get; set; }
 
         [JsonProperty("data")]
-        public Newtonsoft.Json.Linq.JRaw Data { get; set; }
+        public Newtonsoft.Json.Linq.JToken Data { get; set; }
     }
 
     public class ClientConfig
@@ -89,7 +89,7 @@ namespace TonSdk.Modules
     public class ResultOfGetApiReference
     {
         [JsonProperty("api")]
-        public Newtonsoft.Json.Linq.JRaw Api { get; set; }
+        public Newtonsoft.Json.Linq.JToken Api { get; set; }
     }
 
     public class ResultOfVersion
@@ -104,7 +104,7 @@ namespace TonSdk.Modules
     public class ResultOfBuildInfo
     {
         [JsonProperty("build_info")]
-        public Newtonsoft.Json.Linq.JRaw BuildInfo { get; set; }
+        public Newtonsoft.Json.Linq.JToken BuildInfo { get; set; }
     }
 
     /// <summary>

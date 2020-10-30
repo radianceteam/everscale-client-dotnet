@@ -1,8 +1,6 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace TonSdk
@@ -11,20 +9,28 @@ namespace TonSdk
     {
         private uint _context;
         private volatile bool _initialized;
-        internal readonly TonClientConfig Config;
+        private readonly TonSerializer _serializer;
+        internal readonly object Config;
 
-        internal ILogger Logger => Config.Logger ?? DummyLogger.Instance;
+        internal ILogger Logger { get; }
 
-        public static ITonClient Create(TonClientConfig config = default)
+        public static ITonClient Create(ILogger logger = null)
         {
-            var client = new TonClient(config ?? new TonClientConfig());
+            return Create(new { }, logger);
+        }
+
+        public static ITonClient Create(object config, ILogger logger = null)
+        {
+            var client = new TonClient(config, logger);
             client.Init();
             return client;
         }
 
-        private TonClient(TonClientConfig config)
+        private TonClient(object config, ILogger logger)
         {
             Config = config ?? throw new ArgumentNullException(nameof(config));
+            Logger = logger ?? DummyLogger.Instance;
+            _serializer = new TonSerializer(Logger);
         }
 
         private void Init()
@@ -44,7 +50,7 @@ namespace TonSdk
         public async Task<T> CallFunctionAsync<T>(string functionName, object @params = null)
         {
             var result = await GetJsonResponse(functionName, @params);
-            return Deserialize<T>(result);
+            return _serializer.Deserialize<T>(result);
         }
 
         public async Task CallFunctionAsync(string functionName, object @params = null)
@@ -55,7 +61,7 @@ namespace TonSdk
         private async Task<string> GetJsonResponse(string functionName, object @params)
         {
             var functionParamsJson = @params != null
-                ? Serialize(@params)
+                ? _serializer.Serialize(@params)
                 : "";
 
             Logger.Debug($"Calling function {functionName} with parameters {functionParamsJson}");
@@ -170,11 +176,7 @@ namespace TonSdk
                 }
             }
 
-            var configStr = new Utf8String(JsonConvert.SerializeObject(new
-            {
-                // TODO: fill?
-            }));
-
+            var configStr = new Utf8String(_serializer.Serialize(Config));
             Interop.tc_bridge_create_context(configStr.Ptr, configStr.Length, NativeCallback);
 
             if (exception != null)
@@ -183,59 +185,6 @@ namespace TonSdk
             }
 
             return context;
-        }
-
-        private T Deserialize<T>(string json)
-        {
-            if (string.IsNullOrEmpty(json))
-            {
-                Logger.Warning("Empty JSON passed to deserialize method");
-                return default;
-            }
-            return JsonConvert.DeserializeObject<T>(json);
-        }
-
-        private string Serialize(object any)
-        {
-            if (any == null)
-            {
-                Logger.Warning("Null passed to serialize method");
-            }
-            return JsonConvert.SerializeObject(any);
-        }
-    }
-
-    internal class Utf8String : IDisposable
-    {
-        private readonly string _str;
-
-        public IntPtr Ptr { get; }
-        public byte[] Bytes { get; }
-        public int Length => Bytes.Length;
-
-        public Utf8String(string str)
-        {
-            _str = str;
-            Bytes = Encoding.UTF8.GetBytes(str);
-            Ptr = Marshal.AllocHGlobal(Bytes.Length);
-            Marshal.Copy(Bytes, 0, Ptr, Bytes.Length);
-        }
-
-        public void Dispose()
-        {
-            Marshal.FreeHGlobal(Ptr);
-        }
-
-        public override string ToString()
-        {
-            return _str;
-        }
-
-        public static string ToString(IntPtr ptr, int len)
-        {
-            var bytes = new byte[len];
-            Marshal.Copy(ptr, bytes, 0, bytes.Length);
-            return Encoding.UTF8.GetString(bytes);
         }
     }
 }

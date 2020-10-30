@@ -160,7 +160,7 @@ namespace TonSdk.Modules
         ///  transaction BOC.
         /// </summary>
         [JsonProperty("transaction")]
-        public Newtonsoft.Json.Linq.JRaw Transaction { get; set; }
+        public Newtonsoft.Json.Linq.JToken Transaction { get; set; }
 
         /// <summary>
         ///  List of output messages' BOCs. Encoded as `base64`
@@ -179,7 +179,7 @@ namespace TonSdk.Modules
         ///  Transaction fees
         /// </summary>
         [JsonProperty("fees")]
-        public Newtonsoft.Json.Linq.JRaw Fees { get; set; }
+        public Newtonsoft.Json.Linq.JToken Fees { get; set; }
     }
 
     public class DecodedOutput
@@ -197,7 +197,7 @@ namespace TonSdk.Modules
         ///  Decoded body of the function output message.
         /// </summary>
         [JsonProperty("output")]
-        public Newtonsoft.Json.Linq.JRaw Output { get; set; }
+        public Newtonsoft.Json.Linq.JToken Output { get; set; }
     }
 
     public class ParamsOfSendMessage

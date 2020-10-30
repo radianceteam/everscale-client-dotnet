@@ -46,9 +46,7 @@ dotnet test
 ```
 
 ## TODO
- - Complex type serialization/deserialization (EnumOfTypes).
- - Client configuration options.
  - More Tests.
  - Mac support.
  - GitHub workflow script which runs tests and publishes NuGet packages.
- - Readmes.
+

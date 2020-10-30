@@ -69,7 +69,7 @@ function toCSharpValueType(value: TonApiSpec.HasValue, optional: boolean = false
             if ('API' === value.ref_name ||
                 'Value' === value.ref_name ||
                 'TransactionFees' === value.ref_name) {
-                return 'Newtonsoft.Json.Linq.JRaw';
+                return 'Newtonsoft.Json.Linq.JToken';
             }
             // FIXME: SigningBoxHandle is a number
             if ('SigningBoxHandle' === value.ref_name) {
