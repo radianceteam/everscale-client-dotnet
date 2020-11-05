@@ -72,6 +72,7 @@ namespace TonSdk
 
             var successCallbackHandle = default(GCHandle);
             var errorCallbackHandle = default(GCHandle);
+            var customCallbackHandle = default(GCHandle);
 
             var tcs = new TaskCompletionSource<string>();
 
@@ -111,8 +112,27 @@ namespace TonSdk
                 }
             }
 
+
+            void CustomHandler(IntPtr jsonPtr, int len)
+            {
+                try
+                {
+                    var json = Utf8String.ToString(jsonPtr, len);
+                    Logger.Debug($"{functionName} fired custom callback with JSON {json}");
+                    // TODO: use it somehow??
+                }
+                finally
+                {
+                    if (customCallbackHandle.IsAllocated)
+                    {
+                        customCallbackHandle.Free();
+                    }
+                }
+            }
+
             successCallbackHandle = GCHandle.Alloc((Interop.tc_bridge_response_handler_t)SuccessHandler);
             errorCallbackHandle = GCHandle.Alloc((Interop.tc_bridge_response_handler_t)ErrorHandler);
+            customCallbackHandle = GCHandle.Alloc((Interop.tc_bridge_response_handler_t)CustomHandler);
 
             var funcNameStr = new Utf8String(functionName);
             var funcParamsStr = new Utf8String(functionParamsJson);
@@ -123,7 +143,8 @@ namespace TonSdk
                 funcParamsStr.Ptr,
                 funcParamsStr.Length,
                 SuccessHandler,
-                ErrorHandler);
+                ErrorHandler,
+                CustomHandler);
 
             var result = await tcs.Task;
             return result;

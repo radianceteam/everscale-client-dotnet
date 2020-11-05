@@ -31,7 +31,8 @@ namespace TonSdk
             IntPtr function_params_json,
             int params_json_len,
             tc_bridge_response_handler_t success_handler,
-            tc_bridge_response_handler_t error_handler);
+            tc_bridge_response_handler_t error_handler,
+            tc_bridge_response_handler_t custom_handler);
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void tc_bridge_destroy_context(uint context);

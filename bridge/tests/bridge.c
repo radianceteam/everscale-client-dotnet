@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdarg.h>
 
 #ifdef TON_WINDOWS
 
@@ -57,6 +58,12 @@ void test_error_response_handler(const char *str, uint32_t len) {
     completed = true;
 }
 
+void test_error_custom_handler(const char *str, uint32_t len) {
+    char *json = mem_copy_str_n(str, len);
+    printf("request called with custom JSON: %s\n", json);
+    free(json);
+}
+
 int main() {
     tc_bridge_create_context("{}", 2, test_json_callback);
     if (context) {
@@ -66,7 +73,8 @@ int main() {
                 "client.version", strlen("client.version"),
                 "", 0,
                 test_success_response_handler,
-                test_error_response_handler);
+                test_error_response_handler,
+                test_error_custom_handler);
         while (!completed) {
             printf("Sleeping for 1000ms\n");
             ton_sleep(1000);

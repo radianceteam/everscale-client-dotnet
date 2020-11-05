@@ -82,7 +82,8 @@ TC_BRIDGE_API void tc_bridge_request(
         const char *function_params_json,
         uint32_t params_json_len,
         tc_bridge_response_handler_t success_handler,
-        tc_bridge_response_handler_t error_handler);
+        tc_bridge_response_handler_t error_handler,
+        tc_bridge_response_handler_t custom_handler);
 
 TC_BRIDGE_API void tc_bridge_destroy_context(uint32_t context);
 
