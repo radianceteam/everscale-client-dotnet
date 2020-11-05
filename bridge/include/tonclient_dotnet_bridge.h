@@ -8,6 +8,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <tonclient.h>
 
 #if defined _WIN32 || defined __CYGWIN__
     #define TC_BRIDGE_HELPER_DLL_IMPORT __declspec(dllimport)
@@ -67,6 +68,7 @@ typedef void (*tc_bridge_json_callback_t)(
         uint32_t len);
 
 typedef void (*tc_bridge_response_handler_t)(
+        tc_response_types_t type,
         const char *response_json,
         uint32_t response_json_len);
 
@@ -81,9 +83,7 @@ TC_BRIDGE_API void tc_bridge_request(
         uint32_t function_name_len,
         const char *function_params_json,
         uint32_t params_json_len,
-        tc_bridge_response_handler_t success_handler,
-        tc_bridge_response_handler_t error_handler,
-        tc_bridge_response_handler_t custom_handler);
+        tc_bridge_response_handler_t handler);
 
 TC_BRIDGE_API void tc_bridge_destroy_context(uint32_t context);
 

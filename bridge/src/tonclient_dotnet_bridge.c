@@ -1,7 +1,6 @@
 #include "tonclient_dotnet_bridge.h"
 #include "tonclient.h"
 
-#include <stddef.h>
 #include <assert.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -60,9 +59,7 @@ uint32_t get_next_request_id() {
 
 typedef struct tc_bridge_handler_data {
     uint32_t request_id;
-    tc_bridge_response_handler_t success_handler;
-    tc_bridge_response_handler_t error_handler;
-    tc_bridge_response_handler_t custom_handler;
+    tc_bridge_response_handler_t handler;
     struct tc_bridge_handler_data *next;
 } tc_bridge_handler_data_t;
 
@@ -72,19 +69,14 @@ static tc_bridge_handler_data_t *request_data_map[REQUEST_DATA_MAP_SIZE];
 
 tc_bridge_handler_data_t *create_handler_data(
         uint32_t request_id,
-        tc_bridge_response_handler_t success_handler,
-        tc_bridge_response_handler_t error_handler,
-        tc_bridge_response_handler_t custom_handler) {
+        tc_bridge_response_handler_t success_handler) {
 
-    tc_bridge_handler_data_t *data = malloc(sizeof(tc_bridge_handler_data_t));
+    tc_bridge_handler_data_t *data = calloc(1, sizeof(tc_bridge_handler_data_t));
     data->request_id = request_id;
-    data->success_handler = success_handler;
-    data->error_handler = error_handler;
-    data->custom_handler = custom_handler;
+    data->handler = success_handler;
     data->next = NULL;
 
     uint32_t index = request_id % REQUEST_DATA_MAP_SIZE;
-
     tc_bridge_handler_data_t *prev = request_data_map[index];
     if (prev) {
         while (prev->next) {
@@ -128,7 +120,7 @@ void free_handler_data(tc_bridge_handler_data_t *data) {
     if (prev) {
         prev->next = data->next;
     } else {
-        request_data_map[index] = NULL;
+        request_data_map[index] = data->next;
     }
     free(data);
 }
@@ -136,7 +128,7 @@ void free_handler_data(tc_bridge_handler_data_t *data) {
 void bridge_response_handler(
         uint32_t request_id,
         tc_string_data_t params_json,
-        uint32_t response_type,
+        tc_response_types_t response_type,
         bool finished) {
 
     tc_bridge_handler_data_t *data = lookup_handler_data(request_id);
@@ -147,19 +139,11 @@ void bridge_response_handler(
         return;
     }
 
-    if (response_type == tc_response_success) {
-        if (data->success_handler) {
-            data->success_handler(params_json.content, params_json.len);
-        }
-    } else if (response_type == tc_response_error) {
-        if (data->error_handler) {
-            data->error_handler(params_json.content, params_json.len);
-        }
-    } else if (response_type == tc_response_custom) {
-        if (data->custom_handler) {
-            data->custom_handler(params_json.content, params_json.len);
-        }
-    } else if (response_type == tc_response_nop && finished) {
+    if (data->handler) {
+        data->handler(response_type, params_json.content, params_json.len);
+    }
+
+    if (finished) {
         free_handler_data(data);
     }
 }
@@ -182,9 +166,7 @@ void tc_bridge_request(
         uint32_t function_name_len,
         const char *function_params_json,
         uint32_t params_json_len,
-        tc_bridge_response_handler_t success_handler,
-        tc_bridge_response_handler_t error_handler,
-        tc_bridge_response_handler_t custom_handler) {
+        tc_bridge_response_handler_t handler) {
 
     assert(function_name);
     assert(function_name_len);
@@ -192,11 +174,7 @@ void tc_bridge_request(
 
     uint32_t request_id = get_next_request_id();
 
-    create_handler_data(
-            request_id,
-            success_handler,
-            error_handler,
-            custom_handler);
+    create_handler_data(request_id, handler);
 
     tc_string_data_t f_name = {function_name, function_name_len};
     tc_string_data_t f_params = {function_params_json, params_json_len};

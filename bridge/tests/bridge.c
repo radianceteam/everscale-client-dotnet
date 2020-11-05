@@ -43,24 +43,22 @@ void test_json_callback(const char *str, uint32_t len) {
     free(json);
 }
 
-void test_success_response_handler(const char *str, uint32_t len) {
+void test_success_response_handler(tc_response_types_t type, const char *str, uint32_t len) {
     char *json = mem_copy_str_n(str, len);
-    printf("request successfully returned JSON: %s\n", json);
-    free(json);
-    success = true;
-    completed = true;
-}
-
-void test_error_response_handler(const char *str, uint32_t len) {
-    char *json = mem_copy_str_n(str, len);
-    printf("request returned error JSON: %s\n", json);
-    free(json);
-    completed = true;
-}
-
-void test_error_custom_handler(const char *str, uint32_t len) {
-    char *json = mem_copy_str_n(str, len);
-    printf("request called with custom JSON: %s\n", json);
+    switch (type) {
+        case tc_response_success:
+            printf("request successfully returned JSON: %s\n", json);
+            success = true;
+            completed = true;
+            break;
+        case tc_response_error:
+            printf("request returned error JSON: %s\n", json);
+            completed = true;
+            break;
+        default:
+            printf("request called with response type %d and custom JSON: %s\n", type, json);
+            break;
+    }
     free(json);
 }
 
@@ -72,9 +70,7 @@ int main() {
                 context,
                 "client.version", strlen("client.version"),
                 "", 0,
-                test_success_response_handler,
-                test_error_response_handler,
-                test_error_custom_handler);
+                test_success_response_handler);
         while (!completed) {
             printf("Sleeping for 1000ms\n");
             ton_sleep(1000);

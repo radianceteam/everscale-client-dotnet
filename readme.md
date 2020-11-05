@@ -78,7 +78,6 @@ TBD
 
  - 100% function test coverage
  - More negative tests
- - Parallel execution tests
 
 ### Platform support
 

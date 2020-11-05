@@ -70,69 +70,40 @@ namespace TonSdk
             // This is to avoid native handlers being garbage collected while waiting
             // for result from the native lib.
 
-            var successCallbackHandle = default(GCHandle);
-            var errorCallbackHandle = default(GCHandle);
-            var customCallbackHandle = default(GCHandle);
+            var callbackHandle = default(GCHandle);
 
             var tcs = new TaskCompletionSource<string>();
 
-            void SuccessHandler(IntPtr jsonPtr, int len)
+            var handler = new Interop.tc_bridge_response_handler_t((type, jsonPtr, len) =>
             {
                 try
                 {
                     var json = Utf8String.ToString(jsonPtr, len);
-                    Logger.Debug($"{functionName} executed successfully");
-                    Logger.Debug($"JSON returned by {functionName}: {json}");
-                    tcs.SetResult(json);
+                    Logger.Debug($"{functionName} status update: {type} ({json})");
+                    if (type == Interop.tc_response_types_t.tc_response_success)
+                    {
+                        tcs.SetResult(json);
+                    }
+                    else if (type == Interop.tc_response_types_t.tc_response_error)
+                    {
+                        tcs.SetException(TonClientException.FromJson(json));
+                    }
+                    else
+                    {
+                        // TODO: use it somehow??
+                    }
                 }
                 finally
                 {
-                    if (successCallbackHandle.IsAllocated)
+                    if (type == Interop.tc_response_types_t.tc_response_nop &&
+                        callbackHandle.IsAllocated)
                     {
-                        successCallbackHandle.Free();
+                        callbackHandle.Free();
                     }
                 }
-            }
+            });
 
-            void ErrorHandler(IntPtr jsonPtr, int len)
-            {
-                try
-                {
-                    var json = Utf8String.ToString(jsonPtr, len);
-                    Logger.Debug($"{functionName} executed with error");
-                    Logger.Debug($"Error JSON returned by {functionName}: {json}");
-                    tcs.SetException(TonClientException.FromJson(json));
-                }
-                finally
-                {
-                    if (errorCallbackHandle.IsAllocated)
-                    {
-                        errorCallbackHandle.Free();
-                    }
-                }
-            }
-
-
-            void CustomHandler(IntPtr jsonPtr, int len)
-            {
-                try
-                {
-                    var json = Utf8String.ToString(jsonPtr, len);
-                    Logger.Debug($"{functionName} fired custom callback with JSON {json}");
-                    // TODO: use it somehow??
-                }
-                finally
-                {
-                    if (customCallbackHandle.IsAllocated)
-                    {
-                        customCallbackHandle.Free();
-                    }
-                }
-            }
-
-            successCallbackHandle = GCHandle.Alloc((Interop.tc_bridge_response_handler_t)SuccessHandler);
-            errorCallbackHandle = GCHandle.Alloc((Interop.tc_bridge_response_handler_t)ErrorHandler);
-            customCallbackHandle = GCHandle.Alloc((Interop.tc_bridge_response_handler_t)CustomHandler);
+            callbackHandle = GCHandle.Alloc(handler);
 
             var funcNameStr = new Utf8String(functionName);
             var funcParamsStr = new Utf8String(functionParamsJson);
@@ -142,9 +113,7 @@ namespace TonSdk
                 funcNameStr.Length,
                 funcParamsStr.Ptr,
                 funcParamsStr.Length,
-                SuccessHandler,
-                ErrorHandler,
-                CustomHandler);
+                handler);
 
             var result = await tcs.Task;
             return result;
