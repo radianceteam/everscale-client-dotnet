@@ -70,7 +70,8 @@ typedef void (*tc_bridge_json_callback_t)(
 typedef void (*tc_bridge_response_handler_t)(
         tc_response_types_t type,
         const char *response_json,
-        uint32_t response_json_len);
+        uint32_t response_json_len,
+        bool finished);
 
 TC_BRIDGE_API void tc_bridge_create_context(
         const char *config,

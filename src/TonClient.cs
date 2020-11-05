@@ -74,7 +74,7 @@ namespace TonSdk
 
             var tcs = new TaskCompletionSource<string>();
 
-            var handler = new Interop.tc_bridge_response_handler_t((type, jsonPtr, len) =>
+            var handler = new Interop.tc_bridge_response_handler_t((type, jsonPtr, len, finished) =>
             {
                 try
                 {
@@ -95,8 +95,7 @@ namespace TonSdk
                 }
                 finally
                 {
-                    if (type == Interop.tc_response_types_t.tc_response_nop &&
-                        callbackHandle.IsAllocated)
+                    if (finished && callbackHandle.IsAllocated)
                     {
                         callbackHandle.Free();
                     }

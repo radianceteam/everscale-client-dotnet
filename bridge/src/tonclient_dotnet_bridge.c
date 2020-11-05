@@ -140,7 +140,7 @@ void bridge_response_handler(
     }
 
     if (data->handler) {
-        data->handler(response_type, params_json.content, params_json.len);
+        data->handler(response_type, params_json.content, params_json.len, finished);
     }
 
     if (finished) {

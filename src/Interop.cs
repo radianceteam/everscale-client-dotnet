@@ -30,7 +30,8 @@ namespace TonSdk
         public delegate void tc_bridge_response_handler_t(
             tc_response_types_t type,
             IntPtr params_json,
-            int response_json_len);
+            int response_json_len,
+            bool finished);
 
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void tc_bridge_request(
