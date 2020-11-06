@@ -6,7 +6,7 @@
 # TON_LIBRARIES         - List of libraries when using ton client.
 # TON_RUNTIME_LIBRARIES - List of runtime libraries when using ton client.
 
-set(TON_LIB_NAMES ton_client tonclient)
+set(TON_LIB_NAMES ton_client tonclient ton_client.dll)
 
 find_path(TON_INCLUDE_DIR tonclient.h)
 find_library(TON_LIBRARY NAMES ${TON_LIB_NAMES})

@@ -84,7 +84,6 @@ TBD
  - macOS support
  - move `bridge` project to `radianceteam/ton-client-dotnet-bridge`
  - setup matrix build in `ton-client-dotnet-bridge`, publish binaries to GitHub Releases.
- - remove binaries from `lib` 
 
 ### Deployment
 

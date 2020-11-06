@@ -11,5 +11,3 @@ set_target_properties(tonclient_dotnet_bridge PROPERTIES
         SOVERSION ${TC_VERSION_MAJOR})
 
 target_link_libraries(tonclient_dotnet_bridge TON::Client)
-
-install(TARGETS tonclient_dotnet_bridge RUNTIME DESTINATION lib)
