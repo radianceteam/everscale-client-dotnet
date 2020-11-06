@@ -2,9 +2,8 @@
 
 ## Native bridge library for .NET
 
-Sources are in `bridge` directory. 
-Windows and Linux binaries are pre-built and placed into `lib` directory located in the project root.
-Build script is written in `bridge/install.bat` (Windows) and `bridge/install.sh` (Linux/macOS).
+Sources are in `https://github.com/radianceteam/ton-client-dotnet-bridge` repository. 
+Windows, Linux and macOS binaries are pre-built and placed into `lib` directory located in the project root.
 
 ## .NET module code generator
 
@@ -79,15 +78,8 @@ TBD
  - 100% function test coverage
  - More negative tests
 
-### Platform support
-
- - macOS support
- - move `bridge` project to `radianceteam/ton-client-dotnet-bridge`
- - setup matrix build in `ton-client-dotnet-bridge`, publish binaries to GitHub Releases.
-
 ### Deployment
 
- - download bonaries from GitHub releases when building NuGet package.
  - run tests and publish NuGet package when creating new Release in this repo.
 
 ### Documentation
