@@ -56,7 +56,7 @@ namespace TonSdk.Modules
         ///  Number of documents to return
         /// </summary>
         [JsonProperty("limit")]
-        public int? Limit { get; set; }
+        public uint? Limit { get; set; }
     }
 
     public class ResultOfQueryCollection
@@ -92,7 +92,7 @@ namespace TonSdk.Modules
         ///  Query timeout
         /// </summary>
         [JsonProperty("timeout")]
-        public int? Timeout { get; set; }
+        public uint? Timeout { get; set; }
     }
 
     public class ResultOfWaitForCollection
@@ -110,7 +110,7 @@ namespace TonSdk.Modules
         ///  Subscription handle. Must be closed with `unsubscribe`
         /// </summary>
         [JsonProperty("handle")]
-        public int Handle { get; set; }
+        public uint Handle { get; set; }
     }
 
     public class ParamsOfSubscribeCollection
@@ -144,7 +144,7 @@ namespace TonSdk.Modules
         /// 
         ///  Queries data that satisfies the `filter` conditions,
         ///  limits the number of returned records and orders them.
-        ///  The projection fields are limited to  `result` fields
+        ///  The projection fields are limited to `result` fields
         /// </summary>
         Task<ResultOfQueryCollection> QueryCollectionAsync(ParamsOfQueryCollection @params);
 
@@ -154,9 +154,9 @@ namespace TonSdk.Modules
         ///  Triggers only once.
         ///  If object that satisfies the `filter` conditions
         ///  already exists - returns it immediately.
-        ///  If not - waits for insert/update of data withing the specified `timeout`,
+        ///  If not - waits for insert/update of data within the specified `timeout`,
         ///  and returns it.
-        ///  The projection fields are limited to  `result` fields
+        ///  The projection fields are limited to `result` fields
         /// </summary>
         Task<ResultOfWaitForCollection> WaitForCollectionAsync(ParamsOfWaitForCollection @params);
 
@@ -172,7 +172,7 @@ namespace TonSdk.Modules
         ///  
         ///  Triggers for each insert/update of data
         ///  that satisfies the `filter` conditions.
-        ///  The projection fields are limited to  `result` fields.
+        ///  The projection fields are limited to `result` fields.
         /// </summary>
         Task<ResultOfSubscribeCollection> SubscribeCollectionAsync(ParamsOfSubscribeCollection @params);
     }

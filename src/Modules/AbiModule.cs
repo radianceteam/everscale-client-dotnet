@@ -13,16 +13,28 @@ namespace TonSdk.Modules
 {
     public abstract class Abi
     {
-        public class Serialized : Abi
+        public class Contract : Abi
         {
             [JsonProperty("value")]
-            public Newtonsoft.Json.Linq.JToken Value { get; set; }
+            public AbiContract Value { get; set; }
+        }
+
+        public class Json : Abi
+        {
+            [JsonProperty("value")]
+            public string Value { get; set; }
         }
 
         public class Handle : Abi
         {
             [JsonProperty("value")]
-            public decimal Value { get; set; }
+            public uint Value { get; set; }
+        }
+
+        public class Serialized : Abi
+        {
+            [JsonProperty("value")]
+            public AbiContract Value { get; set; }
         }
     }
 
@@ -30,26 +42,31 @@ namespace TonSdk.Modules
     ///  The ABI function header.
     /// 
     ///  Includes several hidden function parameters that contract
-    ///  uses for security and replay protection reasons.
+    ///  uses for security, message delivery monitoring and replay protection reasons.
     /// 
     ///  The actual set of header fields depends on the contract's ABI.
+    ///  If a contract's ABI does not include some headers, then they are not filled.
     /// </summary>
     public class FunctionHeader
     {
         /// <summary>
         ///  Message expiration time in seconds.
+        ///  If not specified - calculated automatically from message_expiration_timeout(),
+        ///  try_index and message_expiration_timeout_grow_factor() (if ABI includes `expire` header).
         /// </summary>
         [JsonProperty("expire")]
-        public int? Expire { get; set; }
+        public uint? Expire { get; set; }
 
         /// <summary>
-        ///  Message creation time in milliseconds.
+        ///  Message creation time in milliseconds. If not specified, `now` is used
+        ///  (if ABI includes `time` header).
         /// </summary>
         [JsonProperty("time")]
         public BigInteger Time { get; set; }
 
         /// <summary>
-        ///  Public key used to sign message. Encoded with `hex`.
+        ///  Public key is used by the contract to check the signature. Encoded in `hex`.
+        ///  If not specified, method fails with exception (if ABI includes `pubkey` header)..
         /// </summary>
         [JsonProperty("pubkey")]
         public string Pubkey { get; set; }
@@ -111,8 +128,8 @@ namespace TonSdk.Modules
         }
 
         /// <summary>
-        ///  Only public key is provided to generate unsigned message and `data_to_sign`
-        ///  which can be signed later.  
+        ///  Only public key is provided in unprefixed hex string format to generate unsigned message 
+        ///  and `data_to_sign` which can be signed later.  
         /// </summary>
         public class External : Signer
         {
@@ -136,7 +153,7 @@ namespace TonSdk.Modules
         public class SigningBox : Signer
         {
             [JsonProperty("handle")]
-            public decimal Handle { get; set; }
+            public uint Handle { get; set; }
         }
     }
 
@@ -291,8 +308,80 @@ namespace TonSdk.Modules
             ///  Default value is 0.
             /// </summary>
             [JsonProperty("processing_try_index")]
-            public int? ProcessingTryIndex { get; set; }
+            public byte? ProcessingTryIndex { get; set; }
         }
+    }
+
+    public class AbiParam
+    {
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("type")]
+        public string Type { get; set; }
+
+        [JsonProperty("components")]
+        public AbiParam[] Components { get; set; }
+    }
+
+    public class AbiEvent
+    {
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("inputs")]
+        public AbiParam[] Inputs { get; set; }
+
+        [JsonProperty("id")]
+        public uint? Id { get; set; }
+    }
+
+    public class AbiData
+    {
+        [JsonProperty("key")]
+        public BigInteger Key { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("type")]
+        public string Type { get; set; }
+
+        [JsonProperty("components")]
+        public AbiParam[] Components { get; set; }
+    }
+
+    public class AbiFunction
+    {
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("inputs")]
+        public AbiParam[] Inputs { get; set; }
+
+        [JsonProperty("outputs")]
+        public AbiParam[] Outputs { get; set; }
+
+        [JsonProperty("id")]
+        public uint? Id { get; set; }
+    }
+
+    public class AbiContract
+    {
+        [JsonProperty("abi_version")]
+        public uint? AbiVersion { get; set; }
+
+        [JsonProperty("header")]
+        public string[] Header { get; set; }
+
+        [JsonProperty("functions")]
+        public AbiFunction[] Functions { get; set; }
+
+        [JsonProperty("events")]
+        public AbiEvent[] Events { get; set; }
+
+        [JsonProperty("data")]
+        public AbiData[] Data { get; set; }
     }
 
     public class ParamsOfEncodeMessageBody
@@ -338,7 +427,7 @@ namespace TonSdk.Modules
         ///  Default value is 0.
         /// </summary>
         [JsonProperty("processing_try_index")]
-        public int? ProcessingTryIndex { get; set; }
+        public byte? ProcessingTryIndex { get; set; }
     }
 
     public class ResultOfEncodeMessageBody
@@ -450,7 +539,7 @@ namespace TonSdk.Modules
         ///  Default value is 0.
         /// </summary>
         [JsonProperty("processing_try_index")]
-        public int? ProcessingTryIndex { get; set; }
+        public byte? ProcessingTryIndex { get; set; }
     }
 
     public class ResultOfEncodeMessage
@@ -613,7 +702,7 @@ namespace TonSdk.Modules
         ///  Initial value for the `last_paid`.
         /// </summary>
         [JsonProperty("last_paid")]
-        public int? LastPaid { get; set; }
+        public uint? LastPaid { get; set; }
     }
 
     public class ResultOfEncodeAccount

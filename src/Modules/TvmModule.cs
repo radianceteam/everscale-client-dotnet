@@ -23,7 +23,7 @@ namespace TonSdk.Modules
         ///  time that is used as transaction time
         /// </summary>
         [JsonProperty("block_time")]
-        public int? BlockTime { get; set; }
+        public uint? BlockTime { get; set; }
 
         /// <summary>
         ///  block logical time
@@ -43,14 +43,14 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Non-existing account to run a creation internal message.
         ///  Should be used with `skip_transaction_check = true` if the message has no deploy data
-        ///  since transaction on the unitialized account are always aborted
+        ///  since transactions on the uninitialized account are always aborted
         /// </summary>
         public class None : AccountForExecutor
         {
         }
 
         /// <summary>
-        ///  Emulate unitialized account to run deploy message
+        ///  Emulate uninitialized account to run deploy message
         /// </summary>
         public class Uninit : AccountForExecutor
         {
@@ -74,6 +74,27 @@ namespace TonSdk.Modules
             [JsonProperty("unlimited_balance")]
             public bool? UnlimitedBalance { get; set; }
         }
+    }
+
+    public class TransactionFees
+    {
+        [JsonProperty("in_msg_fwd_fee")]
+        public BigInteger InMsgFwdFee { get; set; }
+
+        [JsonProperty("storage_fee")]
+        public BigInteger StorageFee { get; set; }
+
+        [JsonProperty("gas_fee")]
+        public BigInteger GasFee { get; set; }
+
+        [JsonProperty("out_msgs_fwd_fee")]
+        public BigInteger OutMsgsFwdFee { get; set; }
+
+        [JsonProperty("total_account_fees")]
+        public BigInteger TotalAccountFees { get; set; }
+
+        [JsonProperty("total_output")]
+        public BigInteger TotalOutput { get; set; }
     }
 
     public class ParamsOfRunExecutor
@@ -144,7 +165,7 @@ namespace TonSdk.Modules
         ///  Transaction fees
         /// </summary>
         [JsonProperty("fees")]
-        public Newtonsoft.Json.Linq.JToken Fees { get; set; }
+        public TransactionFees Fees { get; set; }
     }
 
     public class ParamsOfRunTvm

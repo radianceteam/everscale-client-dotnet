@@ -14,7 +14,7 @@ namespace TonSdk.Modules
     public class ClientError
     {
         [JsonProperty("code")]
-        public int Code { get; set; }
+        public uint Code { get; set; }
 
         [JsonProperty("message")]
         public string Message { get; set; }
@@ -41,19 +41,19 @@ namespace TonSdk.Modules
         public string ServerAddress { get; set; }
 
         [JsonProperty("network_retries_count")]
-        public int? NetworkRetriesCount { get; set; }
+        public sbyte? NetworkRetriesCount { get; set; }
 
         [JsonProperty("message_retries_count")]
-        public int? MessageRetriesCount { get; set; }
+        public sbyte? MessageRetriesCount { get; set; }
 
         [JsonProperty("message_processing_timeout")]
-        public int? MessageProcessingTimeout { get; set; }
+        public uint? MessageProcessingTimeout { get; set; }
 
         [JsonProperty("wait_for_timeout")]
-        public int? WaitForTimeout { get; set; }
+        public uint? WaitForTimeout { get; set; }
 
         [JsonProperty("out_of_sync_threshold")]
-        public BigInteger OutOfSyncThreshold { get; set; }
+        public uint? OutOfSyncThreshold { get; set; }
 
         [JsonProperty("access_key")]
         public string AccessKey { get; set; }
@@ -62,10 +62,10 @@ namespace TonSdk.Modules
     public class CryptoConfig
     {
         [JsonProperty("mnemonic_dictionary")]
-        public int? MnemonicDictionary { get; set; }
+        public byte? MnemonicDictionary { get; set; }
 
         [JsonProperty("mnemonic_word_count")]
-        public int? MnemonicWordCount { get; set; }
+        public byte? MnemonicWordCount { get; set; }
 
         [JsonProperty("hdkey_derivation_path")]
         public string HdkeyDerivationPath { get; set; }
@@ -80,10 +80,25 @@ namespace TonSdk.Modules
         public int? Workchain { get; set; }
 
         [JsonProperty("message_expiration_timeout")]
-        public int? MessageExpirationTimeout { get; set; }
+        public uint? MessageExpirationTimeout { get; set; }
 
         [JsonProperty("message_expiration_timeout_grow_factor")]
-        public int? MessageExpirationTimeoutGrowFactor { get; set; }
+        public float? MessageExpirationTimeoutGrowFactor { get; set; }
+    }
+
+    public class BuildInfoDependency
+    {
+        /// <summary>
+        ///  Dependency name. Usually it is a crate name.
+        /// </summary>
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        /// <summary>
+        ///  Git commit hash of the related repository.
+        /// </summary>
+        [JsonProperty("git_commit")]
+        public string GitCommit { get; set; }
     }
 
     public class ResultOfGetApiReference
@@ -103,8 +118,17 @@ namespace TonSdk.Modules
 
     public class ResultOfBuildInfo
     {
-        [JsonProperty("build_info")]
-        public Newtonsoft.Json.Linq.JToken BuildInfo { get; set; }
+        /// <summary>
+        ///  Build number assigned to this build by the CI.
+        /// </summary>
+        [JsonProperty("build_number")]
+        public uint BuildNumber { get; set; }
+
+        /// <summary>
+        ///  Fingerprint of the most important dependencies.
+        /// </summary>
+        [JsonProperty("dependencies")]
+        public BuildInfoDependency[] Dependencies { get; set; }
     }
 
     /// <summary>
@@ -122,6 +146,9 @@ namespace TonSdk.Modules
         /// </summary>
         Task<ResultOfVersion> VersionAsync();
 
+        /// <summary>
+        ///  Returns detailed information about this build.
+        /// </summary>
         Task<ResultOfBuildInfo> BuildInfoAsync();
     }
 

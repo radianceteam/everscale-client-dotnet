@@ -2,7 +2,12 @@ export module TonApiSpec {
 
     export type ValueType = 'String' | 'Optional' | 'Number' | 'Boolean' | 'Ref' | 'BigInt' | 'Array';
 
-    export interface HasValue {
+    export interface Numeric {
+        number_type?: 'UInt' | 'Int' | 'Float';
+        number_size?: number;
+    }
+
+    export interface HasValue extends Numeric {
         type: ValueType;
         ref_name: string;
         array_item: HasValue;
@@ -22,14 +27,15 @@ export module TonApiSpec {
         description: string;
     }
 
-    export interface Type {
+    export interface Type extends Numeric {
         name: string;
-        type: 'Struct' | 'EnumOfTypes' | 'EnumOfConsts' | 'None';
+        type: 'Struct' | 'EnumOfTypes' | 'EnumOfConsts' | 'Number' | 'None' | 'Ref';
         struct_fields: Field[];
         summary: string;
         description: string;
         enum_types: Type[];
         enum_consts: EnumConst[];
+        ref_name: string;
     }
 
     export interface GenericArg {

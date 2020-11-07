@@ -29,6 +29,27 @@ namespace TonSdk.Modules
         public Newtonsoft.Json.Linq.JToken Parsed { get; set; }
     }
 
+    public class ParamsOfParseShardstate
+    {
+        /// <summary>
+        ///  BOC encoded as base64
+        /// </summary>
+        [JsonProperty("boc")]
+        public string Boc { get; set; }
+
+        /// <summary>
+        ///  Shardstate identificator
+        /// </summary>
+        [JsonProperty("id")]
+        public string Id { get; set; }
+
+        /// <summary>
+        ///  Workchain shardstate belongs to 
+        /// </summary>
+        [JsonProperty("workchain_id")]
+        public int WorkchainId { get; set; }
+    }
+
     public class ParamsOfGetBlockchainConfig
     {
         /// <summary>
@@ -80,6 +101,13 @@ namespace TonSdk.Modules
         /// </summary>
         Task<ResultOfParse> ParseBlockAsync(ParamsOfParse @params);
 
+        /// <summary>
+        ///  Parses shardstate boc into a JSON 
+        ///  
+        ///  JSON structure is compatible with GraphQL API shardstate object
+        /// </summary>
+        Task<ResultOfParse> ParseShardstateAsync(ParamsOfParseShardstate @params);
+
         Task<ResultOfGetBlockchainConfig> GetBlockchainConfigAsync(ParamsOfGetBlockchainConfig @params);
     }
 
@@ -110,6 +138,11 @@ namespace TonSdk.Modules
         public async Task<ResultOfParse> ParseBlockAsync(ParamsOfParse @params)
         {
             return await _client.CallFunctionAsync<ResultOfParse>("boc.parse_block", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfParse> ParseShardstateAsync(ParamsOfParseShardstate @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfParse>("boc.parse_shardstate", @params).ConfigureAwait(false);
         }
 
         public async Task<ResultOfGetBlockchainConfig> GetBlockchainConfigAsync(ParamsOfGetBlockchainConfig @params)

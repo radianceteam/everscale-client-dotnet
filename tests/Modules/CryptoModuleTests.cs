@@ -190,12 +190,12 @@ namespace TonSdk.Tests.Modules
         }
 
         [Theory]
-        [InlineData(15, 8, 1, 4, "c2VjcmV0", "dGVzdA==")]
-        [InlineData(1, 8, 1, 4, "c2VjcmV0", "dGVzdA==")]
-        [InlineData(15, 1, 1, 4, "c2VjcmV0", "dGVzdA==")]
-        [InlineData(15, 8, 1, 4, "", "dGVzdA==")]
-        [InlineData(15, 8, 1, 4, "c2VjcmV0", "")]
-        public async Task Scrypt_Should_Produce_Correct_Result_For_Valid_Input(int logN, int r, int p, int dkLen, string password, string salt)
+        [InlineData(15, 8u, 1u, 4u, "c2VjcmV0", "dGVzdA==")]
+        [InlineData(1, 8u, 1u, 4u, "c2VjcmV0", "dGVzdA==")]
+        [InlineData(15, 1, 1u, 4u, "c2VjcmV0", "dGVzdA==")]
+        [InlineData(15, 8, 1u, 4u, "", "dGVzdA==")]
+        [InlineData(15, 8, 1u, 4u, "c2VjcmV0", "")]
+        public async Task Scrypt_Should_Produce_Correct_Result_For_Valid_Input(byte logN, uint r, uint p, uint dkLen, string password, string salt)
         {
             var result = await _client.Crypto.ScryptAsync(new ParamsOfScrypt
             {
@@ -212,13 +212,11 @@ namespace TonSdk.Tests.Modules
         }
 
         [Theory]
-        [InlineData(-1, 8, 1, 4, "c2VjcmV0", "dGVzdA==", 23)] // `log_n` must be be greater than `0`, InvalidParams
-        [InlineData(65, 8, 1, 4, "c2VjcmV0", "dGVzdA==", 108)] // `log_n` must be less than `64`, ScryptFailed 
         [InlineData(15, 0, 1, 4, "c2VjcmV0", "dGVzdA==", 23)] // `r` must be greater than `0`, InvalidParams
         [InlineData(15, 8, 0, 4, "c2VjcmV0", "dGVzdA==", 23)] // `p` must be greater than `0`, InvalidParams
         [InlineData(15, 8, 1, 4, null, "dGVzdA==", 23)] // `password` must not be null, InvalidParams
         [InlineData(15, 8, 1, 4, "c2VjcmV0", null, 23)] // `salt` must not be null, InvalidParams
-        public async Task Scrypt_Should_Throw_Exception_On_Invalid_Input(int logN, int r, int p, int dkLen, string password, string salt, int errorCode)
+        public async Task Scrypt_Should_Throw_Exception_On_Invalid_Input(byte logN, uint r, uint p, uint dkLen, string password, string salt, int errorCode)
         {
             var exception = await Assert.ThrowsAsync<TonClientException>(() => _client.Crypto.ScryptAsync(new ParamsOfScrypt
             {
@@ -470,8 +468,8 @@ namespace TonSdk.Tests.Modules
         [Theory]
         [CombinatorialData]
         public async Task Should_Call_MnemonicFromRandom(
-            [CombinatorialValues(1, 2, 3, 4, 5, 6, 7, 8)] int dictionary,
-            [CombinatorialValues(12, 15, 18, 21, 24)] int wordCount)
+            [CombinatorialValues(1, 2, 3, 4, 5, 6, 7, 8)] byte dictionary,
+            [CombinatorialValues(12, 15, 18, 21, 24)] byte wordCount)
         {
             var result = await _client.Crypto.MnemonicFromRandomAsync(new ParamsOfMnemonicFromRandom
             {
@@ -490,8 +488,8 @@ namespace TonSdk.Tests.Modules
         {
             var result = await _client.Crypto.MnemonicFromRandomAsync(new ParamsOfMnemonicFromRandom
             {
-                Dictionary = dictionary,
-                WordCount = wordCount
+                Dictionary = (byte?)dictionary,
+                WordCount = (byte?)wordCount
             });
             Assert.NotNull(result);
             Assert.Equal(12, result.Phrase.Split(" ").Length);
@@ -513,8 +511,8 @@ namespace TonSdk.Tests.Modules
         [Theory]
         [CombinatorialData]
         public async Task Should_Call_MnemonicVerify(
-            [CombinatorialValues(1, 2, 3, 4, 5, 6, 7, 8)] int dictionary,
-            [CombinatorialValues(12, 15, 18, 21, 24)] int wordCount)
+            [CombinatorialValues(1, 2, 3, 4, 5, 6, 7, 8)] byte dictionary,
+            [CombinatorialValues(12, 15, 18, 21, 24)] byte wordCount)
         {
             var result = await _client.Crypto.MnemonicFromRandomAsync(new ParamsOfMnemonicFromRandom
             {

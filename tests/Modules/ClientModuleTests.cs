@@ -38,7 +38,7 @@ namespace TonSdk.Tests.Modules
         public async Task Should_Return_BuildInfo()
         {
             var result = await _client.Client.BuildInfoAsync();
-            Assert.NotNull(result.BuildInfo);
+            Assert.NotNull(result);
         }
     }
 }

@@ -187,7 +187,15 @@ namespace TonSdk.Tests
                         raw = "value"
                     }
                 },
-                fees = new[] { 1, 2, 3 }
+                fees = new
+                {
+                    in_msg_fwd_fee = 1,
+                    storage_fee = 2,
+                    gas_fee = 3,
+                    out_msgs_fwd_fee = 4,
+                    total_account_fees = 5,
+                    total_output = 6
+                }
             }));
 
             Assert.NotNull(result);
@@ -206,7 +214,7 @@ namespace TonSdk.Tests
             Assert.NotNull(result.Decoded.OutMessages[0].Value);
             Assert.Equal("value", result.Decoded.OutMessages[0].Value.Value<string>("test"));
             Assert.Equal(new BigInteger(100001), result.Decoded.OutMessages[0].Header.Time);
-            Assert.Equal(1000, result.Decoded.OutMessages[0].Header.Expire);
+            Assert.Equal(1000u, result.Decoded.OutMessages[0].Header.Expire);
             Assert.Equal("a", result.Decoded.OutMessages[0].Header.Pubkey);
 
             Assert.Equal(MessageBodyType.Output, result.Decoded.OutMessages[1].BodyType);
@@ -214,11 +222,16 @@ namespace TonSdk.Tests
             Assert.NotNull(result.Decoded.OutMessages[1].Value);
             Assert.Equal("another value", result.Decoded.OutMessages[1].Value.Value<string>("test"));
             Assert.Equal(new BigInteger(200001), result.Decoded.OutMessages[1].Header.Time);
-            Assert.Equal(2000, result.Decoded.OutMessages[1].Header.Expire);
+            Assert.Equal(2000u, result.Decoded.OutMessages[1].Header.Expire);
             Assert.Equal("b", result.Decoded.OutMessages[1].Header.Pubkey);
 
             Assert.NotNull(result.Fees);
-            Assert.Equal(new[] { 1, 2, 3 }, result.Fees.Values<int>());
+            Assert.Equal(1, result.Fees.InMsgFwdFee);
+            Assert.Equal(2, result.Fees.StorageFee);
+            Assert.Equal(3, result.Fees.GasFee);
+            Assert.Equal(4, result.Fees.OutMsgsFwdFee);
+            Assert.Equal(5, result.Fees.TotalAccountFees);
+            Assert.Equal(6, result.Fees.TotalOutput);
         }
 
         [Fact]

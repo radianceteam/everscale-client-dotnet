@@ -74,7 +74,7 @@ namespace TonSdk.Modules
         ///  Calculated CRC for input data.
         /// </summary>
         [JsonProperty("crc")]
-        public int Crc { get; set; }
+        public ushort Crc { get; set; }
     }
 
     public class ParamsOfGenerateRandomBytes
@@ -83,7 +83,7 @@ namespace TonSdk.Modules
         ///  Size of random byte array.
         /// </summary>
         [JsonProperty("length")]
-        public int Length { get; set; }
+        public uint Length { get; set; }
     }
 
     public class ResultOfGenerateRandomBytes
@@ -210,7 +210,7 @@ namespace TonSdk.Modules
         public string Password { get; set; }
 
         /// <summary>
-        ///  A salt bytes that modifies the hash to protect against Rainbow table attacks.
+        ///  Salt bytes that modify the hash to protect against Rainbow table attacks.
         ///  Must be encoded with `base64`.
         /// </summary>
         [JsonProperty("salt")]
@@ -220,25 +220,25 @@ namespace TonSdk.Modules
         ///  CPU/memory cost parameter
         /// </summary>
         [JsonProperty("log_n")]
-        public int LogN { get; set; }
+        public byte LogN { get; set; }
 
         /// <summary>
         ///  The block size parameter, which fine-tunes sequential memory read size and performance.
         /// </summary>
         [JsonProperty("r")]
-        public int R { get; set; }
+        public uint R { get; set; }
 
         /// <summary>
         ///  Parallelization parameter.
         /// </summary>
         [JsonProperty("p")]
-        public int P { get; set; }
+        public uint P { get; set; }
 
         /// <summary>
         ///  Intended output length in octets of the derived key.
         /// </summary>
         [JsonProperty("dk_len")]
-        public int DkLen { get; set; }
+        public uint DkLen { get; set; }
     }
 
     public class ResultOfScrypt
@@ -442,7 +442,7 @@ namespace TonSdk.Modules
         ///  Dictionary identifier
         /// </summary>
         [JsonProperty("dictionary")]
-        public int? Dictionary { get; set; }
+        public byte? Dictionary { get; set; }
     }
 
     public class ResultOfMnemonicWords
@@ -460,13 +460,13 @@ namespace TonSdk.Modules
         ///  Dictionary identifier
         /// </summary>
         [JsonProperty("dictionary")]
-        public int? Dictionary { get; set; }
+        public byte? Dictionary { get; set; }
 
         /// <summary>
         ///  Mnemonic word count
         /// </summary>
         [JsonProperty("word_count")]
-        public int? WordCount { get; set; }
+        public byte? WordCount { get; set; }
     }
 
     public class ResultOfMnemonicFromRandom
@@ -490,13 +490,13 @@ namespace TonSdk.Modules
         ///  Dictionary identifier
         /// </summary>
         [JsonProperty("dictionary")]
-        public int? Dictionary { get; set; }
+        public byte? Dictionary { get; set; }
 
         /// <summary>
         ///  Mnemonic word count
         /// </summary>
         [JsonProperty("word_count")]
-        public int? WordCount { get; set; }
+        public byte? WordCount { get; set; }
     }
 
     public class ResultOfMnemonicFromEntropy
@@ -520,19 +520,19 @@ namespace TonSdk.Modules
         ///  Dictionary identifier
         /// </summary>
         [JsonProperty("dictionary")]
-        public int? Dictionary { get; set; }
+        public byte? Dictionary { get; set; }
 
         /// <summary>
         ///  Word count
         /// </summary>
         [JsonProperty("word_count")]
-        public int? WordCount { get; set; }
+        public byte? WordCount { get; set; }
     }
 
     public class ResultOfMnemonicVerify
     {
         /// <summary>
-        ///  Flag indicating the mnemonic is valid or not
+        ///  Flag indicating if the mnemonic is valid or not
         /// </summary>
         [JsonProperty("valid")]
         public bool Valid { get; set; }
@@ -556,13 +556,13 @@ namespace TonSdk.Modules
         ///  Dictionary identifier
         /// </summary>
         [JsonProperty("dictionary")]
-        public int? Dictionary { get; set; }
+        public byte? Dictionary { get; set; }
 
         /// <summary>
         ///  Word count
         /// </summary>
         [JsonProperty("word_count")]
-        public int? WordCount { get; set; }
+        public byte? WordCount { get; set; }
     }
 
     public class ParamsOfHDKeyXPrvFromMnemonic
@@ -577,13 +577,13 @@ namespace TonSdk.Modules
         ///  Dictionary identifier
         /// </summary>
         [JsonProperty("dictionary")]
-        public int? Dictionary { get; set; }
+        public byte? Dictionary { get; set; }
 
         /// <summary>
         ///  Mnemonic word count
         /// </summary>
         [JsonProperty("word_count")]
-        public int? WordCount { get; set; }
+        public byte? WordCount { get; set; }
     }
 
     public class ResultOfHDKeyXPrvFromMnemonic
@@ -607,7 +607,7 @@ namespace TonSdk.Modules
         ///  Child index (see BIP-0032)
         /// </summary>
         [JsonProperty("child_index")]
-        public int ChildIndex { get; set; }
+        public uint ChildIndex { get; set; }
 
         /// <summary>
         ///  Indicates the derivation of hardened/not-hardened key (see BIP-0032)
@@ -683,6 +683,36 @@ namespace TonSdk.Modules
         /// </summary>
         [JsonProperty("public")]
         public string Public { get; set; }
+    }
+
+    public class ParamsOfChaCha20
+    {
+        /// <summary>
+        ///  Source data to be encrypted or decrypted. Must be encoded with `base64`.
+        /// </summary>
+        [JsonProperty("data")]
+        public string Data { get; set; }
+
+        /// <summary>
+        ///  256-bit key. Must be encoded with `hex`.
+        /// </summary>
+        [JsonProperty("key")]
+        public string Key { get; set; }
+
+        /// <summary>
+        ///  96-bit nonce. Must be encoded with `hex`.
+        /// </summary>
+        [JsonProperty("nonce")]
+        public string Nonce { get; set; }
+    }
+
+    public class ResultOfChaCha20
+    {
+        /// <summary>
+        ///  Encrypted/decrypted data. Encoded with `base64`.
+        /// </summary>
+        [JsonProperty("data")]
+        public string Data { get; set; }
     }
 
     /// <summary>
@@ -859,6 +889,11 @@ namespace TonSdk.Modules
         ///  Extracts the public key from the serialized extended private key
         /// </summary>
         Task<ResultOfHDKeyPublicFromXPrv> HdkeyPublicFromXprvAsync(ParamsOfHDKeyPublicFromXPrv @params);
+
+        /// <summary>
+        ///  Performs symmetric `chacha20` encryption.
+        /// </summary>
+        Task<ResultOfChaCha20> Chacha20Async(ParamsOfChaCha20 @params);
     }
 
     internal class CryptoModule : ICryptoModule
@@ -1023,6 +1058,11 @@ namespace TonSdk.Modules
         public async Task<ResultOfHDKeyPublicFromXPrv> HdkeyPublicFromXprvAsync(ParamsOfHDKeyPublicFromXPrv @params)
         {
             return await _client.CallFunctionAsync<ResultOfHDKeyPublicFromXPrv>("crypto.hdkey_public_from_xprv", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfChaCha20> Chacha20Async(ParamsOfChaCha20 @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfChaCha20>("crypto.chacha20", @params).ConfigureAwait(false);
         }
     }
 }

@@ -179,7 +179,7 @@ namespace TonSdk.Modules
         ///  Transaction fees
         /// </summary>
         [JsonProperty("fees")]
-        public Newtonsoft.Json.Linq.JToken Fees { get; set; }
+        public TransactionFees Fees { get; set; }
     }
 
     public class DecodedOutput
@@ -187,7 +187,7 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Decoded bodies of the out messages.
         /// 
-        ///  If the message can't be decoded then `None` will be stored in
+        ///  If the message can't be decoded, then `None` will be stored in
         ///  the appropriate position.
         /// </summary>
         [JsonProperty("out_messages")]
@@ -213,14 +213,14 @@ namespace TonSdk.Modules
         /// 
         ///  If this parameter is specified and the message has the
         ///  `expire` header then expiration time will be checked against
-        ///  the current time to prevent an unnecessary sending of already expired message.
+        ///  the current time to prevent unnecessary sending of already expired message.
         /// 
         ///  The `message already expired` error will be returned in this
         ///  case.
         /// 
-        ///  Note that specifying `abi` for ABI compliant contracts is
-        ///  strongly recommended due to choosing proper processing
-        ///  strategy.
+        ///  Note, that specifying `abi` for ABI compliant contracts is
+        ///  strongly recommended, so that proper processing strategy can be
+        ///  chosen.
         /// </summary>
         [JsonProperty("abi")]
         public Abi Abi { get; set; }
@@ -250,7 +250,7 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Optional ABI for decoding the transaction result.
         /// 
-        ///  If it is specified then the output messages' bodies will be
+        ///  If it is specified, then the output messages' bodies will be
         ///  decoded according to this ABI.
         /// 
         ///  The `abi_decoded` result field will be filled out.
@@ -318,7 +318,7 @@ namespace TonSdk.Modules
         ///  `FetchNextBlockFailed` that may be useful for logging of new shard blocks creation 
         ///  during message processing.
         /// 
-        ///  Note that presence of the `abi` parameter is critical for ABI
+        ///  Note, that presence of the `abi` parameter is critical for ABI
         ///  compliant contracts. Message processing uses drastically
         ///  different strategy for processing message for contracts which
         ///  ABI includes "expire" header.
@@ -326,8 +326,8 @@ namespace TonSdk.Modules
         ///  When the ABI header `expire` is present, the processing uses
         ///  `message expiration` strategy:
         ///  - The maximum block gen time is set to
-        ///    `message_expiration_time + transaction_wait_timeout`.
-        ///  - When maximum block gen time is reached the processing will
+        ///    `message_expiration_timeout + transaction_wait_timeout`.
+        ///  - When maximum block gen time is reached, the processing will
         ///    be finished with `MessageExpired` error.
         /// 
         ///  When the ABI header `expire` isn't present or `abi` parameter
@@ -336,7 +336,7 @@ namespace TonSdk.Modules
         ///  - The maximum block gen time is set to
         ///    `now() + transaction_wait_timeout`.
         ///  
-        ///  - If maximum block gen time is reached and no result transaction is found 
+        ///  - If maximum block gen time is reached and no result transaction is found, 
         ///  the processing will exit with an error.
         /// </summary>
         Task<ResultOfProcessMessage> WaitForTransactionAsync(ParamsOfWaitForTransaction @params);
@@ -346,9 +346,9 @@ namespace TonSdk.Modules
         ///  
         ///  Creates ABI-compatible message,
         ///  sends it to the network and monitors for the result transaction.
-        ///  Decodes the output messages's bodies.
+        ///  Decodes the output messages' bodies.
         ///  
-        ///  If contract's ABI includes "expire" header then
+        ///  If contract's ABI includes "expire" header, then
         ///  SDK implements retries in case of unsuccessful message delivery within the expiration
         ///  timeout: SDK recreates the message, sends it and processes it again. 
         ///  
@@ -363,7 +363,7 @@ namespace TonSdk.Modules
         /// expiration timeout for each retry
         ///  
         ///  If contract's ABI does not include "expire" header
-        /// then if no transaction is found within the network timeout (see config parameter ), exits with
+        /// then, if no transaction is found within the network timeout (see config parameter ), exits with
         /// error.
         /// </summary>
         Task<ResultOfProcessMessage> ProcessMessageAsync(ParamsOfProcessMessage @params);
