@@ -93,6 +93,13 @@ namespace TonSdk.Tests
         }
 
         [Fact]
+        public void Should_Serialize_Polymorphic_Library_Type_With_No_Properties_Hex()
+        {
+            Assert.Equal("{\"type\":\"Hex\"}",
+                _serializer.Serialize(new AddressStringFormat.Hex()));
+        }
+
+        [Fact]
         public void Should_Serialize_Polymorphic_Library_Type_With_Properties()
         {
             Assert.Equal("{\"url\":false,\"test\":true,\"bounce\":true,\"type\":\"Base64\"}",
@@ -101,6 +108,17 @@ namespace TonSdk.Tests
                     Bounce = true,
                     Test = true,
                     Url = false
+                }));
+        }
+
+        [Fact]
+        public void Should_Serialize_Polymorphic_Library_Type_As_Property()
+        {
+            Assert.Equal("{\"address\":\"123\",\"output_format\":{\"type\":\"Hex\"}}",
+                _serializer.Serialize(new ParamsOfConvertAddress
+                {
+                    Address = "123",
+                    OutputFormat = new AddressStringFormat.Hex()
                 }));
         }
 

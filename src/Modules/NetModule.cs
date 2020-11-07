@@ -13,10 +13,10 @@ namespace TonSdk.Modules
 {
     public class OrderBy
     {
-        [JsonProperty("path")]
+        [JsonProperty("path", NullValueHandling = NullValueHandling.Ignore)]
         public string Path { get; set; }
 
-        [JsonProperty("direction")]
+        [JsonProperty("direction", NullValueHandling = NullValueHandling.Ignore)]
         public SortDirection Direction { get; set; }
     }
 
@@ -31,31 +31,31 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Collection name (accounts, blocks, transactions, messages, block_signatures)
         /// </summary>
-        [JsonProperty("collection")]
+        [JsonProperty("collection", NullValueHandling = NullValueHandling.Ignore)]
         public string Collection { get; set; }
 
         /// <summary>
         ///  Collection filter
         /// </summary>
-        [JsonProperty("filter")]
+        [JsonProperty("filter", NullValueHandling = NullValueHandling.Ignore)]
         public Newtonsoft.Json.Linq.JToken Filter { get; set; }
 
         /// <summary>
         ///  Projection (result) string
         /// </summary>
-        [JsonProperty("result")]
+        [JsonProperty("result", NullValueHandling = NullValueHandling.Ignore)]
         public string Result { get; set; }
 
         /// <summary>
         ///  Sorting order
         /// </summary>
-        [JsonProperty("order")]
+        [JsonProperty("order", NullValueHandling = NullValueHandling.Ignore)]
         public OrderBy[] Order { get; set; }
 
         /// <summary>
         ///  Number of documents to return
         /// </summary>
-        [JsonProperty("limit")]
+        [JsonProperty("limit", NullValueHandling = NullValueHandling.Ignore)]
         public uint? Limit { get; set; }
     }
 
@@ -64,7 +64,7 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Objects that match the provided criteria
         /// </summary>
-        [JsonProperty("result")]
+        [JsonProperty("result", NullValueHandling = NullValueHandling.Ignore)]
         public Newtonsoft.Json.Linq.JToken[] Result { get; set; }
     }
 
@@ -73,25 +73,25 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Collection name (accounts, blocks, transactions, messages, block_signatures)
         /// </summary>
-        [JsonProperty("collection")]
+        [JsonProperty("collection", NullValueHandling = NullValueHandling.Ignore)]
         public string Collection { get; set; }
 
         /// <summary>
         ///  Collection filter
         /// </summary>
-        [JsonProperty("filter")]
+        [JsonProperty("filter", NullValueHandling = NullValueHandling.Ignore)]
         public Newtonsoft.Json.Linq.JToken Filter { get; set; }
 
         /// <summary>
         ///  Projection (result) string
         /// </summary>
-        [JsonProperty("result")]
+        [JsonProperty("result", NullValueHandling = NullValueHandling.Ignore)]
         public string Result { get; set; }
 
         /// <summary>
         ///  Query timeout
         /// </summary>
-        [JsonProperty("timeout")]
+        [JsonProperty("timeout", NullValueHandling = NullValueHandling.Ignore)]
         public uint? Timeout { get; set; }
     }
 
@@ -100,7 +100,7 @@ namespace TonSdk.Modules
         /// <summary>
         ///  First found object that matches the provided criteria
         /// </summary>
-        [JsonProperty("result")]
+        [JsonProperty("result", NullValueHandling = NullValueHandling.Ignore)]
         public Newtonsoft.Json.Linq.JToken Result { get; set; }
     }
 
@@ -109,7 +109,7 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Subscription handle. Must be closed with `unsubscribe`
         /// </summary>
-        [JsonProperty("handle")]
+        [JsonProperty("handle", NullValueHandling = NullValueHandling.Ignore)]
         public uint Handle { get; set; }
     }
 
@@ -118,19 +118,19 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Collection name (accounts, blocks, transactions, messages, block_signatures)
         /// </summary>
-        [JsonProperty("collection")]
+        [JsonProperty("collection", NullValueHandling = NullValueHandling.Ignore)]
         public string Collection { get; set; }
 
         /// <summary>
         ///  Collection filter
         /// </summary>
-        [JsonProperty("filter")]
+        [JsonProperty("filter", NullValueHandling = NullValueHandling.Ignore)]
         public Newtonsoft.Json.Linq.JToken Filter { get; set; }
 
         /// <summary>
         ///  Projection (result) string
         /// </summary>
-        [JsonProperty("result")]
+        [JsonProperty("result", NullValueHandling = NullValueHandling.Ignore)]
         public string Result { get; set; }
     }
 
@@ -174,7 +174,7 @@ namespace TonSdk.Modules
         ///  that satisfies the `filter` conditions.
         ///  The projection fields are limited to `result` fields.
         /// </summary>
-        Task<ResultOfSubscribeCollection> SubscribeCollectionAsync(ParamsOfSubscribeCollection @params);
+        Task<ResultOfSubscribeCollection> SubscribeCollectionAsync(ParamsOfSubscribeCollection @params, Action<Newtonsoft.Json.Linq.JToken, int> callback = null);
     }
 
     internal class NetModule : INetModule
@@ -201,9 +201,9 @@ namespace TonSdk.Modules
             await _client.CallFunctionAsync("net.unsubscribe", @params).ConfigureAwait(false);
         }
 
-        public async Task<ResultOfSubscribeCollection> SubscribeCollectionAsync(ParamsOfSubscribeCollection @params)
+        public async Task<ResultOfSubscribeCollection> SubscribeCollectionAsync(ParamsOfSubscribeCollection @params, Action<Newtonsoft.Json.Linq.JToken, int> callback = null)
         {
-            return await _client.CallFunctionAsync<ResultOfSubscribeCollection>("net.subscribe_collection").ConfigureAwait(false);
+            return await _client.CallFunctionAsync<ResultOfSubscribeCollection, Newtonsoft.Json.Linq.JToken>("net.subscribe_collection", @params, callback).ConfigureAwait(false);
         }
     }
 }

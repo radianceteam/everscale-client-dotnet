@@ -31,7 +31,7 @@ namespace TonSdk.Modules
         /// </summary>
         public class FetchFirstBlockFailed : ProcessingEvent
         {
-            [JsonProperty("error")]
+            [JsonProperty("error", NullValueHandling = NullValueHandling.Ignore)]
             public ClientError Error { get; set; }
         }
 
@@ -41,13 +41,13 @@ namespace TonSdk.Modules
         /// </summary>
         public class WillSend : ProcessingEvent
         {
-            [JsonProperty("shard_block_id")]
+            [JsonProperty("shard_block_id", NullValueHandling = NullValueHandling.Ignore)]
             public string ShardBlockId { get; set; }
 
-            [JsonProperty("message_id")]
+            [JsonProperty("message_id", NullValueHandling = NullValueHandling.Ignore)]
             public string MessageId { get; set; }
 
-            [JsonProperty("message")]
+            [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
             public string Message { get; set; }
         }
 
@@ -56,13 +56,13 @@ namespace TonSdk.Modules
         /// </summary>
         public class DidSend : ProcessingEvent
         {
-            [JsonProperty("shard_block_id")]
+            [JsonProperty("shard_block_id", NullValueHandling = NullValueHandling.Ignore)]
             public string ShardBlockId { get; set; }
 
-            [JsonProperty("message_id")]
+            [JsonProperty("message_id", NullValueHandling = NullValueHandling.Ignore)]
             public string MessageId { get; set; }
 
-            [JsonProperty("message")]
+            [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
             public string Message { get; set; }
         }
 
@@ -76,16 +76,16 @@ namespace TonSdk.Modules
         /// </summary>
         public class SendFailed : ProcessingEvent
         {
-            [JsonProperty("shard_block_id")]
+            [JsonProperty("shard_block_id", NullValueHandling = NullValueHandling.Ignore)]
             public string ShardBlockId { get; set; }
 
-            [JsonProperty("message_id")]
+            [JsonProperty("message_id", NullValueHandling = NullValueHandling.Ignore)]
             public string MessageId { get; set; }
 
-            [JsonProperty("message")]
+            [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
             public string Message { get; set; }
 
-            [JsonProperty("error")]
+            [JsonProperty("error", NullValueHandling = NullValueHandling.Ignore)]
             public ClientError Error { get; set; }
         }
 
@@ -98,13 +98,13 @@ namespace TonSdk.Modules
         /// </summary>
         public class WillFetchNextBlock : ProcessingEvent
         {
-            [JsonProperty("shard_block_id")]
+            [JsonProperty("shard_block_id", NullValueHandling = NullValueHandling.Ignore)]
             public string ShardBlockId { get; set; }
 
-            [JsonProperty("message_id")]
+            [JsonProperty("message_id", NullValueHandling = NullValueHandling.Ignore)]
             public string MessageId { get; set; }
 
-            [JsonProperty("message")]
+            [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
             public string Message { get; set; }
         }
 
@@ -116,16 +116,16 @@ namespace TonSdk.Modules
         /// </summary>
         public class FetchNextBlockFailed : ProcessingEvent
         {
-            [JsonProperty("shard_block_id")]
+            [JsonProperty("shard_block_id", NullValueHandling = NullValueHandling.Ignore)]
             public string ShardBlockId { get; set; }
 
-            [JsonProperty("message_id")]
+            [JsonProperty("message_id", NullValueHandling = NullValueHandling.Ignore)]
             public string MessageId { get; set; }
 
-            [JsonProperty("message")]
+            [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
             public string Message { get; set; }
 
-            [JsonProperty("error")]
+            [JsonProperty("error", NullValueHandling = NullValueHandling.Ignore)]
             public ClientError Error { get; set; }
         }
 
@@ -139,13 +139,13 @@ namespace TonSdk.Modules
         /// </summary>
         public class MessageExpired : ProcessingEvent
         {
-            [JsonProperty("message_id")]
+            [JsonProperty("message_id", NullValueHandling = NullValueHandling.Ignore)]
             public string MessageId { get; set; }
 
-            [JsonProperty("message")]
+            [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
             public string Message { get; set; }
 
-            [JsonProperty("error")]
+            [JsonProperty("error", NullValueHandling = NullValueHandling.Ignore)]
             public ClientError Error { get; set; }
         }
     }
@@ -159,26 +159,26 @@ namespace TonSdk.Modules
         ///  `boc` field encoded with `base64` which contains source
         ///  transaction BOC.
         /// </summary>
-        [JsonProperty("transaction")]
+        [JsonProperty("transaction", NullValueHandling = NullValueHandling.Ignore)]
         public Newtonsoft.Json.Linq.JToken Transaction { get; set; }
 
         /// <summary>
         ///  List of output messages' BOCs. Encoded as `base64`
         /// </summary>
-        [JsonProperty("out_messages")]
+        [JsonProperty("out_messages", NullValueHandling = NullValueHandling.Ignore)]
         public string[] OutMessages { get; set; }
 
         /// <summary>
         ///  Optional decoded message bodies according to the optional
         ///  `abi` parameter.
         /// </summary>
-        [JsonProperty("decoded")]
+        [JsonProperty("decoded", NullValueHandling = NullValueHandling.Ignore)]
         public DecodedOutput Decoded { get; set; }
 
         /// <summary>
         ///  Transaction fees
         /// </summary>
-        [JsonProperty("fees")]
+        [JsonProperty("fees", NullValueHandling = NullValueHandling.Ignore)]
         public TransactionFees Fees { get; set; }
     }
 
@@ -190,13 +190,13 @@ namespace TonSdk.Modules
         ///  If the message can't be decoded, then `None` will be stored in
         ///  the appropriate position.
         /// </summary>
-        [JsonProperty("out_messages")]
+        [JsonProperty("out_messages", NullValueHandling = NullValueHandling.Ignore)]
         public DecodedMessageBody[] OutMessages { get; set; }
 
         /// <summary>
         ///  Decoded body of the function output message.
         /// </summary>
-        [JsonProperty("output")]
+        [JsonProperty("output", NullValueHandling = NullValueHandling.Ignore)]
         public Newtonsoft.Json.Linq.JToken Output { get; set; }
     }
 
@@ -205,7 +205,7 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Message BOC.
         /// </summary>
-        [JsonProperty("message")]
+        [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
         public string Message { get; set; }
 
         /// <summary>
@@ -222,13 +222,14 @@ namespace TonSdk.Modules
         ///  strongly recommended, so that proper processing strategy can be
         ///  chosen.
         /// </summary>
-        [JsonProperty("abi")]
+        [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
         public Abi Abi { get; set; }
 
         /// <summary>
         ///  Flag for requesting events sending
         /// </summary>
-        [JsonProperty("send_events")]
+        [JsonProperty("send_events", NullValueHandling = NullValueHandling.Ignore)]
         public bool SendEvents { get; set; }
     }
 
@@ -241,7 +242,7 @@ namespace TonSdk.Modules
         ///  This block id must be used as a parameter of the
         ///  `wait_for_transaction`.
         /// </summary>
-        [JsonProperty("shard_block_id")]
+        [JsonProperty("shard_block_id", NullValueHandling = NullValueHandling.Ignore)]
         public string ShardBlockId { get; set; }
     }
 
@@ -255,13 +256,14 @@ namespace TonSdk.Modules
         /// 
         ///  The `abi_decoded` result field will be filled out.
         /// </summary>
-        [JsonProperty("abi")]
+        [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
         public Abi Abi { get; set; }
 
         /// <summary>
         ///  Message BOC. Encoded with `base64`.
         /// </summary>
-        [JsonProperty("message")]
+        [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
         public string Message { get; set; }
 
         /// <summary>
@@ -269,13 +271,13 @@ namespace TonSdk.Modules
         /// 
         ///  You must provide the same value as the `send_message` has returned.
         /// </summary>
-        [JsonProperty("shard_block_id")]
+        [JsonProperty("shard_block_id", NullValueHandling = NullValueHandling.Ignore)]
         public string ShardBlockId { get; set; }
 
         /// <summary>
         ///  Flag that enables/disables intermediate events
         /// </summary>
-        [JsonProperty("send_events")]
+        [JsonProperty("send_events", NullValueHandling = NullValueHandling.Ignore)]
         public bool SendEvents { get; set; }
     }
 
@@ -284,13 +286,13 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Message encode parameters.
         /// </summary>
-        [JsonProperty("message_encode_params")]
+        [JsonProperty("message_encode_params", NullValueHandling = NullValueHandling.Ignore)]
         public ParamsOfEncodeMessage MessageEncodeParams { get; set; }
 
         /// <summary>
         ///  Flag for requesting events sending
         /// </summary>
-        [JsonProperty("send_events")]
+        [JsonProperty("send_events", NullValueHandling = NullValueHandling.Ignore)]
         public bool SendEvents { get; set; }
     }
 
@@ -308,7 +310,7 @@ namespace TonSdk.Modules
         ///  Sends message to the network and returns the last generated shard block of the destination account
         ///  before the message was sent. It will be required later for message processing.
         /// </summary>
-        Task<ResultOfSendMessage> SendMessageAsync(ParamsOfSendMessage @params);
+        Task<ResultOfSendMessage> SendMessageAsync(ParamsOfSendMessage @params, Action<ProcessingEvent, int> callback = null);
 
         /// <summary>
         ///  Performs monitoring of the network for the result transaction
@@ -339,7 +341,7 @@ namespace TonSdk.Modules
         ///  - If maximum block gen time is reached and no result transaction is found, 
         ///  the processing will exit with an error.
         /// </summary>
-        Task<ResultOfProcessMessage> WaitForTransactionAsync(ParamsOfWaitForTransaction @params);
+        Task<ResultOfProcessMessage> WaitForTransactionAsync(ParamsOfWaitForTransaction @params, Action<ProcessingEvent, int> callback = null);
 
         /// <summary>
         ///  Creates message, sends it to the network and monitors its processing.
@@ -366,7 +368,7 @@ namespace TonSdk.Modules
         /// then, if no transaction is found within the network timeout (see config parameter ), exits with
         /// error.
         /// </summary>
-        Task<ResultOfProcessMessage> ProcessMessageAsync(ParamsOfProcessMessage @params);
+        Task<ResultOfProcessMessage> ProcessMessageAsync(ParamsOfProcessMessage @params, Action<ProcessingEvent, int> request = null);
     }
 
     internal class ProcessingModule : IProcessingModule
@@ -378,19 +380,19 @@ namespace TonSdk.Modules
             _client = client ?? throw new ArgumentNullException(nameof(client));
         }
 
-        public async Task<ResultOfSendMessage> SendMessageAsync(ParamsOfSendMessage @params)
+        public async Task<ResultOfSendMessage> SendMessageAsync(ParamsOfSendMessage @params, Action<ProcessingEvent, int> callback = null)
         {
-            return await _client.CallFunctionAsync<ResultOfSendMessage>("processing.send_message").ConfigureAwait(false);
+            return await _client.CallFunctionAsync<ResultOfSendMessage, ProcessingEvent>("processing.send_message", @params, callback).ConfigureAwait(false);
         }
 
-        public async Task<ResultOfProcessMessage> WaitForTransactionAsync(ParamsOfWaitForTransaction @params)
+        public async Task<ResultOfProcessMessage> WaitForTransactionAsync(ParamsOfWaitForTransaction @params, Action<ProcessingEvent, int> callback = null)
         {
-            return await _client.CallFunctionAsync<ResultOfProcessMessage>("processing.wait_for_transaction").ConfigureAwait(false);
+            return await _client.CallFunctionAsync<ResultOfProcessMessage, ProcessingEvent>("processing.wait_for_transaction", @params, callback).ConfigureAwait(false);
         }
 
-        public async Task<ResultOfProcessMessage> ProcessMessageAsync(ParamsOfProcessMessage @params)
+        public async Task<ResultOfProcessMessage> ProcessMessageAsync(ParamsOfProcessMessage @params, Action<ProcessingEvent, int> request = null)
         {
-            return await _client.CallFunctionAsync<ResultOfProcessMessage>("processing.process_message").ConfigureAwait(false);
+            return await _client.CallFunctionAsync<ResultOfProcessMessage, ProcessingEvent>("processing.process_message", @params, request).ConfigureAwait(false);
         }
     }
 }

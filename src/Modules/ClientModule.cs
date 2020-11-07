@@ -13,76 +13,76 @@ namespace TonSdk.Modules
 {
     public class ClientError
     {
-        [JsonProperty("code")]
+        [JsonProperty("code", NullValueHandling = NullValueHandling.Ignore)]
         public uint Code { get; set; }
 
-        [JsonProperty("message")]
+        [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
         public string Message { get; set; }
 
-        [JsonProperty("data")]
+        [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
         public Newtonsoft.Json.Linq.JToken Data { get; set; }
     }
 
     public class ClientConfig
     {
-        [JsonProperty("network")]
+        [JsonProperty("network", NullValueHandling = NullValueHandling.Ignore)]
         public NetworkConfig Network { get; set; }
 
-        [JsonProperty("crypto")]
+        [JsonProperty("crypto", NullValueHandling = NullValueHandling.Ignore)]
         public CryptoConfig Crypto { get; set; }
 
-        [JsonProperty("abi")]
+        [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
         public AbiConfig Abi { get; set; }
     }
 
     public class NetworkConfig
     {
-        [JsonProperty("server_address")]
+        [JsonProperty("server_address", NullValueHandling = NullValueHandling.Ignore)]
         public string ServerAddress { get; set; }
 
-        [JsonProperty("network_retries_count")]
+        [JsonProperty("network_retries_count", NullValueHandling = NullValueHandling.Ignore)]
         public sbyte? NetworkRetriesCount { get; set; }
 
-        [JsonProperty("message_retries_count")]
+        [JsonProperty("message_retries_count", NullValueHandling = NullValueHandling.Ignore)]
         public sbyte? MessageRetriesCount { get; set; }
 
-        [JsonProperty("message_processing_timeout")]
+        [JsonProperty("message_processing_timeout", NullValueHandling = NullValueHandling.Ignore)]
         public uint? MessageProcessingTimeout { get; set; }
 
-        [JsonProperty("wait_for_timeout")]
+        [JsonProperty("wait_for_timeout", NullValueHandling = NullValueHandling.Ignore)]
         public uint? WaitForTimeout { get; set; }
 
-        [JsonProperty("out_of_sync_threshold")]
+        [JsonProperty("out_of_sync_threshold", NullValueHandling = NullValueHandling.Ignore)]
         public uint? OutOfSyncThreshold { get; set; }
 
-        [JsonProperty("access_key")]
+        [JsonProperty("access_key", NullValueHandling = NullValueHandling.Ignore)]
         public string AccessKey { get; set; }
     }
 
     public class CryptoConfig
     {
-        [JsonProperty("mnemonic_dictionary")]
+        [JsonProperty("mnemonic_dictionary", NullValueHandling = NullValueHandling.Ignore)]
         public byte? MnemonicDictionary { get; set; }
 
-        [JsonProperty("mnemonic_word_count")]
+        [JsonProperty("mnemonic_word_count", NullValueHandling = NullValueHandling.Ignore)]
         public byte? MnemonicWordCount { get; set; }
 
-        [JsonProperty("hdkey_derivation_path")]
+        [JsonProperty("hdkey_derivation_path", NullValueHandling = NullValueHandling.Ignore)]
         public string HdkeyDerivationPath { get; set; }
 
-        [JsonProperty("hdkey_compliant")]
+        [JsonProperty("hdkey_compliant", NullValueHandling = NullValueHandling.Ignore)]
         public bool? HdkeyCompliant { get; set; }
     }
 
     public class AbiConfig
     {
-        [JsonProperty("workchain")]
+        [JsonProperty("workchain", NullValueHandling = NullValueHandling.Ignore)]
         public int? Workchain { get; set; }
 
-        [JsonProperty("message_expiration_timeout")]
+        [JsonProperty("message_expiration_timeout", NullValueHandling = NullValueHandling.Ignore)]
         public uint? MessageExpirationTimeout { get; set; }
 
-        [JsonProperty("message_expiration_timeout_grow_factor")]
+        [JsonProperty("message_expiration_timeout_grow_factor", NullValueHandling = NullValueHandling.Ignore)]
         public float? MessageExpirationTimeoutGrowFactor { get; set; }
     }
 
@@ -91,19 +91,19 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Dependency name. Usually it is a crate name.
         /// </summary>
-        [JsonProperty("name")]
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
         public string Name { get; set; }
 
         /// <summary>
         ///  Git commit hash of the related repository.
         /// </summary>
-        [JsonProperty("git_commit")]
+        [JsonProperty("git_commit", NullValueHandling = NullValueHandling.Ignore)]
         public string GitCommit { get; set; }
     }
 
     public class ResultOfGetApiReference
     {
-        [JsonProperty("api")]
+        [JsonProperty("api", NullValueHandling = NullValueHandling.Ignore)]
         public Newtonsoft.Json.Linq.JToken Api { get; set; }
     }
 
@@ -112,7 +112,7 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Core Library version
         /// </summary>
-        [JsonProperty("version")]
+        [JsonProperty("version", NullValueHandling = NullValueHandling.Ignore)]
         public string Version { get; set; }
     }
 
@@ -121,13 +121,13 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Build number assigned to this build by the CI.
         /// </summary>
-        [JsonProperty("build_number")]
+        [JsonProperty("build_number", NullValueHandling = NullValueHandling.Ignore)]
         public uint BuildNumber { get; set; }
 
         /// <summary>
         ///  Fingerprint of the most important dependencies.
         /// </summary>
-        [JsonProperty("dependencies")]
+        [JsonProperty("dependencies", NullValueHandling = NullValueHandling.Ignore)]
         public BuildInfoDependency[] Dependencies { get; set; }
     }
 

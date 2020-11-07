@@ -28,7 +28,7 @@ namespace TonSdk
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void tc_bridge_response_handler_t(
-            tc_response_types_t type,
+            int type,
             IntPtr params_json,
             int response_json_len,
             bool finished);

@@ -1,88 +1,102 @@
-﻿# TON SDK Dotnet Wrapper
+﻿# TON SDK .NET Wrapper
 
-## Native bridge library for .NET
+## Supported Platforms
 
-Sources are in `https://github.com/radianceteam/ton-client-dotnet-bridge` repository. 
-Windows, Linux and macOS binaries are pre-built and placed into `lib` directory located in the project root.
+ - Windows x86, x64
+ - Linux x64
+ - macOS x64
+ 
+### Supported runtimes
 
-## .NET module code generator
+ - .NET Core 2.0 and newer.
+ - .NET Framework 4.6.1 and newer.
 
-Code generator sources are in `generator` directory.
+## Installation
 
-## .NET interop code
-
-Core classes and generated modules are in `src` dir.
-
-## Tests
-
-Tests are located in `tests` dir.
-
-NOTE: Code was generated for all 57 functions, and 29 of them are covered with tests ATM.
-Some of others may have bugs, so to be covered later. Still TODOs there for Step 3.
-
-Functions (methods) covered with tests:
-
-1. `client.version`
-2. `client.get_api_reference`
-3. `client.build_info`
-4. `crypto.factorize`
-5. `crypto.modular_power`
-6. `crypto.ton_crc16`
-7. `crypto.generate_random_bytes`
-8. `crypto.convert_public_key_to_ton_safe_format`
-9. `crypto.generate_random_sign_keys`
-10. `crypto.sign`
-11. `crypto.verify_signature`
-12. `crypto.sha256`
-13. `crypto.sha512`
-14. `crypto.scrypt`
-15. `crypto.nacl_sign_keypair_from_secret_key`
-16. `crypto.nacl_sign`
-17. `crypto.nacl_sign_open`
-18. `crypto.nacl_sign_detached`
-19. `crypto.nacl_box_keypair`
-20. `crypto.nacl_box`
-21. `crypto.nacl_box_open`
-22. `crypto.nacl_secret_box`
-23. `crypto.nacl_secret_box_open`
-24. `crypto.mnemonic_words`
-25. `crypto.mnemonic_from_random`
-26. `crypto.mnemonic_from_entropy`
-27. `crypto.mnemonic_verify`
-28. `crypto.mnemonic_derive_sign_keys`
-29. `crypto.hdkey_xprv_from_mnemonic`
-
-## Build
-
-To build project and run all tests, clone this repo and then run:
+### NuGet package
 
 ```
-dotnet restore
-dotnet test
+Install-Package TonClient
 ```
 
 ## Usage example
 
 ### Basic usage
 
-TBD
+```
+using TonSdk.TonClient;
+
+...
+
+    var client = TonClient.Create();
+    var result = await _client.Client.VersionAsync();
+    // use result.Version...
 
 ### Advanced usage
 
-TBD
+#### Configuring client
 
-## TODO
+```
+    var client = TonClient.Create(new ClientConfig
+        {
+            Network = new NetworkConfig
+            {
+                ServerAddress = "http://localhost",
+                MessageRetriesCount = 10,
+                OutOfSyncThreshold = 2500
+            },
+            Abi = new AbiConfig
+            {
+                MessageExpirationTimeout = 10000
+            }
+        });
+```
 
-### Tests
+#### Logging
 
- - 100% function test coverage
- - More negative tests
+By default, wrapper uses `DummyLogger` which is an implementation of `ILogger` interface.
 
-### Deployment
+To configure custom logging, create own `ILogger` implementation and pass it to `TonClient.Create()`:
 
- - run tests and publish NuGet package when creating new Release in this repo.
+```
+    public class MyLogger : ILogger
+    {
+        private readonly Microsoft.Extensions.Logging.ILogger _delegate;
 
-### Documentation
+        public MyLogger(Microsoft.Extensions.Logging.ILogger logger)
+        {
+            _delegate = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
 
- - usage readme
- - development readme
+        public void Debug(string message)
+        {
+            _delegate.LogDebug(message);
+        }
+
+        public void Information(string message)
+        {
+            _delegate.LogInformation(message);
+        }
+
+        public void Warning(string message)
+        {
+            _delegate.LogWarning(message);
+        }
+
+        public void Error(string message, Exception ex = null)
+        {
+            _delegate.LogError(ex, message);
+        }
+    }
+
+    ...
+
+    var logger = ... ;
+
+    var client = TonClient.Create(null, new MyLogger(logger));
+    
+``` 
+
+## Development
+
+See [Development documentation](development.md)

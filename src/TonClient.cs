@@ -16,12 +16,12 @@ namespace TonSdk
 
         public static ITonClient Create(ILogger logger = null)
         {
-            return Create(new { }, logger);
+            return Create(null, logger);
         }
 
         public static ITonClient Create(object config, ILogger logger = null)
         {
-            var client = new TonClient(config, logger);
+            var client = new TonClient(config ?? new {}, logger);
             client.Init();
             return client;
         }
@@ -49,16 +49,27 @@ namespace TonSdk
 
         public async Task<T> CallFunctionAsync<T>(string functionName, object @params = null)
         {
-            var result = await GetJsonResponse(functionName, @params);
+            var result = await GetJsonResponse<T>(functionName, @params);
             return _serializer.Deserialize<T>(result);
         }
 
         public async Task CallFunctionAsync(string functionName, object @params = null)
         {
-            await GetJsonResponse(functionName, @params);
+            await GetJsonResponse<string>(functionName, @params);
         }
 
-        private async Task<string> GetJsonResponse(string functionName, object @params)
+        public async Task<T> CallFunctionAsync<T, TC>(string functionName, object @params, Action<TC, int> callback)
+        {
+            var result = await GetJsonResponse(functionName, @params, callback);
+            return _serializer.Deserialize<T>(result);
+        }
+
+        public async Task CallFunctionAsync<TC>(string functionName, object @params, Action<TC, int> callback)
+        {
+            await GetJsonResponse(functionName, @params, callback);
+        }
+
+        private async Task<string> GetJsonResponse<TC>(string functionName, object @params, Action<TC, int> callback = null)
         {
             var functionParamsJson = @params != null
                 ? _serializer.Serialize(@params)
@@ -80,17 +91,25 @@ namespace TonSdk
                 {
                     var json = Utf8String.ToString(jsonPtr, len);
                     Logger.Debug($"{functionName} status update: {type} ({json})");
-                    if (type == Interop.tc_response_types_t.tc_response_success)
+                    if (type == (int)Interop.tc_response_types_t.tc_response_success)
                     {
                         tcs.SetResult(json);
                     }
-                    else if (type == Interop.tc_response_types_t.tc_response_error)
+                    else if (type == (int)Interop.tc_response_types_t.tc_response_error)
                     {
                         tcs.SetException(TonClientException.FromJson(json));
                     }
+                    else if (type == (int)Interop.tc_response_types_t.tc_response_nop)
+                    {
+                        // TODO: ???
+                    }
                     else
                     {
-                        // TODO: use it somehow??
+                        if (callback != null)
+                        {
+                            var value = _serializer.Deserialize<TC>(json);
+                            callback.Invoke(value, type);
+                        }
                     }
                 }
                 finally
@@ -114,8 +133,7 @@ namespace TonSdk
                 funcParamsStr.Length,
                 handler);
 
-            var result = await tcs.Task;
-            return result;
+            return await tcs.Task;
         }
 
         private uint CreateContext()

@@ -19,4 +19,9 @@
     <ProjectReference Include="..\src\TonClient.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="Resources\contracts\**" CopyToOutputDirectory="PreserveNewest"
+          Link="contracts\%(RecursiveDir)\%(Filename)%(Extension)"/>
+  </ItemGroup>
+
 </Project>

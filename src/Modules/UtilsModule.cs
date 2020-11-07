@@ -23,13 +23,13 @@ namespace TonSdk.Modules
 
         public class Base64 : AddressStringFormat
         {
-            [JsonProperty("url")]
+            [JsonProperty("url", NullValueHandling = NullValueHandling.Ignore)]
             public bool Url { get; set; }
 
-            [JsonProperty("test")]
+            [JsonProperty("test", NullValueHandling = NullValueHandling.Ignore)]
             public bool Test { get; set; }
 
-            [JsonProperty("bounce")]
+            [JsonProperty("bounce", NullValueHandling = NullValueHandling.Ignore)]
             public bool Bounce { get; set; }
         }
     }
@@ -39,13 +39,14 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Account address in any TON format.
         /// </summary>
-        [JsonProperty("address")]
+        [JsonProperty("address", NullValueHandling = NullValueHandling.Ignore)]
         public string Address { get; set; }
 
         /// <summary>
         ///  Specify the format to convert to.
         /// </summary>
-        [JsonProperty("output_format")]
+        [JsonProperty("output_format", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
         public AddressStringFormat OutputFormat { get; set; }
     }
 
@@ -54,7 +55,7 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Address in the specified format
         /// </summary>
-        [JsonProperty("address")]
+        [JsonProperty("address", NullValueHandling = NullValueHandling.Ignore)]
         public string Address { get; set; }
     }
 

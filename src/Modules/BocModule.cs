@@ -16,7 +16,7 @@ namespace TonSdk.Modules
         /// <summary>
         ///  BOC encoded as base64
         /// </summary>
-        [JsonProperty("boc")]
+        [JsonProperty("boc", NullValueHandling = NullValueHandling.Ignore)]
         public string Boc { get; set; }
     }
 
@@ -25,7 +25,7 @@ namespace TonSdk.Modules
         /// <summary>
         ///  JSON containing parsed BOC
         /// </summary>
-        [JsonProperty("parsed")]
+        [JsonProperty("parsed", NullValueHandling = NullValueHandling.Ignore)]
         public Newtonsoft.Json.Linq.JToken Parsed { get; set; }
     }
 
@@ -34,19 +34,19 @@ namespace TonSdk.Modules
         /// <summary>
         ///  BOC encoded as base64
         /// </summary>
-        [JsonProperty("boc")]
+        [JsonProperty("boc", NullValueHandling = NullValueHandling.Ignore)]
         public string Boc { get; set; }
 
         /// <summary>
         ///  Shardstate identificator
         /// </summary>
-        [JsonProperty("id")]
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
         public string Id { get; set; }
 
         /// <summary>
         ///  Workchain shardstate belongs to 
         /// </summary>
-        [JsonProperty("workchain_id")]
+        [JsonProperty("workchain_id", NullValueHandling = NullValueHandling.Ignore)]
         public int WorkchainId { get; set; }
     }
 
@@ -55,7 +55,7 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Key block BOC encoded as base64
         /// </summary>
-        [JsonProperty("block_boc")]
+        [JsonProperty("block_boc", NullValueHandling = NullValueHandling.Ignore)]
         public string BlockBoc { get; set; }
     }
 
@@ -64,8 +64,26 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Blockchain config BOC encoded as base64
         /// </summary>
-        [JsonProperty("config_boc")]
+        [JsonProperty("config_boc", NullValueHandling = NullValueHandling.Ignore)]
         public string ConfigBoc { get; set; }
+    }
+
+    public class ParamsOfGetBocHash
+    {
+        /// <summary>
+        ///  BOC encoded as base64
+        /// </summary>
+        [JsonProperty("boc", NullValueHandling = NullValueHandling.Ignore)]
+        public string Boc { get; set; }
+    }
+
+    public class ResultOfGetBocHash
+    {
+        /// <summary>
+        ///  BOC root hash encoded with hex
+        /// </summary>
+        [JsonProperty("hash", NullValueHandling = NullValueHandling.Ignore)]
+        public string Hash { get; set; }
     }
 
     /// <summary>
@@ -109,6 +127,11 @@ namespace TonSdk.Modules
         Task<ResultOfParse> ParseShardstateAsync(ParamsOfParseShardstate @params);
 
         Task<ResultOfGetBlockchainConfig> GetBlockchainConfigAsync(ParamsOfGetBlockchainConfig @params);
+
+        /// <summary>
+        ///  Calculates BOC root hash
+        /// </summary>
+        Task<ResultOfGetBocHash> GetBocHashAsync(ParamsOfGetBocHash @params);
     }
 
     internal class BocModule : IBocModule
@@ -148,6 +171,11 @@ namespace TonSdk.Modules
         public async Task<ResultOfGetBlockchainConfig> GetBlockchainConfigAsync(ParamsOfGetBlockchainConfig @params)
         {
             return await _client.CallFunctionAsync<ResultOfGetBlockchainConfig>("boc.get_blockchain_config", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfGetBocHash> GetBocHashAsync(ParamsOfGetBocHash @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfGetBocHash>("boc.get_boc_hash", @params).ConfigureAwait(false);
         }
     }
 }

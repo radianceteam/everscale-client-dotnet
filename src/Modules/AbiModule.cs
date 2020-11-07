@@ -15,25 +15,25 @@ namespace TonSdk.Modules
     {
         public class Contract : Abi
         {
-            [JsonProperty("value")]
+            [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
             public AbiContract Value { get; set; }
         }
 
         public class Json : Abi
         {
-            [JsonProperty("value")]
+            [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
             public string Value { get; set; }
         }
 
         public class Handle : Abi
         {
-            [JsonProperty("value")]
+            [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
             public uint Value { get; set; }
         }
 
         public class Serialized : Abi
         {
-            [JsonProperty("value")]
+            [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
             public AbiContract Value { get; set; }
         }
     }
@@ -54,21 +54,21 @@ namespace TonSdk.Modules
         ///  If not specified - calculated automatically from message_expiration_timeout(),
         ///  try_index and message_expiration_timeout_grow_factor() (if ABI includes `expire` header).
         /// </summary>
-        [JsonProperty("expire")]
+        [JsonProperty("expire", NullValueHandling = NullValueHandling.Ignore)]
         public uint? Expire { get; set; }
 
         /// <summary>
         ///  Message creation time in milliseconds. If not specified, `now` is used
         ///  (if ABI includes `time` header).
         /// </summary>
-        [JsonProperty("time")]
+        [JsonProperty("time", NullValueHandling = NullValueHandling.Ignore)]
         public BigInteger Time { get; set; }
 
         /// <summary>
         ///  Public key is used by the contract to check the signature. Encoded in `hex`.
         ///  If not specified, method fails with exception (if ABI includes `pubkey` header)..
         /// </summary>
-        [JsonProperty("pubkey")]
+        [JsonProperty("pubkey", NullValueHandling = NullValueHandling.Ignore)]
         public string Pubkey { get; set; }
     }
 
@@ -77,7 +77,7 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Function name that is being called.
         /// </summary>
-        [JsonProperty("function_name")]
+        [JsonProperty("function_name", NullValueHandling = NullValueHandling.Ignore)]
         public string FunctionName { get; set; }
 
         /// <summary>
@@ -87,13 +87,13 @@ namespace TonSdk.Modules
         ///  contract's ABI, the library will set the default values for
         ///  them.
         /// </summary>
-        [JsonProperty("header")]
+        [JsonProperty("header", NullValueHandling = NullValueHandling.Ignore)]
         public FunctionHeader Header { get; set; }
 
         /// <summary>
         ///  Function input parameters according to ABI.
         /// </summary>
-        [JsonProperty("input")]
+        [JsonProperty("input", NullValueHandling = NullValueHandling.Ignore)]
         public Newtonsoft.Json.Linq.JToken Input { get; set; }
     }
 
@@ -102,19 +102,19 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Content of TVC file encoded in `base64`.
         /// </summary>
-        [JsonProperty("tvc")]
+        [JsonProperty("tvc", NullValueHandling = NullValueHandling.Ignore)]
         public string Tvc { get; set; }
 
         /// <summary>
         ///  Target workchain for destination address. Default is `0`.
         /// </summary>
-        [JsonProperty("workchain_id")]
+        [JsonProperty("workchain_id", NullValueHandling = NullValueHandling.Ignore)]
         public int? WorkchainId { get; set; }
 
         /// <summary>
         ///  List of initial values for contract's public variables.
         /// </summary>
-        [JsonProperty("initial_data")]
+        [JsonProperty("initial_data", NullValueHandling = NullValueHandling.Ignore)]
         public Newtonsoft.Json.Linq.JToken InitialData { get; set; }
     }
 
@@ -133,7 +133,7 @@ namespace TonSdk.Modules
         /// </summary>
         public class External : Signer
         {
-            [JsonProperty("public_key")]
+            [JsonProperty("public_key", NullValueHandling = NullValueHandling.Ignore)]
             public string PublicKey { get; set; }
         }
 
@@ -142,7 +142,7 @@ namespace TonSdk.Modules
         /// </summary>
         public class Keys : Signer
         {
-            [JsonProperty("keys")]
+            [JsonProperty("keys", NullValueHandling = NullValueHandling.Ignore)]
             public KeyPair KeysProperty { get; set; }
         }
 
@@ -152,7 +152,7 @@ namespace TonSdk.Modules
         /// </summary>
         public class SigningBox : Signer
         {
-            [JsonProperty("handle")]
+            [JsonProperty("handle", NullValueHandling = NullValueHandling.Ignore)]
             public uint Handle { get; set; }
         }
     }
@@ -187,7 +187,8 @@ namespace TonSdk.Modules
         /// </summary>
         public class Message : StateInitSource
         {
-            [JsonProperty("source")]
+            [JsonProperty("source", NullValueHandling = NullValueHandling.Ignore)]
+            [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
             public MessageSource Source { get; set; }
         }
 
@@ -199,19 +200,19 @@ namespace TonSdk.Modules
             /// <summary>
             ///  Code BOC. Encoded in `base64`.
             /// </summary>
-            [JsonProperty("code")]
+            [JsonProperty("code", NullValueHandling = NullValueHandling.Ignore)]
             public string Code { get; set; }
 
             /// <summary>
             ///  Data BOC. Encoded in `base64`.
             /// </summary>
-            [JsonProperty("data")]
+            [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
             public string Data { get; set; }
 
             /// <summary>
             ///  Library BOC. Encoded in `base64`.
             /// </summary>
-            [JsonProperty("library")]
+            [JsonProperty("library", NullValueHandling = NullValueHandling.Ignore)]
             public string Library { get; set; }
         }
 
@@ -220,23 +221,24 @@ namespace TonSdk.Modules
         /// </summary>
         public class Tvc : StateInitSource
         {
-            [JsonProperty("tvc")]
+            [JsonProperty("tvc", NullValueHandling = NullValueHandling.Ignore)]
             public string TvcProperty { get; set; }
 
-            [JsonProperty("public_key")]
+            [JsonProperty("public_key", NullValueHandling = NullValueHandling.Ignore)]
             public string PublicKey { get; set; }
 
-            [JsonProperty("init_params")]
+            [JsonProperty("init_params", NullValueHandling = NullValueHandling.Ignore)]
             public StateInitParams InitParams { get; set; }
         }
     }
 
     public class StateInitParams
     {
-        [JsonProperty("abi")]
+        [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
         public Abi Abi { get; set; }
 
-        [JsonProperty("value")]
+        [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
         public Newtonsoft.Json.Linq.JToken Value { get; set; }
     }
 
@@ -244,10 +246,11 @@ namespace TonSdk.Modules
     {
         public class Encoded : MessageSource
         {
-            [JsonProperty("message")]
+            [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
             public string Message { get; set; }
 
-            [JsonProperty("abi")]
+            [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
+            [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
             public Abi Abi { get; set; }
         }
 
@@ -256,7 +259,8 @@ namespace TonSdk.Modules
             /// <summary>
             ///  Contract ABI.
             /// </summary>
-            [JsonProperty("abi")]
+            [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
+            [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
             public Abi Abi { get; set; }
 
             /// <summary>
@@ -264,7 +268,7 @@ namespace TonSdk.Modules
             /// 
             ///  Must be specified in case of non-deploy message.
             /// </summary>
-            [JsonProperty("address")]
+            [JsonProperty("address", NullValueHandling = NullValueHandling.Ignore)]
             public string Address { get; set; }
 
             /// <summary>
@@ -272,7 +276,7 @@ namespace TonSdk.Modules
             /// 
             ///  Must be specified in case of deploy message.
             /// </summary>
-            [JsonProperty("deploy_set")]
+            [JsonProperty("deploy_set", NullValueHandling = NullValueHandling.Ignore)]
             public DeploySet DeploySet { get; set; }
 
             /// <summary>
@@ -283,13 +287,14 @@ namespace TonSdk.Modules
             ///  In case of deploy message it is optional and contains parameters
             ///  of the functions that will to be called upon deploy transaction.
             /// </summary>
-            [JsonProperty("call_set")]
+            [JsonProperty("call_set", NullValueHandling = NullValueHandling.Ignore)]
             public CallSet CallSet { get; set; }
 
             /// <summary>
             ///  Signing parameters.
             /// </summary>
-            [JsonProperty("signer")]
+            [JsonProperty("signer", NullValueHandling = NullValueHandling.Ignore)]
+            [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
             public Signer Signer { get; set; }
 
             /// <summary>
@@ -307,80 +312,83 @@ namespace TonSdk.Modules
             /// 
             ///  Default value is 0.
             /// </summary>
-            [JsonProperty("processing_try_index")]
+            [JsonProperty("processing_try_index", NullValueHandling = NullValueHandling.Ignore)]
             public byte? ProcessingTryIndex { get; set; }
         }
     }
 
     public class AbiParam
     {
-        [JsonProperty("name")]
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
         public string Name { get; set; }
 
-        [JsonProperty("type")]
+        [JsonProperty("type", NullValueHandling = NullValueHandling.Ignore)]
         public string Type { get; set; }
 
-        [JsonProperty("components")]
+        [JsonProperty("components", NullValueHandling = NullValueHandling.Ignore)]
         public AbiParam[] Components { get; set; }
     }
 
     public class AbiEvent
     {
-        [JsonProperty("name")]
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
         public string Name { get; set; }
 
-        [JsonProperty("inputs")]
+        [JsonProperty("inputs", NullValueHandling = NullValueHandling.Ignore)]
         public AbiParam[] Inputs { get; set; }
 
-        [JsonProperty("id")]
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
         public uint? Id { get; set; }
     }
 
     public class AbiData
     {
-        [JsonProperty("key")]
+        [JsonProperty("key", NullValueHandling = NullValueHandling.Ignore)]
         public BigInteger Key { get; set; }
 
-        [JsonProperty("name")]
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
         public string Name { get; set; }
 
-        [JsonProperty("type")]
+        [JsonProperty("type", NullValueHandling = NullValueHandling.Ignore)]
         public string Type { get; set; }
 
-        [JsonProperty("components")]
+        [JsonProperty("components", NullValueHandling = NullValueHandling.Ignore)]
         public AbiParam[] Components { get; set; }
     }
 
     public class AbiFunction
     {
-        [JsonProperty("name")]
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
         public string Name { get; set; }
 
-        [JsonProperty("inputs")]
+        [JsonProperty("inputs", NullValueHandling = NullValueHandling.Ignore)]
         public AbiParam[] Inputs { get; set; }
 
-        [JsonProperty("outputs")]
+        [JsonProperty("outputs", NullValueHandling = NullValueHandling.Ignore)]
         public AbiParam[] Outputs { get; set; }
 
-        [JsonProperty("id")]
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
         public uint? Id { get; set; }
     }
 
     public class AbiContract
     {
-        [JsonProperty("abi_version")]
+        [JsonProperty("ABI version", NullValueHandling = NullValueHandling.Ignore)]
+        public uint? ABIVersion { get; set; }
+
+        [JsonProperty("abi_version", NullValueHandling = NullValueHandling.Ignore)]
         public uint? AbiVersion { get; set; }
 
-        [JsonProperty("header")]
+        [JsonProperty("header", NullValueHandling = NullValueHandling.Ignore)]
         public string[] Header { get; set; }
 
-        [JsonProperty("functions")]
+        [JsonProperty("functions", NullValueHandling = NullValueHandling.Ignore)]
         public AbiFunction[] Functions { get; set; }
 
-        [JsonProperty("events")]
+        [JsonProperty("events", NullValueHandling = NullValueHandling.Ignore)]
         public AbiEvent[] Events { get; set; }
 
-        [JsonProperty("data")]
+        [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
         public AbiData[] Data { get; set; }
     }
 
@@ -389,7 +397,8 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Contract ABI.
         /// </summary>
-        [JsonProperty("abi")]
+        [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
         public Abi Abi { get; set; }
 
         /// <summary>
@@ -399,19 +408,20 @@ namespace TonSdk.Modules
         /// 
         ///  In case of deploy message contains parameters of constructor.
         /// </summary>
-        [JsonProperty("call_set")]
+        [JsonProperty("call_set", NullValueHandling = NullValueHandling.Ignore)]
         public CallSet CallSet { get; set; }
 
         /// <summary>
         ///  True if internal message body must be encoded.
         /// </summary>
-        [JsonProperty("is_internal")]
+        [JsonProperty("is_internal", NullValueHandling = NullValueHandling.Ignore)]
         public bool IsInternal { get; set; }
 
         /// <summary>
         ///  Signing parameters.
         /// </summary>
-        [JsonProperty("signer")]
+        [JsonProperty("signer", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
         public Signer Signer { get; set; }
 
         /// <summary>
@@ -426,7 +436,7 @@ namespace TonSdk.Modules
         /// 
         ///  Default value is 0.
         /// </summary>
-        [JsonProperty("processing_try_index")]
+        [JsonProperty("processing_try_index", NullValueHandling = NullValueHandling.Ignore)]
         public byte? ProcessingTryIndex { get; set; }
     }
 
@@ -435,7 +445,7 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Message body BOC encoded with `base64`.
         /// </summary>
-        [JsonProperty("body")]
+        [JsonProperty("body", NullValueHandling = NullValueHandling.Ignore)]
         public string Body { get; set; }
 
         /// <summary>
@@ -445,7 +455,7 @@ namespace TonSdk.Modules
         ///  message signing. Is this case you need to sing this data and
         ///  produce signed message using `abi.attach_signature`.
         /// </summary>
-        [JsonProperty("data_to_sign")]
+        [JsonProperty("data_to_sign", NullValueHandling = NullValueHandling.Ignore)]
         public string DataToSign { get; set; }
     }
 
@@ -454,31 +464,32 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Contract ABI
         /// </summary>
-        [JsonProperty("abi")]
+        [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
         public Abi Abi { get; set; }
 
         /// <summary>
         ///  Public key. Must be encoded with `hex`.
         /// </summary>
-        [JsonProperty("public_key")]
+        [JsonProperty("public_key", NullValueHandling = NullValueHandling.Ignore)]
         public string PublicKey { get; set; }
 
         /// <summary>
         ///  Unsigned message BOC. Must be encoded with `base64`.
         /// </summary>
-        [JsonProperty("message")]
+        [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
         public string Message { get; set; }
 
         /// <summary>
         ///  Signature. Must be encoded with `hex`.
         /// </summary>
-        [JsonProperty("signature")]
+        [JsonProperty("signature", NullValueHandling = NullValueHandling.Ignore)]
         public string Signature { get; set; }
     }
 
     public class ResultOfAttachSignatureToMessageBody
     {
-        [JsonProperty("body")]
+        [JsonProperty("body", NullValueHandling = NullValueHandling.Ignore)]
         public string Body { get; set; }
     }
 
@@ -487,7 +498,8 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Contract ABI.
         /// </summary>
-        [JsonProperty("abi")]
+        [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
         public Abi Abi { get; set; }
 
         /// <summary>
@@ -495,7 +507,7 @@ namespace TonSdk.Modules
         /// 
         ///  Must be specified in case of non-deploy message.
         /// </summary>
-        [JsonProperty("address")]
+        [JsonProperty("address", NullValueHandling = NullValueHandling.Ignore)]
         public string Address { get; set; }
 
         /// <summary>
@@ -503,7 +515,7 @@ namespace TonSdk.Modules
         /// 
         ///  Must be specified in case of deploy message.
         /// </summary>
-        [JsonProperty("deploy_set")]
+        [JsonProperty("deploy_set", NullValueHandling = NullValueHandling.Ignore)]
         public DeploySet DeploySet { get; set; }
 
         /// <summary>
@@ -514,13 +526,14 @@ namespace TonSdk.Modules
         ///  In case of deploy message it is optional and contains parameters
         ///  of the functions that will to be called upon deploy transaction.
         /// </summary>
-        [JsonProperty("call_set")]
+        [JsonProperty("call_set", NullValueHandling = NullValueHandling.Ignore)]
         public CallSet CallSet { get; set; }
 
         /// <summary>
         ///  Signing parameters.
         /// </summary>
-        [JsonProperty("signer")]
+        [JsonProperty("signer", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
         public Signer Signer { get; set; }
 
         /// <summary>
@@ -538,7 +551,7 @@ namespace TonSdk.Modules
         /// 
         ///  Default value is 0.
         /// </summary>
-        [JsonProperty("processing_try_index")]
+        [JsonProperty("processing_try_index", NullValueHandling = NullValueHandling.Ignore)]
         public byte? ProcessingTryIndex { get; set; }
     }
 
@@ -547,7 +560,7 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Message BOC encoded with `base64`.
         /// </summary>
-        [JsonProperty("message")]
+        [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
         public string Message { get; set; }
 
         /// <summary>
@@ -557,19 +570,19 @@ namespace TonSdk.Modules
         ///  message signing. Is this case you need to use this data to create signature and
         ///  then produce signed message using `abi.attach_signature`.
         /// </summary>
-        [JsonProperty("data_to_sign")]
+        [JsonProperty("data_to_sign", NullValueHandling = NullValueHandling.Ignore)]
         public string DataToSign { get; set; }
 
         /// <summary>
         ///  Destination address.
         /// </summary>
-        [JsonProperty("address")]
+        [JsonProperty("address", NullValueHandling = NullValueHandling.Ignore)]
         public string Address { get; set; }
 
         /// <summary>
         ///  Message id.
         /// </summary>
-        [JsonProperty("message_id")]
+        [JsonProperty("message_id", NullValueHandling = NullValueHandling.Ignore)]
         public string MessageId { get; set; }
     }
 
@@ -578,25 +591,26 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Contract ABI
         /// </summary>
-        [JsonProperty("abi")]
+        [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
         public Abi Abi { get; set; }
 
         /// <summary>
         ///  Public key encoded in `hex`.
         /// </summary>
-        [JsonProperty("public_key")]
+        [JsonProperty("public_key", NullValueHandling = NullValueHandling.Ignore)]
         public string PublicKey { get; set; }
 
         /// <summary>
         ///  Unsigned message BOC encoded in `base64`.
         /// </summary>
-        [JsonProperty("message")]
+        [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
         public string Message { get; set; }
 
         /// <summary>
         ///  Signature encoded in `hex`.
         /// </summary>
-        [JsonProperty("signature")]
+        [JsonProperty("signature", NullValueHandling = NullValueHandling.Ignore)]
         public string Signature { get; set; }
     }
 
@@ -605,13 +619,13 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Signed message BOC
         /// </summary>
-        [JsonProperty("message")]
+        [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
         public string Message { get; set; }
 
         /// <summary>
         ///  Message ID
         /// </summary>
-        [JsonProperty("message_id")]
+        [JsonProperty("message_id", NullValueHandling = NullValueHandling.Ignore)]
         public string MessageId { get; set; }
     }
 
@@ -620,13 +634,14 @@ namespace TonSdk.Modules
         /// <summary>
         ///  contract ABI
         /// </summary>
-        [JsonProperty("abi")]
+        [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
         public Abi Abi { get; set; }
 
         /// <summary>
         ///  Message BOC
         /// </summary>
-        [JsonProperty("message")]
+        [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
         public string Message { get; set; }
     }
 
@@ -635,25 +650,25 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Type of the message body content.
         /// </summary>
-        [JsonProperty("body_type")]
+        [JsonProperty("body_type", NullValueHandling = NullValueHandling.Ignore)]
         public MessageBodyType BodyType { get; set; }
 
         /// <summary>
         ///  Function or event name.
         /// </summary>
-        [JsonProperty("name")]
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
         public string Name { get; set; }
 
         /// <summary>
         ///  Parameters or result value.
         /// </summary>
-        [JsonProperty("value")]
+        [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
         public Newtonsoft.Json.Linq.JToken Value { get; set; }
 
         /// <summary>
         ///  Function header.
         /// </summary>
-        [JsonProperty("header")]
+        [JsonProperty("header", NullValueHandling = NullValueHandling.Ignore)]
         public FunctionHeader Header { get; set; }
     }
 
@@ -662,19 +677,20 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Contract ABI used to decode.
         /// </summary>
-        [JsonProperty("abi")]
+        [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
         public Abi Abi { get; set; }
 
         /// <summary>
         ///  Message body BOC encoded in `base64`.
         /// </summary>
-        [JsonProperty("body")]
+        [JsonProperty("body", NullValueHandling = NullValueHandling.Ignore)]
         public string Body { get; set; }
 
         /// <summary>
         ///  True if the body belongs to the internal message.
         /// </summary>
-        [JsonProperty("is_internal")]
+        [JsonProperty("is_internal", NullValueHandling = NullValueHandling.Ignore)]
         public bool IsInternal { get; set; }
     }
 
@@ -683,25 +699,26 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Source of the account state init.
         /// </summary>
-        [JsonProperty("state_init")]
+        [JsonProperty("state_init", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
         public StateInitSource StateInit { get; set; }
 
         /// <summary>
         ///  Initial balance.
         /// </summary>
-        [JsonProperty("balance")]
+        [JsonProperty("balance", NullValueHandling = NullValueHandling.Ignore)]
         public BigInteger Balance { get; set; }
 
         /// <summary>
         ///  Initial value for the `last_trans_lt`.
         /// </summary>
-        [JsonProperty("last_trans_lt")]
+        [JsonProperty("last_trans_lt", NullValueHandling = NullValueHandling.Ignore)]
         public BigInteger LastTransLt { get; set; }
 
         /// <summary>
         ///  Initial value for the `last_paid`.
         /// </summary>
-        [JsonProperty("last_paid")]
+        [JsonProperty("last_paid", NullValueHandling = NullValueHandling.Ignore)]
         public uint? LastPaid { get; set; }
     }
 
@@ -710,13 +727,13 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Account BOC encoded in `base64`.
         /// </summary>
-        [JsonProperty("account")]
+        [JsonProperty("account", NullValueHandling = NullValueHandling.Ignore)]
         public string Account { get; set; }
 
         /// <summary>
         ///  Account ID  encoded in `hex`.
         /// </summary>
-        [JsonProperty("id")]
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
         public string Id { get; set; }
     }
 

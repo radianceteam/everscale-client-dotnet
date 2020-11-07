@@ -11,7 +11,7 @@ namespace TonSdk.Tests.Modules
 
         public ClientModuleTests(ITestOutputHelper outputHelper)
         {
-            _client = TonClient.Create(new XUnitTestLogger(outputHelper));
+            _client = TestClient.Create(new XUnitTestLogger(outputHelper));
         }
 
         public void Dispose()

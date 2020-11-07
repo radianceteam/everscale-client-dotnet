@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using TonSdk.Modules;
 using Xunit;
@@ -12,7 +13,7 @@ namespace TonSdk.Tests.Modules
 
         public CryptoModuleTests(ITestOutputHelper outputHelper)
         {
-            _client = TonClient.Create(new XUnitTestLogger(outputHelper));
+            _client = TestClient.Create(new XUnitTestLogger(outputHelper));
         }
 
         public void Dispose()
@@ -25,11 +26,11 @@ namespace TonSdk.Tests.Modules
         {
             var result = await _client.Crypto.FactorizeAsync(new ParamsOfFactorize
             {
-                Composite = "c"
+                Composite = "17ED48941A08F981"
             });
 
             Assert.NotNull(result);
-            Assert.Equal(new[] { "3", "4" }, result.Factors);
+            Assert.Equal(new[] { "494C553B", "53911073" }, result.Factors);
         }
 
         [Fact]
@@ -55,13 +56,13 @@ namespace TonSdk.Tests.Modules
         {
             var result = await _client.Crypto.ModularPowerAsync(new ParamsOfModularPower
             {
-                Base = "4",
-                Exponent = "2",
-                Modulus = "6"
+                Base = "0123456789ABCDEF",
+                Exponent = "0123",
+                Modulus = "01234567"
             });
 
             Assert.NotNull(result);
-            Assert.Equal("4", result.ModularPower);
+            Assert.Equal("63bfdf", result.ModularPower);
         }
 
         [Fact]
@@ -69,11 +70,11 @@ namespace TonSdk.Tests.Modules
         {
             var result = await _client.Crypto.TonCrc16Async(new ParamsOfTonCrc16
             {
-                Data = "anything"
+                Data = "0123456789abcdef".HexToBase64String()
             });
 
             Assert.NotNull(result);
-            Assert.Equal(21741, result.Crc);
+            Assert.Equal(43349, result.Crc);
         }
 
         [Fact]
@@ -81,25 +82,23 @@ namespace TonSdk.Tests.Modules
         {
             var result = await _client.Crypto.GenerateRandomBytesAsync(new ParamsOfGenerateRandomBytes
             {
-                Length = 10
+                Length = 32
             });
 
             Assert.NotNull(result);
-            Assert.Equal(10, Convert.FromBase64String(result.Bytes).Length);
+            Assert.Equal(44, result.Bytes.Length);
         }
 
         [Fact]
         public async Task Should_ConvertPublicKeyToTonSafeFormat()
         {
-            var key = "1114676765926380121143944239225577351517094772360684970410316804";
             var result = await _client.Crypto.ConvertPublicKeyToTonSafeFormatAsync(new ParamsOfConvertPublicKeyToTonSafeFormat
             {
-                PublicKey = key
+                PublicKey = "06117f59ade83e097e0fb33e5d29e8735bda82b3bf78a015542aaa853bb69600"
             });
 
             Assert.NotNull(result);
-            Assert.NotEmpty(result.TonPublicKey);
-            Assert.NotEqual(result.TonPublicKey, key);
+            Assert.Equal("PuYGEX9Zreg-CX4Psz5dKehzW9qCs794oBVUKqqFO7aWAOTD", result.TonPublicKey);
         }
 
         [Fact]
@@ -109,31 +108,37 @@ namespace TonSdk.Tests.Modules
             Assert.NotNull(result);
             Assert.NotEmpty(result.Public);
             Assert.NotEmpty(result.Secret);
+            Assert.NotEqual(result.Public, result.Secret);
+            Assert.Equal(64, result.Public.Length);
+            Assert.Equal(64, result.Secret.Length);
         }
 
         [Fact]
         public async Task Should_Verify_Signed_String()
         {
-            var keys = await _client.Crypto.GenerateRandomSignKeysAsync();
             var result = await _client.Crypto.SignAsync(new ParamsOfSign
             {
-                Unsigned = "test".ToBase64String(),
-                Keys = keys
+                Unsigned = "Test Message".ToBase64String(),
+                Keys = new KeyPair
+                {
+                    Public = "1869b7ef29d58026217e9cf163cbfbd0de889bdf1bf4daebf5433a312f5b8d6e",
+                    Secret = "56b6a77093d6fdf14e593f36275d872d75de5b341942376b2a08759f3cbae78f"
+                }
             });
 
             Assert.NotNull(result);
-            Assert.NotEmpty(result.Signed);
-            Assert.NotEmpty(result.Signature);
+            Assert.Equal("+wz+QO6l1slgZS5s65BNqKcu4vz24FCJz4NSAxef9lu0jFfs8x3PzSZRC+pn5k8+aJi3xYMA3BQzglQmjK3hA1Rlc3QgTWVzc2FnZQ==", result.Signed);
+            Assert.Equal("fb0cfe40eea5d6c960652e6ceb904da8a72ee2fcf6e05089cf835203179ff65bb48c57ecf31dcfcd26510bea67e64f3e6898b7c58300dc14338254268cade103", result.Signature);
 
             var verified = await _client.Crypto.VerifySignatureAsync(new ParamsOfVerifySignature
             {
-                Public = keys.Public,
+                Public = "1869b7ef29d58026217e9cf163cbfbd0de889bdf1bf4daebf5433a312f5b8d6e",
                 Signed = result.Signed
             });
 
             Assert.NotNull(verified);
             Assert.NotEmpty(verified.Unsigned);
-            Assert.Equal("test", verified.Unsigned.FromBase64String());
+            Assert.Equal("Test Message", verified.Unsigned.FromBase64String());
         }
 
         [Fact]
@@ -168,12 +173,38 @@ namespace TonSdk.Tests.Modules
         {
             var result = await _client.Crypto.Sha256Async(new ParamsOfHash
             {
-                Data = "12345".ToBase64String()
+                Data = "Message to hash with sha 256".ToBase64String()
             });
 
             Assert.NotNull(result);
             Assert.NotEmpty(result.Hash);
-            Assert.Equal("5994471ABB01112AFCC18159F6CC74B4F511B99806DA59B3CAF5A9C173CACFC5", result.Hash.ToUpper());
+            Assert.Equal("16FD057308DD358D5A9B3BA2DE766B2DFD5E308478FC1F7BA5988DB2493852F5", result.Hash.ToUpper());
+        }
+
+        [Fact]
+        public async Task Should_Calculate_Sha256_2()
+        {
+            var result = await _client.Crypto.Sha256Async(new ParamsOfHash
+            {
+                Data = "4d65737361676520746f206861736820776974682073686120323536".HexToBase64String()
+            });
+
+            Assert.NotNull(result);
+            Assert.NotEmpty(result.Hash);
+            Assert.Equal("16FD057308DD358D5A9B3BA2DE766B2DFD5E308478FC1F7BA5988DB2493852F5", result.Hash.ToUpper());
+        }
+
+        [Fact]
+        public async Task Should_Calculate_Sha256_4()
+        {
+            var result = await _client.Crypto.Sha256Async(new ParamsOfHash
+            {
+                Data = "TWVzc2FnZSB0byBoYXNoIHdpdGggc2hhIDI1Ng=="
+            });
+
+            Assert.NotNull(result);
+            Assert.NotEmpty(result.Hash);
+            Assert.Equal("16FD057308DD358D5A9B3BA2DE766B2DFD5E308478FC1F7BA5988DB2493852F5", result.Hash.ToUpper());
         }
 
         [Fact]
@@ -181,12 +212,29 @@ namespace TonSdk.Tests.Modules
         {
             var result = await _client.Crypto.Sha512Async(new ParamsOfHash
             {
-                Data = "12345".ToBase64String()
+                Data = "Message to hash with sha 512".ToBase64String()
             });
 
             Assert.NotNull(result);
             Assert.NotEmpty(result.Hash);
-            Assert.Equal("3627909A29C31381A071EC27F7C9CA97726182AED29A7DDD2E54353322CFB30ABB9E3A6DF2AC2C20FE23436311D678564D0C8D305930575F60E2D3D048184D79", result.Hash.ToUpper());
+            Assert.Equal("2616A44E0DA827F0244E93C2B0B914223737A6129BC938B8EDF2780AC9482960BAA9B7C7CDB11457C1CEBD5AE77E295ED94577F32D4C963DC35482991442DAA5", result.Hash.ToUpper());
+        }
+
+        [Fact]
+        public async Task Should_Call_Scrypt()
+        {
+            var result = await _client.Crypto.ScryptAsync(new ParamsOfScrypt
+            {
+                Password = "Test Password".ToBase64String(),
+                Salt = "Test Salt".ToBase64String(),
+                LogN = 10,
+                R = 8,
+                P = 16,
+                DkLen = 64
+            });
+
+            Assert.NotNull(result);
+            Assert.Equal("52e7fcf91356eca55fc5d52f16f5d777e3521f54e3c570c9bbb7df58fc15add73994e5db42be368de7ebed93c9d4f21f9be7cc453358d734b04a057d0ed3626d", result.Key);
         }
 
         [Theory]
@@ -212,8 +260,8 @@ namespace TonSdk.Tests.Modules
         }
 
         [Theory]
-        [InlineData(15, 0, 1, 4, "c2VjcmV0", "dGVzdA==", 23)] // `r` must be greater than `0`, InvalidParams
-        [InlineData(15, 8, 0, 4, "c2VjcmV0", "dGVzdA==", 23)] // `p` must be greater than `0`, InvalidParams
+        [InlineData(15, 0, 1, 4, "c2VjcmV0", "dGVzdA==", 108)] // `r` must be greater than `0`, ScryptFailed
+        [InlineData(15, 8, 0, 4, "c2VjcmV0", "dGVzdA==", 108)] // `p` must be greater than `0`, ScryptFailed
         [InlineData(15, 8, 1, 4, null, "dGVzdA==", 23)] // `password` must not be null, InvalidParams
         [InlineData(15, 8, 1, 4, "c2VjcmV0", null, 23)] // `salt` must not be null, InvalidParams
         public async Task Scrypt_Should_Throw_Exception_On_Invalid_Input(byte logN, uint r, uint p, uint dkLen, string password, string salt, int errorCode)
@@ -236,16 +284,15 @@ namespace TonSdk.Tests.Modules
         [Fact]
         public async Task Should_Call_NaclSignKeyPairFromSecretKey()
         {
-            var keyPair = await _client.Crypto.GenerateRandomSignKeysAsync();
-
             var result = await _client.Crypto.NaclSignKeypairFromSecretKeyAsync(new ParamsOfNaclSignKeyPairFromSecret
             {
-                Secret = keyPair.Secret
+                Secret = "8fb4f2d256e57138fb310b0a6dac5bbc4bee09eb4821223a720e5b8e1f3dd674"
             });
 
             Assert.NotNull(result);
             Assert.NotEmpty(result.Secret);
-            Assert.Equal(result.Public, keyPair.Public);
+            Assert.NotEqual(result.Secret, result.Public);
+            Assert.Equal("aa5533618573860a7e1bf19f34bd292871710ed5b2eafa0dcdbb33405f2231c6", result.Public);
         }
 
         [Theory]
@@ -262,6 +309,33 @@ namespace TonSdk.Tests.Modules
             Assert.NotNull(exception);
             Assert.NotEmpty(exception.Message);
             Assert.Equal(101, exception.Code); // InvalidSecretKey 
+        }
+
+        [Fact]
+        public async Task Should_Call_Nacl_Sign()
+        {
+            var result = await _client.Crypto.NaclSignAsync(new ParamsOfNaclSign
+            {
+                Unsigned = "Test Message".ToBase64String(),
+                Secret =
+                    "56b6a77093d6fdf14e593f36275d872d75de5b341942376b2a08759f3cbae78f1869b7ef29d58026217e9cf163cbfbd0de889bdf1bf4daebf5433a312f5b8d6e"
+            });
+
+            Assert.NotNull(result);
+            Assert.Equal("+wz+QO6l1slgZS5s65BNqKcu4vz24FCJz4NSAxef9lu0jFfs8x3PzSZRC+pn5k8+aJi3xYMA3BQzglQmjK3hA1Rlc3QgTWVzc2FnZQ==", result.Signed);
+        }
+
+        [Fact]
+        public async Task Should_Call_Nacl_Sign_Open()
+        {
+            var result = await _client.Crypto.NaclSignOpenAsync(new ParamsOfNaclSignOpen
+            {
+                Signed = "fb0cfe40eea5d6c960652e6ceb904da8a72ee2fcf6e05089cf835203179ff65bb48c57ecf31dcfcd26510bea67e64f3e6898b7c58300dc14338254268cade10354657374204d657373616765".HexToBase64String(),
+                Public = "1869b7ef29d58026217e9cf163cbfbd0de889bdf1bf4daebf5433a312f5b8d6e"
+            });
+
+            Assert.NotNull(result);
+            Assert.Equal("Test Message", result.Unsigned.FromBase64String());
         }
 
         [Fact]
@@ -371,6 +445,19 @@ namespace TonSdk.Tests.Modules
             var result = await _client.Crypto.NaclBoxKeypairAsync();
             Assert.NotNull(result);
             Assert.Equal(64, result.Public.Length);
+            Assert.Equal(64, result.Secret.Length);
+            Assert.NotEqual(result.Public, result.Secret);
+        }
+
+        [Fact]
+        public async Task Should_Create_NaclBoxKeyPairFromSecretKey()
+        {
+            var result = await _client.Crypto.NaclBoxKeypairFromSecretKeyAsync(new ParamsOfNaclBoxKeyPairFromSecret
+            {
+                Secret = "e207b5966fb2c5be1b71ed94ea813202706ab84253bdf4dc55232f82a1caf0d4"
+            });
+            Assert.NotNull(result);
+            Assert.Equal("a53b003d3ffc1e159355cb37332d67fc235a7feb6381e36c803274074dc3933a", result.Public);
             Assert.Equal(64, result.Secret.Length);
             Assert.NotEqual(result.Public, result.Secret);
         }
@@ -641,13 +728,140 @@ namespace TonSdk.Tests.Modules
         [Fact]
         public async Task Should_Call_HdkeyXprvFromMnemonic()
         {
-            var master = await _client.Crypto.HdkeyXprvFromMnemonicAsync(new ParamsOfHDKeyXPrvFromMnemonic
+            var result = await _client.Crypto.HdkeyXprvFromMnemonicAsync(new ParamsOfHDKeyXPrvFromMnemonic
             {
                 Phrase = "abuse boss fly battle rubber wasp afraid hamster guide essence vibrant tattoo"
             });
 
-            Assert.NotNull(master);
-            Assert.Equal("xprv9s21ZrQH143K25JhKqEwvJW7QAiVvkmi4WRenBZanA6kxHKtKAQQKwZG65kCyW5jWJ8NY9e3GkRoistUjjcpHNsGBUv94istDPXvqGNuWpC", master.Xprv);
+            Assert.NotNull(result);
+            Assert.Equal("xprv9s21ZrQH143K25JhKqEwvJW7QAiVvkmi4WRenBZanA6kxHKtKAQQKwZG65kCyW5jWJ8NY9e3GkRoistUjjcpHNsGBUv94istDPXvqGNuWpC", result.Xprv);
+        }
+
+        [Fact]
+        public async Task Should_Call_HdkeySecretFromXprv()
+        {
+            var result = await _client.Crypto.HdkeySecretFromXprvAsync(new ParamsOfHDKeySecretFromXPrv
+            {
+                Xprv = "xprv9s21ZrQH143K25JhKqEwvJW7QAiVvkmi4WRenBZanA6kxHKtKAQQKwZG65kCyW5jWJ8NY9e3GkRoistUjjcpHNsGBUv94istDPXvqGNuWpC"
+            });
+
+            Assert.NotNull(result);
+            Assert.Equal("0c91e53128fa4d67589d63a6c44049c1068ec28a63069a55ca3de30c57f8b365", result.Secret);
+        }
+
+        [Fact]
+        public async Task Should_Call_HdkeySecretFromXprv2()
+        {
+            var result = await _client.Crypto.HdkeySecretFromXprvAsync(new ParamsOfHDKeySecretFromXPrv
+            {
+                Xprv = "xprv9uZwtSeoKf1swgAkVVCEUmC2at6t7MCJoHnBbn1MWJZyxQ4cySkVXPyNh7zjf9VjsP4vEHDDD2a6R35cHubg4WpzXRzniYiy8aJh1gNnBKv"
+            });
+
+            Assert.NotNull(result);
+            Assert.Equal("518afc6489b61d4b738ee9ad9092815fa014ffa6e9a280fa17f84d95f31adb91", result.Secret);
+        }
+
+        [Fact]
+        public async Task Should_Call_HdkeySecretFromXprv3()
+        {
+            var result = await _client.Crypto.HdkeySecretFromXprvAsync(new ParamsOfHDKeySecretFromXPrv
+            {
+                Xprv = "xprvA1KNMo63UcGjmDF1bX39Cw2BXGUwrwMjeD5qvQ3tA3qS3mZQkGtpf4DHq8FDLKAvAjXsYGLHDP2dVzLu9ycta8PXLuSYib2T3vzLf3brVgZ"
+            });
+
+            Assert.NotNull(result);
+            Assert.Equal("1c566ade41169763b155761406d3cef08b29b31cf8014f51be08c0cb4e67c5e1", result.Secret);
+        }
+
+        [Fact]
+        public async Task Should_Call_HdkeyPublicFromXprv()
+        {
+            var result = await _client.Crypto.HdkeyPublicFromXprvAsync(new ParamsOfHDKeyPublicFromXPrv
+            {
+                Xprv = "xprv9s21ZrQH143K25JhKqEwvJW7QAiVvkmi4WRenBZanA6kxHKtKAQQKwZG65kCyW5jWJ8NY9e3GkRoistUjjcpHNsGBUv94istDPXvqGNuWpC"
+            });
+
+            Assert.NotNull(result);
+            Assert.Equal("02a8eb63085f73c33fa31b4d1134259406347284f8dab6fc68f4bf8c96f6c39b75", result.Public);
+        }
+
+        [Fact]
+        public async Task Should_Call_HdkeyPublicFromXprv2()
+        {
+            var result = await _client.Crypto.HdkeyPublicFromXprvAsync(new ParamsOfHDKeyPublicFromXPrv
+            {
+                Xprv = "xprv9uZwtSeoKf1swgAkVVCEUmC2at6t7MCJoHnBbn1MWJZyxQ4cySkVXPyNh7zjf9VjsP4vEHDDD2a6R35cHubg4WpzXRzniYiy8aJh1gNnBKv"
+            });
+
+            Assert.NotNull(result);
+            Assert.Equal("027a598c7572dbb4fbb9663a0c805576babf7faa173a4288a48a52f6f427e12be1", result.Public);
+        }
+
+        [Fact]
+        public async Task Should_Call_HdkeyPublicFromXprv3()
+        {
+            var result = await _client.Crypto.HdkeyPublicFromXprvAsync(new ParamsOfHDKeyPublicFromXPrv
+            {
+                Xprv = "xprvA1KNMo63UcGjmDF1bX39Cw2BXGUwrwMjeD5qvQ3tA3qS3mZQkGtpf4DHq8FDLKAvAjXsYGLHDP2dVzLu9ycta8PXLuSYib2T3vzLf3brVgZ"
+            });
+
+            Assert.NotNull(result);
+            Assert.Equal("02a87d9764eedaacee45b0f777b5a242939b05fa06873bf511ca9a59cb46a5f526", result.Public);
+        }
+
+        [Fact]
+        public async Task Should_Call_HdkeyDeriveFromXprv()
+        {
+            var result = await _client.Crypto.HdkeyDeriveFromXprvAsync(new ParamsOfHDKeyDeriveFromXPrv
+            {
+                Xprv = "xprv9s21ZrQH143K25JhKqEwvJW7QAiVvkmi4WRenBZanA6kxHKtKAQQKwZG65kCyW5jWJ8NY9e3GkRoistUjjcpHNsGBUv94istDPXvqGNuWpC",
+                ChildIndex = 0u,
+                Hardened = false
+            });
+
+            Assert.NotNull(result);
+            Assert.Equal("xprv9uZwtSeoKf1swgAkVVCEUmC2at6t7MCJoHnBbn1MWJZyxQ4cySkVXPyNh7zjf9VjsP4vEHDDD2a6R35cHubg4WpzXRzniYiy8aJh1gNnBKv", result.Xprv);
+        }
+
+        [Fact]
+        public async Task Should_Call_HdkeyDeriveFromXprvPath()
+        {
+            var result = await _client.Crypto.HdkeyDeriveFromXprvPathAsync(new ParamsOfHDKeyDeriveFromXPrvPath
+            {
+                Xprv = "xprv9s21ZrQH143K25JhKqEwvJW7QAiVvkmi4WRenBZanA6kxHKtKAQQKwZG65kCyW5jWJ8NY9e3GkRoistUjjcpHNsGBUv94istDPXvqGNuWpC",
+                Path = "m/44'/60'/0'/0'"
+            });
+
+            Assert.NotNull(result);
+            Assert.Equal("xprvA1KNMo63UcGjmDF1bX39Cw2BXGUwrwMjeD5qvQ3tA3qS3mZQkGtpf4DHq8FDLKAvAjXsYGLHDP2dVzLu9ycta8PXLuSYib2T3vzLf3brVgZ", result.Xprv);
+        }
+
+        [Fact]
+        public async Task Should_Call_Chacha20()
+        {
+            var result = await _client.Crypto.Chacha20Async(new ParamsOfChaCha20
+            {
+                Data = "Message".ToBase64String(),
+                Key = string.Concat(Enumerable.Repeat("01", 32)),
+                Nonce = string.Concat(Enumerable.Repeat("ff", 12))
+            });
+
+            Assert.NotNull(result);
+            Assert.Equal("w5QOGsJodQ==", result.Data);
+        }
+
+        [Fact]
+        public async Task Should_Call_Chacha20_2()
+        {
+            var result = await _client.Crypto.Chacha20Async(new ParamsOfChaCha20
+            {
+                Data = "w5QOGsJodQ==",
+                Key = string.Concat(Enumerable.Repeat("01", 32)),
+                Nonce = string.Concat(Enumerable.Repeat("ff", 12))
+            });
+
+            Assert.NotNull(result);
+            Assert.Equal("TWVzc2FnZQ==", result.Data);
         }
     }
 }

@@ -16,25 +16,25 @@ namespace TonSdk.Modules
         /// <summary>
         ///  boc with config
         /// </summary>
-        [JsonProperty("blockchain_config")]
+        [JsonProperty("blockchain_config", NullValueHandling = NullValueHandling.Ignore)]
         public string BlockchainConfig { get; set; }
 
         /// <summary>
         ///  time that is used as transaction time
         /// </summary>
-        [JsonProperty("block_time")]
+        [JsonProperty("block_time", NullValueHandling = NullValueHandling.Ignore)]
         public uint? BlockTime { get; set; }
 
         /// <summary>
         ///  block logical time
         /// </summary>
-        [JsonProperty("block_lt")]
+        [JsonProperty("block_lt", NullValueHandling = NullValueHandling.Ignore)]
         public BigInteger BlockLt { get; set; }
 
         /// <summary>
         ///  transaction logical time
         /// </summary>
-        [JsonProperty("transaction_lt")]
+        [JsonProperty("transaction_lt", NullValueHandling = NullValueHandling.Ignore)]
         public BigInteger TransactionLt { get; set; }
     }
 
@@ -64,36 +64,36 @@ namespace TonSdk.Modules
             /// <summary>
             ///  Account BOC. Encoded as base64.
             /// </summary>
-            [JsonProperty("boc")]
+            [JsonProperty("boc", NullValueHandling = NullValueHandling.Ignore)]
             public string Boc { get; set; }
 
             /// <summary>
             ///  Flag for running account with the unlimited balance. Can be used to calculate
             ///  transaction fees without balance check
             /// </summary>
-            [JsonProperty("unlimited_balance")]
+            [JsonProperty("unlimited_balance", NullValueHandling = NullValueHandling.Ignore)]
             public bool? UnlimitedBalance { get; set; }
         }
     }
 
     public class TransactionFees
     {
-        [JsonProperty("in_msg_fwd_fee")]
+        [JsonProperty("in_msg_fwd_fee", NullValueHandling = NullValueHandling.Ignore)]
         public BigInteger InMsgFwdFee { get; set; }
 
-        [JsonProperty("storage_fee")]
+        [JsonProperty("storage_fee", NullValueHandling = NullValueHandling.Ignore)]
         public BigInteger StorageFee { get; set; }
 
-        [JsonProperty("gas_fee")]
+        [JsonProperty("gas_fee", NullValueHandling = NullValueHandling.Ignore)]
         public BigInteger GasFee { get; set; }
 
-        [JsonProperty("out_msgs_fwd_fee")]
+        [JsonProperty("out_msgs_fwd_fee", NullValueHandling = NullValueHandling.Ignore)]
         public BigInteger OutMsgsFwdFee { get; set; }
 
-        [JsonProperty("total_account_fees")]
+        [JsonProperty("total_account_fees", NullValueHandling = NullValueHandling.Ignore)]
         public BigInteger TotalAccountFees { get; set; }
 
-        [JsonProperty("total_output")]
+        [JsonProperty("total_output", NullValueHandling = NullValueHandling.Ignore)]
         public BigInteger TotalOutput { get; set; }
     }
 
@@ -102,31 +102,33 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Input message BOC. Must be encoded as base64.
         /// </summary>
-        [JsonProperty("message")]
+        [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
         public string Message { get; set; }
 
         /// <summary>
         ///  Account to run on executor
         /// </summary>
-        [JsonProperty("account")]
+        [JsonProperty("account", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
         public AccountForExecutor Account { get; set; }
 
         /// <summary>
         ///  Execution options.
         /// </summary>
-        [JsonProperty("execution_options")]
+        [JsonProperty("execution_options", NullValueHandling = NullValueHandling.Ignore)]
         public ExecutionOptions ExecutionOptions { get; set; }
 
         /// <summary>
         ///  Contract ABI for decoding output messages
         /// </summary>
-        [JsonProperty("abi")]
+        [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
         public Abi Abi { get; set; }
 
         /// <summary>
         ///  Skip transaction check flag
         /// </summary>
-        [JsonProperty("skip_transaction_check")]
+        [JsonProperty("skip_transaction_check", NullValueHandling = NullValueHandling.Ignore)]
         public bool? SkipTransactionCheck { get; set; }
     }
 
@@ -139,32 +141,32 @@ namespace TonSdk.Modules
         ///  `boc` field encoded with `base64` which contains source
         ///  transaction BOC.
         /// </summary>
-        [JsonProperty("transaction")]
+        [JsonProperty("transaction", NullValueHandling = NullValueHandling.Ignore)]
         public Newtonsoft.Json.Linq.JToken Transaction { get; set; }
 
         /// <summary>
         ///  List of output messages' BOCs. Encoded as `base64`
         /// </summary>
-        [JsonProperty("out_messages")]
+        [JsonProperty("out_messages", NullValueHandling = NullValueHandling.Ignore)]
         public string[] OutMessages { get; set; }
 
         /// <summary>
         ///  Optional decoded message bodies according to the optional
         ///  `abi` parameter.
         /// </summary>
-        [JsonProperty("decoded")]
+        [JsonProperty("decoded", NullValueHandling = NullValueHandling.Ignore)]
         public DecodedOutput Decoded { get; set; }
 
         /// <summary>
         ///  Updated account state BOC. Encoded as `base64`
         /// </summary>
-        [JsonProperty("account")]
+        [JsonProperty("account", NullValueHandling = NullValueHandling.Ignore)]
         public string Account { get; set; }
 
         /// <summary>
         ///  Transaction fees
         /// </summary>
-        [JsonProperty("fees")]
+        [JsonProperty("fees", NullValueHandling = NullValueHandling.Ignore)]
         public TransactionFees Fees { get; set; }
     }
 
@@ -173,25 +175,26 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Input message BOC. Must be encoded as base64.
         /// </summary>
-        [JsonProperty("message")]
+        [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
         public string Message { get; set; }
 
         /// <summary>
         ///  Account BOC. Must be encoded as base64.
         /// </summary>
-        [JsonProperty("account")]
+        [JsonProperty("account", NullValueHandling = NullValueHandling.Ignore)]
         public string Account { get; set; }
 
         /// <summary>
         ///  Execution options.
         /// </summary>
-        [JsonProperty("execution_options")]
+        [JsonProperty("execution_options", NullValueHandling = NullValueHandling.Ignore)]
         public ExecutionOptions ExecutionOptions { get; set; }
 
         /// <summary>
         ///  Contract ABI for dedcoding output messages
         /// </summary>
-        [JsonProperty("abi")]
+        [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
         public Abi Abi { get; set; }
     }
 
@@ -200,21 +203,21 @@ namespace TonSdk.Modules
         /// <summary>
         ///  List of output messages' BOCs. Encoded as `base64`
         /// </summary>
-        [JsonProperty("out_messages")]
+        [JsonProperty("out_messages", NullValueHandling = NullValueHandling.Ignore)]
         public string[] OutMessages { get; set; }
 
         /// <summary>
         ///  Optional decoded message bodies according to the optional
         ///  `abi` parameter.
         /// </summary>
-        [JsonProperty("decoded")]
+        [JsonProperty("decoded", NullValueHandling = NullValueHandling.Ignore)]
         public DecodedOutput Decoded { get; set; }
 
         /// <summary>
         ///  Updated account state BOC. Encoded as `base64`.
         ///  Attention! Only data in account state is updated.
         /// </summary>
-        [JsonProperty("account")]
+        [JsonProperty("account", NullValueHandling = NullValueHandling.Ignore)]
         public string Account { get; set; }
     }
 
@@ -223,22 +226,22 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Account BOC in `base64`
         /// </summary>
-        [JsonProperty("account")]
+        [JsonProperty("account", NullValueHandling = NullValueHandling.Ignore)]
         public string Account { get; set; }
 
         /// <summary>
         ///  Function name
         /// </summary>
-        [JsonProperty("function_name")]
+        [JsonProperty("function_name", NullValueHandling = NullValueHandling.Ignore)]
         public string FunctionName { get; set; }
 
         /// <summary>
         ///  Input parameters
         /// </summary>
-        [JsonProperty("input")]
+        [JsonProperty("input", NullValueHandling = NullValueHandling.Ignore)]
         public Newtonsoft.Json.Linq.JToken Input { get; set; }
 
-        [JsonProperty("execution_options")]
+        [JsonProperty("execution_options", NullValueHandling = NullValueHandling.Ignore)]
         public ExecutionOptions ExecutionOptions { get; set; }
     }
 
@@ -247,7 +250,7 @@ namespace TonSdk.Modules
         /// <summary>
         ///  Values returned by getmethod on stack
         /// </summary>
-        [JsonProperty("output")]
+        [JsonProperty("output", NullValueHandling = NullValueHandling.Ignore)]
         public Newtonsoft.Json.Linq.JToken Output { get; set; }
     }
 

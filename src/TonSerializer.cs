@@ -20,16 +20,16 @@ namespace TonSdk
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _defaultSerializerSettings = new JsonSerializerSettings
             {
-                DefaultValueHandling = DefaultValueHandling.Ignore,
+                NullValueHandling = NullValueHandling.Ignore
             };
             _polymorphicTypeSerializerSettings = new JsonSerializerSettings
             {
-                DefaultValueHandling = DefaultValueHandling.Ignore,
+                NullValueHandling = NullValueHandling.Ignore,
                 TypeNameHandling = TypeNameHandling.Objects
             };
             _polymorphicTypeDeserializerSettings = new JsonSerializerSettings
             {
-                DefaultValueHandling = DefaultValueHandling.Ignore,
+                NullValueHandling = NullValueHandling.Ignore,
                 TypeNameHandling = TypeNameHandling.Objects
             };
             _polymorphicTypeSerializerSettings.Converters.Add(PolymorphicConcreteTypeConverter.Instance);
@@ -42,6 +42,12 @@ namespace TonSdk
             {
                 _logger.Warning("Empty JSON passed to deserialize method");
                 return default;
+            }
+
+            if (typeof(T) == typeof(JToken))
+            {
+                object token = JObject.Parse(json);
+                return (T)token;
             }
             return JsonConvert.DeserializeObject<T>(json,
                 typeof(T).IsTonPolymorphicAbstractType()

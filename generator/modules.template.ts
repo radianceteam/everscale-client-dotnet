@@ -1,6 +1,6 @@
 /**
  * This files generates C# classes from the TON Client SDK definitions location in JSON file (api.json).
- * The JSON file is taken from https://raw.githubusercontent.com/tonlabs/TON-SDK/1.0.0-rc/tools/api.json.
+ * The JSON file is taken from https://raw.githubusercontent.com/tonlabs/TON-SDK/1.1.0-rc/tools/api.json.
  */
 
 import {TextWriter} from '@yellicode/core';
@@ -20,6 +20,10 @@ function toCamelCase(value: string): string {
     return ucFirst(value)
         .replace(/[\\-_\\+\s](\w)/g,
             match => match.substring(1).toUpperCase());
+}
+
+function toCSharpEventCallbackTypeName(moduleName: string): string {
+    return toCamelCase(moduleName) + 'Event';
 }
 
 function toCSharpModuleName(name: string): string {
@@ -121,6 +125,10 @@ function parseRef(ref: string): string[] {
     return refSpec;
 }
 
+function typeExists(moduleName: string, typeName: string): boolean {
+    return !!(typesByModuleAndName[moduleName] && typesByModuleAndName[moduleName][typeName]);
+}
+
 function getTypeByName(moduleName: string, typeName: string): TonApiSpec.Type {
     if (!typesByModuleAndName[moduleName] || !typesByModuleAndName[moduleName][typeName]) {
         throw new Error(`Type ${moduleName}.${typeName} not found`);
@@ -135,6 +143,27 @@ function getReferenceType(moduleName: string, typeName: string): TonApiSpec.Type
     return referenceTypes[moduleName][typeName];
 }
 
+function isUnknownType(refSpec: string): boolean {
+    // FIXME: no concrete types are defined for these API types in api.json; returning raw JSON.
+    return ('API' === refSpec || 'Value' === refSpec);
+}
+
+function isContextParam(param: TonApiSpec.Param): boolean {
+    return param.type === 'Generic' &&
+        param.generic_args &&
+        param.generic_args.length &&
+        param.generic_args[0].type === 'Ref' &&
+        param.generic_args[0].ref_name === 'ClientContext';
+}
+
+function isCallbackParam(param: TonApiSpec.Param): boolean {
+    return param.type === 'Generic' &&
+        param.generic_args &&
+        param.generic_args.length &&
+        param.generic_args[0].type === 'Ref' &&
+        param.generic_args[0].ref_name === 'Request';
+}
+
 function toCSharpValueType(value: TonApiSpec.HasValue, optional: boolean = false): string {
     switch (value.type) {
         case 'String':
@@ -145,9 +174,7 @@ function toCSharpValueType(value: TonApiSpec.HasValue, optional: boolean = false
         case 'Boolean':
             return 'bool' + (optional ? '?' : '');
         case 'Ref':
-            // FIXME: no concrete types are defined for these API types in api.json; returning raw JSON.
-            if ('API' === value.ref_name ||
-                'Value' === value.ref_name) {
+            if (isUnknownType(value.ref_name)) {
                 return 'Newtonsoft.Json.Linq.JToken';
             }
             const [moduleName, typeName] = parseRef(value.ref_name);
@@ -231,12 +258,23 @@ function getReturnType(result: TonApiSpec.Result): string {
 function writeTypeMembers(type: TonApiSpec.Type, writer: CSharpWriter) {
     for (let i = 0, n = type.struct_fields.length; i < n; ++i) {
         const field = type.struct_fields[i];
-        if ('ABI version' === field.name) {
-            // FIXME: error in api.json
-            continue;
-        }
         writer.writeXmlDocSummary(getXmlDocSummary(field.summary, field.description));
-        writer.writeLine(`[JsonProperty("${field.name}")]`);
+        writer.writeLine(`[JsonProperty("${field.name}", NullValueHandling = NullValueHandling.Ignore)]`);
+
+        let ref_name = 'Ref' === field.type
+            ? field.ref_name
+            : 'Optional' === field.type && field.optional_inner && field.optional_inner.type == 'Ref'
+                ? field.optional_inner.ref_name
+                : undefined;
+
+        if (ref_name && !isUnknownType(ref_name)) {
+            const [moduleName, typeName] = parseRef(ref_name);
+            const type = getTypeByName(moduleName, typeName);
+            if (type.type === 'EnumOfTypes') {
+                writer.writeLine(`[JsonConverter(typeof(PolymorphicConcreteTypeConverter))]`);
+            }
+        }
+
         writer.writeAutoProperty({
             accessModifier: 'public',
             typeName: toCSharpValueType(field),
@@ -336,20 +374,49 @@ function writeTypeDefinitions(module: TonApiSpec.Module, writer: CSharpWriter): 
     return writer;
 }
 
-function getFunctionParameters(fn: TonApiSpec.Function): ParameterDefinition[] {
+function functionHasParam(fn: TonApiSpec.Function): boolean {
+    return fn.params.filter(p => !isContextParam(p)).length > 1;
+}
+
+function functionHasCallback(fn: TonApiSpec.Function): boolean {
+    return fn.params.filter(p => isCallbackParam(p)).length > 0;
+}
+
+function getFunctionCallbackType(module: TonApiSpec.Module, fn: TonApiSpec.Function): string {
+    if (!functionHasCallback(fn)) {
+        return null;
+    }
+    const concreteType = toCSharpEventCallbackTypeName(module.name);
+    return typeExists(module.name, concreteType)
+        ? concreteType : 'Newtonsoft.Json.Linq.JToken';
+}
+
+function toCSharpParameterDefinition(module: TonApiSpec.Module, fn: TonApiSpec.Function, p: TonApiSpec.Param): ParameterDefinition {
+    const callbackType = isCallbackParam(p) &&
+        getFunctionCallbackType(module, fn);
+    const result = {
+        name: toCSharpParameterName(p.name),
+        typeName: callbackType
+            ? `Action<${callbackType}, int>`
+            : getParameterType(p),
+        xmlDocSummary: getXmlDocSummary(p.summary, p.description)
+    } as ParameterDefinition;
+    if (callbackType) {
+        result.defaultValue = 'null';
+    }
+    return result;
+}
+
+function getFunctionParameters(module: TonApiSpec.Module, fn: TonApiSpec.Function): ParameterDefinition[] {
     return fn.params
-        .filter(p => p.type != 'Generic' && p.name != '_context')
-        .map(p => ({
-            name: toCSharpParameterName(p.name),
-            typeName: getParameterType(p),
-            xmlDocSummary: getXmlDocSummary(p.summary, p.description)
-        } as ParameterDefinition));
+        .filter(p => !isContextParam(p))
+        .map(p => toCSharpParameterDefinition(module, fn, p));
 }
 
 function writeInterfaceMethod(module: TonApiSpec.Module, fn: TonApiSpec.Function, writer: CSharpWriter): CSharpWriter {
     return writer.writeMethodDeclaration({
         name: toCSharpMethodName(fn.name),
-        parameters: getFunctionParameters(fn),
+        parameters: getFunctionParameters(module, fn),
         returnTypeName: toCSharpMethodReturnType(fn.result),
         xmlDocSummary: getXmlDocSummary(fn.summary, fn.description)
     });
@@ -361,22 +428,30 @@ function writeMethodImplementation(module: TonApiSpec.Module, fn: TonApiSpec.Fun
         .writeMethodBlock({
             accessModifier: 'public',
             name: toCSharpMethodName(fn.name),
-            parameters: getFunctionParameters(fn),
+            parameters: getFunctionParameters(module, fn),
             returnTypeName: `async ${returnType}`
         }, () => {
-            const hasParam = 2 === fn.params.length; // param #1 is always _context
-            if ('Task' === returnType) {
-                if (hasParam) {
-                    writer.writeLine(`await _client.CallFunctionAsync("${module.name}.${fn.name}", ${toCSharpParameterName(fn.params[1].name)}).ConfigureAwait(false);`)
-                } else {
-                    writer.writeLine(`await _client.CallFunctionAsync("${module.name}.${fn.name}").ConfigureAwait(false);`)
-                }
+
+            const callArguments = [`"${module.name}.${fn.name}"`]
+                .concat(getFunctionParameters(module, fn)
+                    .map(p => p.name));
+
+            let returnSpec = '';
+            const genericArguments = [];
+            if ('Task' !== returnType) {
+                genericArguments.push(getReturnType(fn.result))
+                returnSpec = 'return ';
+            }
+
+            const callbackType = getFunctionCallbackType(module, fn);
+            if (callbackType) {
+                genericArguments.push(callbackType);
+            }
+
+            if (genericArguments.length) {
+                writer.writeLine(`${returnSpec}await _client.CallFunctionAsync<${genericArguments.join(', ')}>(${callArguments.join(', ')}).ConfigureAwait(false);`)
             } else {
-                if (hasParam) {
-                    writer.writeLine(`return await _client.CallFunctionAsync<${getReturnType(fn.result)}>("${module.name}.${fn.name}", ${toCSharpParameterName(fn.params[1].name)}).ConfigureAwait(false);`)
-                } else {
-                    writer.writeLine(`return await _client.CallFunctionAsync<${getReturnType(fn.result)}>("${module.name}.${fn.name}").ConfigureAwait(false);`)
-                }
+                writer.writeLine(`${returnSpec}await _client.CallFunctionAsync(${callArguments.join(', ')}).ConfigureAwait(false);`)
             }
         });
 }
