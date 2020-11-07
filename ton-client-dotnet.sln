@@ -7,9 +7,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C035FCB2-6FF
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{18F62298-ECA2-4010-A703-5F3924216AE6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ton-client-dotnet", "src\ton-client-dotnet.csproj", "{ABDB59F1-AC8D-495F-AFEF-AA80F4FA0159}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TonClient", "src\TonClient.csproj", "{ABDB59F1-AC8D-495F-AFEF-AA80F4FA0159}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ton-client-dotnet-tests", "tests\ton-client-dotnet-tests.csproj", "{6DEC18C9-41C4-4452-8CE5-2808EA9977BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TonClient.Tests", "tests\TonClient.Tests.csproj", "{6DEC18C9-41C4-4452-8CE5-2808EA9977BA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

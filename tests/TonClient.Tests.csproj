@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\ton-client-dotnet.csproj" />
+    <ProjectReference Include="..\src\TonClient.csproj" />
   </ItemGroup>
 
 </Project>

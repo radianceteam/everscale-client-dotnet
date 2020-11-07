@@ -1,3 +1,3 @@
 ﻿using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("ton-client-dotnet-tests")]
+[assembly: InternalsVisibleTo("TonClient.Tests")]
