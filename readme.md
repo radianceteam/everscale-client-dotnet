@@ -32,6 +32,7 @@ using TonSdk.TonClient;
         var version = await client.Client.VersionAsync();
         Console.WriteLine($"TON SDK client version: {version.Version}");
     }
+```
 
 ### Advanced usage
 
