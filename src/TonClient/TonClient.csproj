@@ -1,10 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="nuget.props" />
-
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>TonSdk</RootNamespace>
+    <AssemblyName>TonClient</AssemblyName>
+    <Version>$(VersionSuffix)</Version>
+    <PackageId>TonClient</PackageId>
+    <Author>Andrew Anisimov</Author>
+    <Owners>Radiance Team</Owners>
+    <Copyright>Copyright 2020 ©</Copyright>
+    <PackageVersion>$(VersionSuffix)</PackageVersion>
+    <PackageDescription>TON SDK Client .NET Wrapper</PackageDescription>
+    <PackageProjectUrl>https://github.com/radianceteam/ton-client-dotnet</PackageProjectUrl>
+    <InformationalVersion>$(VersionSuffix)</InformationalVersion>
   </PropertyGroup>
 
   <ItemGroup>

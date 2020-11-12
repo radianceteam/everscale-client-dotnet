@@ -10,22 +10,13 @@
     <_NativeRuntime Condition="'$(_NativeRuntime)' == '' And '$(_IsWindows)' == 'true' And ('$(Prefer32Bit)' == 'true' Or '$(PlatformTarget)' == 'x86')">win-x86</_NativeRuntime>
     <_NativeRuntime Condition="'$(_NativeRuntime)' == '' And '$(_IsWindows)' == 'true' And ('$(Prefer32Bit)' == 'false' Or '$(PlatformTarget)' == 'x64')">win-x64</_NativeRuntime>
 
-    <_NativeLibName Condition="'$(_NativeRuntime)' == 'win-x86' Or '$(_NativeRuntime)' == 'win-x64'">tonclient_dotnet_bridge.dll</_NativeLibName>
+    <_NativeLibName Condition="'$(_NativeRuntime)' == 'win-x86' Or '$(_NativeRuntime)' == 'win-x64'">ton_client.dll</_NativeLibName>
     <_NativeLibName Condition="'$(_NativeRuntime)' == 'osx-x64'">libton_client.dylib</_NativeLibName>
-    <_NativeLibName Condition="'$(_NativeRuntime)' == 'linux-x64'">libtonclient_dotnet_bridge.so</_NativeLibName>
-
-    <_NativeSdkLibName Condition="'$(_NativeRuntime)' == 'win-x86' Or '$(_NativeRuntime)' == 'win-x64'"></_NativeSdkLibName>
-    <_NativeSdkLibName Condition="'$(_NativeRuntime)' == 'osx-x64'">libton_client.dylib</_NativeSdkLibName>
-    <_NativeSdkLibName Condition="'$(_NativeRuntime)' == 'linux-x64'">libton_client.so</_NativeSdkLibName>
+    <_NativeLibName Condition="'$(_NativeRuntime)' == 'linux-x64'">libton_client.so</_NativeLibName>
 
   </PropertyGroup>
   <ItemGroup>
     <Content Condition="'$(_NativeRuntime)' != ''" Include="$(MSBuildThisFileDirectory)../../runtimes/$(_NativeRuntime)/native/$(_NativeLibName)">
-      <Link>%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Condition="'$(_NativeRuntime)' != ''" Include="$(MSBuildThisFileDirectory)../../runtimes/$(_NativeRuntime)/native/$(_NativeSdkLibName)">
       <Link>%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
