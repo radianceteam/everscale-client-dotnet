@@ -17,4 +17,4 @@ jobs:
         run: |
           docker run -d --name local-node -p8888:80 tonlabs/local-node
           dotnet restore
-          dotnet test --logger "trx;LogFileName=test-results.trx"
+          dotnet test

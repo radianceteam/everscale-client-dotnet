@@ -2,14 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyVersion>1.1.0</AssemblyVersion>
     <AssemblyName>TonClient</AssemblyName>
     <Copyright>Copyright 2020 ©</Copyright>
     <PackageId>TonClient</PackageId>
-    <PackagePrereleaseIdentifier></PackagePrereleaseIdentifier>
-    <PackageVersion>$(AssemblyVersion)$(PackagePrereleaseIdentifier)</PackageVersion>
+    <PackageVersion>$(VersionSuffix)</PackageVersion>
     <PackageProjectUrl>https://github.com/radianceteam/ton-client-dotnet</PackageProjectUrl>
-    <InformationalVersion>$(AssemblyVersion)</InformationalVersion>
+    <InformationalVersion>$(VersionSuffix)</InformationalVersion>
   </PropertyGroup>
 
 </Project>
