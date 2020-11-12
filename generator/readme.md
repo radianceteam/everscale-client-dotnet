@@ -9,7 +9,7 @@ to generate TON Client module classes automatically.
 
 ## Installation
 
-Install the required packages by running the `npm install` command:
+Install required packages by running the `npm install` command:
 
 ```
 npm install
@@ -17,7 +17,7 @@ npm install
 
 ## Running the generator
 
-Run the following command to run the code generator:
+Run the following command to generate .NET modules:
 
 ```
 npm run generate
