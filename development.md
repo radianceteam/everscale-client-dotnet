@@ -2,15 +2,15 @@
 
 ## Requirements
 
-.NET Core 2.1 SDK or later.
+.NET SDK 3.1 SDK or later.
 
-## Source structure
-
-### Native library for .NET
+## Native library for .NET
 
 Native binaries are built in a separate repository https://github.com/radianceteam/ton-client-dotnet-bridge,
 CI/CD was set up to generate binaries upon each new tag push. Windows, Linux and macOS binaries are pre-built 
 that way and placed into [runtimes](runtimes/readme.md) directory located in the project root.
+
+## Source structure
 
 ### .NET module code generator
 
