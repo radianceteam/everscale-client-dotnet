@@ -20,8 +20,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Resources\contracts\**" CopyToOutputDirectory="PreserveNewest"
-          Link="contracts\%(RecursiveDir)\%(Filename)%(Extension)"/>
+    <None Include="Resources\contracts\**" CopyToOutputDirectory="PreserveNewest" Link="contracts\%(RecursiveDir)\%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Modules\" />
   </ItemGroup>
 
 </Project>

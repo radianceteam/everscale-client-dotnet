@@ -14,24 +14,28 @@ namespace TonSdk.Tests
 
         public void Debug(string message)
         {
-            _outputHelper.WriteLine($"[DEBUG] {message}");
+            Log("DEBUG", message);
         }
 
         public void Information(string message)
         {
-            _outputHelper.WriteLine($"[INFO] {message}");
+            Log("INFO", message);
         }
 
         public void Warning(string message)
         {
-            _outputHelper.WriteLine($"[WARN] {message}");
+            Log("WARN", message);
         }
 
         public void Error(string message, Exception ex = null)
         {
-            _outputHelper.WriteLine(ex == null ?
-                $"[ERROR] {message}" :
-                $"[ERROR] {message}: {ex}");
+            Log("ERROR", ex == null ?
+                message : $"{message}: {ex}");
+        }
+
+        private void Log(string level, string message)
+        {
+            _outputHelper.WriteLine($"[{level}] {message}");
         }
     }
 }

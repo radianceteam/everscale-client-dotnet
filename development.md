@@ -2,16 +2,7 @@
 
 ## Requirements
 
-### Supported OS
-
- - Window x64, x86
- - Linux x64
- - macOS x64
-
-### Supported runtimes
-
- - .NET Core 2.0 and later.
- - .NET Framework 4.6.1 and later.
+.NET Core 2.1 SDK or later.
 
 ## Source structure
 
@@ -42,7 +33,7 @@ docker run -d --name local-node -p8888:80 tonlabs/local-node
 ```
 
 2. Given that Docker machine host is `localhost`, set `TON_NETWORK_ADDRESS` environment 
-   variable to `http://localhost:8888`. Restart shell if needed.
+variable to `http://localhost:8888`. Restart shell if needed.
 
 3. Run these commands:
 
