@@ -16,7 +16,7 @@
 
   </PropertyGroup>
   <ItemGroup>
-    <Content Condition="'$(_NativeRuntime)' != ''" Include="$(MSBuildThisFileDirectory)../../runtimes/$(_NativeRuntime)/native/$(_NativeLibName)">
+    <Content Condition="'$(_NativeRuntime)' != ''" Include="$(MSBuildThisFileDirectory)../runtimes/$(_NativeRuntime)/native/$(_NativeLibName)">
       <Link>%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
