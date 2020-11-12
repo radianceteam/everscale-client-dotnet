@@ -19,6 +19,13 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 3.1.x
+      - name: Run Tests
+        env:
+          TON_NETWORK_ADDRESS: http://localhost:8888
+        run: |
+          docker run -d --name local-node -p8888:80 tonlabs/local-node
+          dotnet restore
+          dotnet test
       - name: Pack
         run: dotnet pack -c Release
           --version-suffix ${{ steps.vars.outputs.version }}
