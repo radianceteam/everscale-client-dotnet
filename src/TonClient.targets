@@ -2,30 +2,30 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <_IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</_IsWindows>
-    <_IsMacOS Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">true</_IsMacOS>
+    <_Isosx Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">true</_Isosx>
     <_IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</_IsLinux>
 
-    <_NativeRuntime Condition="'$(_NativeRuntime)' == '' And '$(_IsMacOS)' == 'true' And ('$(Prefer32Bit)' == 'false' Or '$(PlatformTarget)' == 'x64')">macos-x64</_NativeRuntime>
+    <_NativeRuntime Condition="'$(_NativeRuntime)' == '' And '$(_Isosx)' == 'true' And ('$(Prefer32Bit)' == 'false' Or '$(PlatformTarget)' == 'x64')">osx-x64</_NativeRuntime>
     <_NativeRuntime Condition="'$(_NativeRuntime)' == '' And '$(_IsLinux)' == 'true' And ('$(Prefer32Bit)' == 'false' Or '$(PlatformTarget)' == 'x64')">linux-x64</_NativeRuntime>
-    <_NativeRuntime Condition="'$(_NativeRuntime)' == '' And '$(_IsWindows)' == 'true' And ('$(Prefer32Bit)' == 'true' Or '$(PlatformTarget)' == 'x86')">windows-x86</_NativeRuntime>
-    <_NativeRuntime Condition="'$(_NativeRuntime)' == '' And '$(_IsWindows)' == 'true' And ('$(Prefer32Bit)' == 'false' Or '$(PlatformTarget)' == 'x64')">windows-x64</_NativeRuntime>
+    <_NativeRuntime Condition="'$(_NativeRuntime)' == '' And '$(_IsWindows)' == 'true' And ('$(Prefer32Bit)' == 'true' Or '$(PlatformTarget)' == 'x86')">win-x86</_NativeRuntime>
+    <_NativeRuntime Condition="'$(_NativeRuntime)' == '' And '$(_IsWindows)' == 'true' And ('$(Prefer32Bit)' == 'false' Or '$(PlatformTarget)' == 'x64')">win-x64</_NativeRuntime>
 
     <_NativeLibName Condition="'$(_NativeRuntime)' == 'win-x86' Or '$(_NativeRuntime)' == 'win-x64'">tonclient_dotnet_bridge.dll</_NativeLibName>
     <_NativeLibName Condition="'$(_NativeRuntime)' == 'osx-x64'">libton_client.dylib</_NativeLibName>
     <_NativeLibName Condition="'$(_NativeRuntime)' == 'linux-x64'">libtonclient_dotnet_bridge.so</_NativeLibName>
 
-    <_NativeSdkLibName Condition="'$(_NativeRuntime)' == 'windows-x86' Or '$(_NativeRuntime)' == 'windows-x64'"></_NativeSdkLibName>
-    <_NativeSdkLibName Condition="'$(_NativeRuntime)' == 'macos-x64'">libton_client.dylib</_NativeSdkLibName>
+    <_NativeSdkLibName Condition="'$(_NativeRuntime)' == 'win-x86' Or '$(_NativeRuntime)' == 'win-x64'"></_NativeSdkLibName>
+    <_NativeSdkLibName Condition="'$(_NativeRuntime)' == 'osx-x64'">libton_client.dylib</_NativeSdkLibName>
     <_NativeSdkLibName Condition="'$(_NativeRuntime)' == 'linux-x64'">libton_client.so</_NativeSdkLibName>
 
   </PropertyGroup>
   <ItemGroup>
-    <Content Condition="'$(_NativeRuntime)' != ''" Include="$(MSBuildThisFileDirectory)../lib/$(_NativeRuntime)/$(_NativeLibName)">
+    <Content Condition="'$(_NativeRuntime)' != ''" Include="$(MSBuildThisFileDirectory)../runtimes/$(_NativeRuntime)/$(_NativeLibName)">
       <Link>%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
     </Content>
-    <Content Condition="'$(_NativeRuntime)' != ''" Include="$(MSBuildThisFileDirectory)../lib/$(_NativeRuntime)/$(_NativeSdkLibName)">
+    <Content Condition="'$(_NativeRuntime)' != ''" Include="$(MSBuildThisFileDirectory)../runtimes/$(_NativeRuntime)/$(_NativeSdkLibName)">
       <Link>%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>

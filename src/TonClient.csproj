@@ -23,45 +23,45 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="../lib/windows-x86/ton_client.dll">
+    <Content Include="../runtimes/win-x86/ton_client.dll">
       <Pack>true</Pack>
-      <PackagePath>lib/windows-x86/ton_client.dll</PackagePath>
-      <Link>lib/windows-x86/ton_client.dll</Link>
+      <PackagePath>runtimes/win-x86/ton_client.dll</PackagePath>
+      <Link>runtimes/win-x86/ton_client.dll</Link>
     </Content>
-    <Content Include="../lib/windows-x86/tonclient_dotnet_bridge.dll">
+    <Content Include="../runtimes/win-x86/tonclient_dotnet_bridge.dll">
       <Pack>true</Pack>
-      <PackagePath>lib/windows-x86/tonclient_dotnet_bridge.dll</PackagePath>
-      <Link>lib/windows-x86/tonclient_dotnet_bridge.dll</Link>
+      <PackagePath>runtimes/win-x86/tonclient_dotnet_bridge.dll</PackagePath>
+      <Link>runtimes/win-x86/tonclient_dotnet_bridge.dll</Link>
     </Content>
-    <Content Include="../lib/windows-x64/ton_client.dll">
+    <Content Include="../runtimes/win-x64/ton_client.dll">
       <Pack>true</Pack>
-      <PackagePath>lib/windows-x64/ton_client.dll</PackagePath>
-      <Link>lib/windows-x64/ton_client.dll</Link>
+      <PackagePath>runtimes/win-x64/ton_client.dll</PackagePath>
+      <Link>runtimes/win-x64/ton_client.dll</Link>
     </Content>
-    <Content Include="../lib/windows-x64/tonclient_dotnet_bridge.dll">
+    <Content Include="../runtimes/win-x64/tonclient_dotnet_bridge.dll">
       <Pack>true</Pack>
-      <PackagePath>lib/windows-x64/tonclient_dotnet_bridge.dll</PackagePath>
-      <Link>lib/windows-x64/tonclient_dotnet_bridge.dll</Link>
+      <PackagePath>runtimes/win-x64/tonclient_dotnet_bridge.dll</PackagePath>
+      <Link>runtimes/win-x64/tonclient_dotnet_bridge.dll</Link>
     </Content>
-    <Content Include="../lib/linux-x64/libton_client.so">
+    <Content Include="../runtimes/linux-x64/libton_client.so">
       <Pack>true</Pack>
-      <PackagePath>lib/linux-x64/libton_client.so</PackagePath>
-      <Link>lib/linux-x64/libton_client.so</Link>
+      <PackagePath>runtimes/linux-x64/libton_client.so</PackagePath>
+      <Link>runtimes/linux-x64/libton_client.so</Link>
     </Content>
-    <Content Include="../lib/linux-x64/libtonclient_dotnet_bridge.so">
+    <Content Include="../runtimes/linux-x64/libtonclient_dotnet_bridge.so">
       <Pack>true</Pack>
-      <PackagePath>lib/linux-x64/libtonclient_dotnet_bridge.so</PackagePath>
-      <Link>lib/linux-x64/libtonclient_dotnet_bridge.so</Link>
+      <PackagePath>runtimes/linux-x64/libtonclient_dotnet_bridge.so</PackagePath>
+      <Link>runtimes/linux-x64/libtonclient_dotnet_bridge.so</Link>
     </Content>
-    <Content Include="../lib/macos-x64/libton_client.dylib">
+    <Content Include="../runtimes/osx-x64/libton_client.dylib">
       <Pack>true</Pack>
-      <PackagePath>lib/macos-x64/libton_client.dylib</PackagePath>
-      <Link>lib/macos-x64/libton_client.dylib</Link>
+      <PackagePath>runtimes/osx-x64/libton_client.dylib</PackagePath>
+      <Link>runtimes/osx-x64/libton_client.dylib</Link>
     </Content>
-    <Content Include="../lib/macos-x64/libtonclient_dotnet_bridge.dylib">
+    <Content Include="../runtimes/osx-x64/libtonclient_dotnet_bridge.dylib">
       <Pack>true</Pack>
-      <PackagePath>lib/macos-x64/libtonclient_dotnet_bridge.dylib</PackagePath>
-      <Link>lib/macos-x64/libtonclient_dotnet_bridge.dylib</Link>
+      <PackagePath>runtimes/osx-x64/libtonclient_dotnet_bridge.dylib</PackagePath>
+      <Link>runtimes/osx-x64/libtonclient_dotnet_bridge.dylib</Link>
     </Content>
     <Content Include="TonClient.targets">
       <Pack>true</Pack>
@@ -70,34 +70,34 @@
   </ItemGroup>
 
   <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Windows')) And '$(PlatformTarget)' == 'x86'">
-    <None Include="../lib/windows-x86/ton_client.dll" CopyToOutputDirectory="PreserveNewest">
+    <None Include="../runtimes/win-x86/ton_client.dll" CopyToOutputDirectory="PreserveNewest">
       <Visible>false</Visible>
     </None>
-    <None Include="../lib/windows-x86/tonclient_dotnet_bridge.dll" CopyToOutputDirectory="PreserveNewest">
+    <None Include="../runtimes/win-x86/tonclient_dotnet_bridge.dll" CopyToOutputDirectory="PreserveNewest">
       <Visible>false</Visible>
     </None>
   </ItemGroup>
   <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Windows')) And '$(PlatformTarget)' != 'x86'">
-    <None Include="../lib/windows-x64/ton_client.dll" CopyToOutputDirectory="PreserveNewest">
+    <None Include="../runtimes/win-x64/ton_client.dll" CopyToOutputDirectory="PreserveNewest">
       <Visible>false</Visible>
     </None>
-    <None Include="../lib/windows-x64/tonclient_dotnet_bridge.dll" CopyToOutputDirectory="PreserveNewest">
+    <None Include="../runtimes/win-x64/tonclient_dotnet_bridge.dll" CopyToOutputDirectory="PreserveNewest">
       <Visible>false</Visible>
     </None>
   </ItemGroup>
   <ItemGroup Condition="$([MSBuild]::IsOSPlatform('OSX'))">
-    <None Include="../lib/macos-x64/libton_client.dylib" CopyToOutputDirectory="PreserveNewest">
+    <None Include="../runtimes/osx-x64/libton_client.dylib" CopyToOutputDirectory="PreserveNewest">
       <Visible>false</Visible>
     </None>
-    <None Include="../lib/macos-x64/libtonclient_dotnet_bridge.dylib" CopyToOutputDirectory="PreserveNewest">
+    <None Include="../runtimes/osx-x64/libtonclient_dotnet_bridge.dylib" CopyToOutputDirectory="PreserveNewest">
       <Visible>false</Visible>
     </None>
   </ItemGroup>
   <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
-    <None Include="../lib/linux-x64/libton_client.so" CopyToOutputDirectory="PreserveNewest" >
+    <None Include="../runtimes/linux-x64/libton_client.so" CopyToOutputDirectory="PreserveNewest" >
       <Visible>false</Visible>
     </None>
-    <None Include="../lib/linux-x64/libtonclient_dotnet_bridge.so" CopyToOutputDirectory="PreserveNewest">
+    <None Include="../runtimes/linux-x64/libtonclient_dotnet_bridge.so" CopyToOutputDirectory="PreserveNewest">
       <Visible>false</Visible>
     </None>
   </ItemGroup>
