@@ -6,12 +6,11 @@
 
 ## Source structure
 
-### Native bridge library for .NET
+### Native library for .NET
 
-Sources are in separate repository https://github.com/radianceteam/ton-client-dotnet-bridge. 
-CI/CD was set up in that repository to generate binaries upon each build.
-Windows, Linux and macOS binaries are pre-built and placed into [lib](lib/readme.md) 
-directory located in the project root.
+Native binaries are built in a separate repository https://github.com/radianceteam/ton-client-dotnet-bridge,
+CI/CD was set up to generate binaries upon each new tag push. Windows, Linux and macOS binaries are pre-built 
+that way and placed into [runtimes](runtimes/readme.md) directory located in the project root.
 
 ### .NET module code generator
 
@@ -48,9 +47,9 @@ Here's the procedure of upgrading .NET Wrapper to the new TON SDK version.
 
 ### Update binaries
 
-1. Update `ton-client-dotnet-bridge` sources and push changes to GitHub.
+1. Push new tag to `ton-client-dotnet-bridge` to trigger TON SDK build (using the same tag as the SDK version, example: `1.1.0`).
 2. Wait for the build, then go to https://github.com/radianceteam/ton-client-dotnet-bridge/actions and download build artifacts.
-3. Unpack them, find binaries for Windows, Linux and Mac and copy them to the corresponding path inside `lib` directory (replacing the existing ones).
+3. Unpack them, find binaries for Windows, Linux and Mac and copy them to the corresponding path inside `runtimes` directory (replacing the existing ones).
 
 ### Re-generate modules
 
@@ -66,10 +65,5 @@ from Rust programming language to C# (this is basically how all the tests are wr
 
 ## Deployment
 
-TBD
-
-## TODO
-
-### Deployment
-
- - run tests and publish NuGet package when creating new Release in this repo.
+Create tag named after TON SDK version and push it. GitHub CI/CD will take care of the rest, 
+like, running tests, creating Release, pushing to NuGet. Enjoy!

@@ -21,7 +21,7 @@ namespace TonSdk
 
         public static ITonClient Create(object config, ILogger logger = null)
         {
-            var client = new TonClient(config ?? new {}, logger);
+            var client = new TonClient(config ?? new { }, logger);
             client.Init();
             return client;
         }
@@ -43,7 +43,7 @@ namespace TonSdk
         {
             if (_initialized)
             {
-                Interop.tc_bridge_destroy_context(_context);
+                Interop.tc_destroy_context(_context);
             }
         }
 
@@ -85,11 +85,11 @@ namespace TonSdk
 
             var tcs = new TaskCompletionSource<string>();
 
-            var handler = new Interop.tc_bridge_response_handler_t((type, jsonPtr, len, finished) =>
+            var handler = new Interop.tc_response_handler_t((requestId, json_str, type, finished) =>
             {
                 try
                 {
-                    var json = Utf8String.ToString(jsonPtr, len);
+                    var json = json_str.ToString();
                     Logger.Debug($"{functionName} status update: {type} ({json})");
                     if (type == (int)Interop.tc_response_types_t.tc_response_success)
                     {
@@ -108,7 +108,7 @@ namespace TonSdk
                         if (callback != null)
                         {
                             var value = _serializer.Deserialize<TC>(json);
-                            callback.Invoke(value, type);
+                            callback.Invoke(value, (int)type);
                         }
                     }
                 }
@@ -123,14 +123,10 @@ namespace TonSdk
 
             callbackHandle = GCHandle.Alloc(handler);
 
-            var funcNameStr = new Utf8String(functionName);
-            var funcParamsStr = new Utf8String(functionParamsJson);
-
-            Interop.tc_bridge_request(_context,
-                funcNameStr.Ptr,
-                funcNameStr.Length,
-                funcParamsStr.Ptr,
-                funcParamsStr.Length,
+            Interop.tc_request(_context,
+                Interop.tc_string_data_t.Create(functionName),
+            Interop.tc_string_data_t.Create(functionParamsJson),
+                1,
                 handler);
 
             return await tcs.Task;
@@ -141,54 +137,37 @@ namespace TonSdk
             Logger.Debug("Init context");
 
             uint context = 0;
-            Exception exception = null;
 
-            void NativeCallback(IntPtr jsonPtr, int len)
+            var configStr = _serializer.Serialize(Config);
+            var result = Interop.tc_create_context(Interop.tc_string_data_t.Create(configStr));
+            if (result == null)
             {
-                try
-                {
-                    if (jsonPtr == IntPtr.Zero)
-                    {
-                        Logger.Error("Init context returned null");
-                        exception = new TonClientException($"{nameof(Interop.tc_bridge_create_context)} returned null");
-                    }
-                    else
-                    {
-                        var json = Utf8String.ToString(jsonPtr, len);
-                        Logger.Debug($"Init context returned JSON: {json}");
-                        var token = JObject.Parse(json);
-                        if (token.TryGetValue("result", out var contextToken))
-                        {
-                            Logger.Debug($"Init context succeeded: {contextToken}");
-                            context = contextToken.Value<uint>();
-                        }
-                        else
-                        {
-                            if (token.TryGetValue("error", out var errorToken))
-                            {
-                                Logger.Debug($"throwing exception with error {errorToken}");
-                                exception = TonClientException.FromJson(errorToken.Value<JToken>());
-                            }
-                            else
-                            {
-                                Logger.Debug($"throwing exception with the returned JSON: {json}");
-                                exception = TonClientException.FromJson(json);
-                            }
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    exception = e;
-                }
+                Logger.Error("Init context returned null");
+                throw new TonClientException($"{nameof(Interop.tc_create_context)} returned null");
             }
 
-            var configStr = new Utf8String(_serializer.Serialize(Config));
-            Interop.tc_bridge_create_context(configStr.Ptr, configStr.Length, NativeCallback);
+            var json = Interop.tc_read_string(result).ToString();
+            Logger.Debug($"Init context returned JSON: {json}");
+            Interop.tc_destroy_string(result);
 
-            if (exception != null)
+            var token = JObject.Parse(json);
+            if (token.TryGetValue("result", out var contextToken))
             {
-                throw exception;
+                Logger.Debug($"Init context succeeded: {contextToken}");
+                context = contextToken.Value<uint>();
+            }
+            else
+            {
+                if (token.TryGetValue("error", out var errorToken))
+                {
+                    Logger.Debug($"throwing exception with error {errorToken}");
+                    throw TonClientException.FromJson(errorToken.Value<JToken>());
+                }
+                else
+                {
+                    Logger.Debug($"throwing exception with the returned JSON: {json}");
+                    throw TonClientException.FromJson(json);
+                }
             }
 
             return context;
