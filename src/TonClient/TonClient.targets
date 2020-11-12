@@ -20,12 +20,12 @@
 
   </PropertyGroup>
   <ItemGroup>
-    <Content Condition="'$(_NativeRuntime)' != ''" Include="$(MSBuildThisFileDirectory)../runtimes/$(_NativeRuntime)/$(_NativeLibName)">
+    <Content Condition="'$(_NativeRuntime)' != ''" Include="$(MSBuildThisFileDirectory)../../runtimes/$(_NativeRuntime)/$(_NativeLibName)">
       <Link>%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
     </Content>
-    <Content Condition="'$(_NativeRuntime)' != ''" Include="$(MSBuildThisFileDirectory)../runtimes/$(_NativeRuntime)/$(_NativeSdkLibName)">
+    <Content Condition="'$(_NativeRuntime)' != ''" Include="$(MSBuildThisFileDirectory)../../runtimes/$(_NativeRuntime)/$(_NativeSdkLibName)">
       <Link>%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>

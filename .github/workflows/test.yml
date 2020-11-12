@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
       - name: Setup .NET Core
@@ -15,7 +15,6 @@ jobs:
         env:
           TON_NETWORK_ADDRESS: http://localhost:8888
         run: |
-          docker run -d --network host --name local-node -p8888:80 tonlabs/local-node
-          docker ps
+          docker run -d --name local-node -p8888:80 tonlabs/local-node
           dotnet restore
           dotnet test --logger "trx;LogFileName=test-results.trx"

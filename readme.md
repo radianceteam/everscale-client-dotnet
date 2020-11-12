@@ -28,16 +28,17 @@ using TonSdk.TonClient;
 
 ...
 
-    var client = TonClient.Create();
-    var result = await _client.Client.VersionAsync();
-    // use result.Version...
+    using (var client = TonClient.Create()) {
+        var version = await client.Client.VersionAsync();
+        Console.WriteLine($"TON SDK client version: {version.Version}");
+    }
 
 ### Advanced usage
 
 #### Configuring client
 
 ```
-    var client = TonClient.Create(new ClientConfig
+    using (var client = TonClient.Create(new ClientConfig
         {
             Network = new NetworkConfig
             {
@@ -49,7 +50,11 @@ using TonSdk.TonClient;
             {
                 MessageExpirationTimeout = 10000
             }
-        });
+        }))
+    {
+        ...
+    }
+
 ```
 
 #### Logging
@@ -93,7 +98,18 @@ To configure custom logging, create own `ILogger` implementation and pass it to 
 
     var logger = ... ;
 
-    var client = TonClient.Create(null, new MyLogger(logger));
+    using (var client = TonClient.Create(new MyLogger(logger))) {
+        ...
+    }
+    
+    or with both config and logger:
+
+    using (var client = TonClient.Create(new ClientConfig { 
+        ... 
+    }, new MyLogger(logger)))
+    {
+        ...
+    }    
     
 ``` 
 
