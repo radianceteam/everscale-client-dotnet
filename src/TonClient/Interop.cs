@@ -95,10 +95,12 @@ namespace TonSdk
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        internal struct tc_string_data_t
+        internal struct tc_string_data_t : IDisposable
         {
             IntPtr content;
             uint len;
+
+            private bool _allocated;
 
             public static tc_string_data_t Create(string str)
             {
@@ -107,7 +109,16 @@ namespace TonSdk
                 var result = new tc_string_data_t { content = Marshal.AllocHGlobal(length) };
                 Marshal.Copy(bytes, 0, result.content, length);
                 result.len = (uint)length;
+                result._allocated = true;
                 return result;
+            }
+
+            public void Dispose()
+            {
+                if (_allocated)
+                {
+                    Marshal.FreeHGlobal(content);
+                }
             }
 
             public override string ToString()

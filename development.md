@@ -2,7 +2,7 @@
 
 ## Requirements
 
-.NET SDK 3.1 SDK or later.
+.NET SDK 3.1 or later.
 
 ## Native library for .NET
 
