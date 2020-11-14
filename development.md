@@ -25,20 +25,65 @@ Core classes and generated modules are in `src` dir.
 
 Tests are located in `tests` dir. To build project and run all tests, do the following:
 
-1. Run local NodeSE server for testing.
+1. Run local NodeSE server for testing using [Docker](https://www.docker.com/products/docker-desktop).
 
 ```
-docker run -d --name local-node -p8888:80 tonlabs/local-node
+docker run -d -p8888:80 tonlabs/local-node
 ```
 
 2. Given that Docker machine host is `localhost`, set `TON_NETWORK_ADDRESS` environment 
-variable to `http://localhost:8888`. Restart shell if needed.
+variable to `http://localhost:8888`. Restart shell if needed (on Windows).
 
 3. Run these commands:
 
 ```
 dotnet restore
 dotnet test
+```
+
+Tests will output something like this:
+
+```
+Test Run Successful.
+Total tests: 214
+     Passed: 214
+ Total time: 1.2510 Minutes
+```
+
+to see more detailed output run tests using this command:
+
+```
+dotnet test --logger:"console;verbosity=detailed"
+```
+
+Note: you could run tests without having to setup Docker and starting NodeSE server. 
+But if you do so, some tests will be skipped:
+
+```
+[xUnit.net 00:00:00.56]     TonSdk.Tests.Modules.ProcessingModuleTests.Should_Wait_For_Message [SKIP]
+[xUnit.net 00:00:00.57]     TonSdk.Tests.Modules.TvmModuleTests.Should_Run_Executor [SKIP]
+[xUnit.net 00:00:00.63]     TonSdk.Tests.Modules.TvmModuleTests.Should_Run_Tvm [SKIP]
+  ! TonSdk.Tests.Modules.ProcessingModuleTests.Should_Wait_For_Message [1ms]
+  ! TonSdk.Tests.Modules.TvmModuleTests.Should_Run_Executor [1ms]
+  ! TonSdk.Tests.Modules.TvmModuleTests.Should_Run_Tvm [1ms]
+[xUnit.net 00:00:02.02]     TonSdk.Tests.Modules.NetModuleTests.Should_Query_Collection_Block_Signature [SKIP]
+  ! TonSdk.Tests.Modules.NetModuleTests.Should_Query_Collection_Block_Signature [1ms]
+[xUnit.net 00:00:02.03]     TonSdk.Tests.Modules.NetModuleTests.Should_Query_Collection_Ranges [SKIP]
+[xUnit.net 00:00:02.03]     TonSdk.Tests.Modules.NetModuleTests.Should_Subscribe_For_Messages [SKIP]
+[xUnit.net 00:00:02.03]     TonSdk.Tests.Modules.NetModuleTests.Should_Subscribe_For_Transactions_With_Address [SKIP]
+[xUnit.net 00:00:02.03]     TonSdk.Tests.Modules.NetModuleTests.Should_Query_Collection_All_Accounts [SKIP]
+[xUnit.net 00:00:02.03]     TonSdk.Tests.Modules.NetModuleTests.Should_Wait_For_Collection [SKIP]
+  ! TonSdk.Tests.Modules.NetModuleTests.Should_Query_Collection_Ranges [1ms]
+  ! TonSdk.Tests.Modules.NetModuleTests.Should_Subscribe_For_Messages [1ms]
+  ! TonSdk.Tests.Modules.NetModuleTests.Should_Subscribe_For_Transactions_With_Address [1ms]
+  ! TonSdk.Tests.Modules.NetModuleTests.Should_Query_Collection_All_Accounts [1ms]
+  ! TonSdk.Tests.Modules.NetModuleTests.Should_Wait_For_Collection [1ms]
+
+Test Run Successful.
+Total tests: 214
+     Passed: 205
+    Skipped: 9
+ Total time: 7.2342 Seconds
 ```
 
 ## Updating procedure

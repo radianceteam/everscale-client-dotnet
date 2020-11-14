@@ -19,14 +19,12 @@
 Install-Package TonClient
 ```
 
-## Usage example
+## Usage examples
 
 ### Basic usage
 
-```
-using TonSdk.TonClient;
-
-...
+```cs
+using TonSdk;
 
     using (var client = TonClient.Create()) {
         var version = await client.Client.VersionAsync();
@@ -38,7 +36,7 @@ using TonSdk.TonClient;
 
 #### Configuring client
 
-```
+```cs
     using (var client = TonClient.Create(new ClientConfig
         {
             Network = new NetworkConfig
@@ -53,7 +51,7 @@ using TonSdk.TonClient;
             }
         }))
     {
-        ...
+        // ...
     }
 
 ```
@@ -64,56 +62,68 @@ By default, wrapper uses `DummyLogger` which is an implementation of `ILogger` i
 
 To configure custom logging, create own `ILogger` implementation and pass it to `TonClient.Create()`:
 
-```
+```cs 
+using System;
+using Serilog;
+using ILogger = TonSdk.ILogger;
+
+...
+
     public class MyLogger : ILogger
     {
-        private readonly Microsoft.Extensions.Logging.ILogger _delegate;
-
-        public MyLogger(Microsoft.Extensions.Logging.ILogger logger)
-        {
-            _delegate = logger ?? throw new ArgumentNullException(nameof(logger));
-        }
-
         public void Debug(string message)
         {
-            _delegate.LogDebug(message);
+            Log.Debug(message);
         }
 
         public void Information(string message)
         {
-            _delegate.LogInformation(message);
+            Log.Information(message);
         }
 
         public void Warning(string message)
         {
-            _delegate.LogWarning(message);
+            Log.Warning(message);
         }
 
         public void Error(string message, Exception ex = null)
         {
-            _delegate.LogError(ex, message);
+            Log.Error(ex, message);
         }
-    }
-
-    ...
-
-    var logger = ... ;
-
-    using (var client = TonClient.Create(new MyLogger(logger))) {
-        ...
-    }
-    
-    or with both config and logger:
-
-    using (var client = TonClient.Create(new ClientConfig { 
-        ... 
-    }, new MyLogger(logger)))
-    {
-        ...
-    }    
-    
+    }   
 ``` 
+
+then call `TonClient.Create` method with logger argument:
+
+```cs 
+using System;
+using Serilog;
+using TonSdk;
+   
+    Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.Console()
+                // ... other logging setup
+                .CreateLogger();
+
+    using (var client = TonClient.Create(new MyLogger())) {
+        // ...
+    }   
+```
+
+or with both config and logger:
+   
+```cs 
+    using (var client = TonClient.Create(new ClientConfig { 
+        // ... 
+    }, new MyLogger()))
+    {
+        // ...
+    }
+```
+
+Note: see [TonClientDemo](src/TonClientDemo) for the complete working demo.
 
 ## Development
 
-See [Development documentation](development.md)
+See [Development documentation](development.md).
