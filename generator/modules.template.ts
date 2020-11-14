@@ -195,7 +195,7 @@ function toCSharpValueType(value: TonApiSpec.HasValue, optional: boolean = false
 
 function getCSharpModuleClassLocation(module: TonApiSpec.Module): string {
     let moduleName = toCSharpModuleName(module.name);
-    return `../src/Modules/${moduleName}.cs`;
+    return `../src/TonClient/Modules/${moduleName}.cs`;
 }
 
 function writeUsingDirectives(writer: CSharpWriter): CSharpWriter {
