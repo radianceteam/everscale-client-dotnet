@@ -24,7 +24,7 @@ Install-Package TonClient
 ### Basic usage
 
 ```cs
-using TonSdk;
+using TonSdk.Modules;
 
     using (var client = TonClient.Create()) {
         var version = await client.Client.VersionAsync();
@@ -98,7 +98,7 @@ then call `TonClient.Create` method with logger argument:
 ```cs 
 using System;
 using Serilog;
-using TonSdk;
+using TonSdk.Modules;
    
     Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
@@ -123,6 +123,36 @@ or with both config and logger:
 ```
 
 Note: see [TonClientDemo](src/TonClientDemo) for the complete working demo.
+
+#### Passing JToken values
+
+Some API methods require `JToken` parameters. [JToken](https://www.newtonsoft.com/json/help/html/T_Newtonsoft_Json_Linq_JToken.htm) 
+is a class from [Newtonsoft.Json](https://www.nuget.org/packages/Newtonsoft.Json/) library used for JSON processing. 
+TON SDK .NET Wrapper library uses it for passing raw JSON data to the client library and back. 
+Here's the example of how to deal with it:
+
+```cs 
+
+using Newtonsoft.Json.Linq;
+using TonSdk.Modules;
+
+    using (var client = TonClient.Create()) { 
+        var result = await client.Net.WaitForCollectionAsync(new ParamsOfWaitForCollection
+        {
+            Collection = "accounts",
+            Filter = JObject.FromObject(new
+            {
+                id = new { eq = "... some address" }
+            }),
+            Result = "id boc"
+        });
+    }
+```
+
+Note [JObject.FromObject](https://www.newtonsoft.com/json/help/html/M_Newtonsoft_Json_Linq_JObject_FromObject.htm) 
+static method used for constructing [JObject](https://www.newtonsoft.com/json/help/html/T_Newtonsoft_Json_Linq_JObject.htm)
+(which is a descendant of [JToken](https://www.newtonsoft.com/json/help/html/T_Newtonsoft_Json_Linq_JToken.htm) type) 
+from .NET object of anonymous type.
 
 ## Development
 
