@@ -77,8 +77,8 @@ namespace TonSdk
 
             Logger.Debug($"Calling function {functionName} with parameters {functionParamsJson}");
 
-            // Two GCHandles to store references to the native callback handlers.
-            // This is to avoid native handlers being garbage collected while waiting
+            // GCHandle to store reference to the native callback handler.
+            // This is to avoid native handler being garbage collected while waiting
             // for result from the native lib.
 
             var callbackHandle = default(GCHandle);
