@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace TonSdk
@@ -123,11 +124,11 @@ namespace TonSdk
 
             callbackHandle = GCHandle.Alloc(handler);
 
-            using (var fNameStr = Interop.tc_string_data_t.Create(functionName))
+            using (var fNameStr = new TonString(functionName))
             {
-                using (var fParamsStr = Interop.tc_string_data_t.Create(functionParamsJson))
+                using (var fParamsStr = new TonString(functionParamsJson))
                 {
-                    Interop.tc_request(_context, fNameStr, fParamsStr, 1, handler);
+                    Interop.tc_request(_context, fNameStr.ToStruct(), fParamsStr.ToStruct(), 1, handler);
                 }
             }
 
@@ -140,9 +141,9 @@ namespace TonSdk
 
             uint context = 0;
 
-            using (var configStr = Interop.tc_string_data_t.Create(_serializer.Serialize(Config)))
+            using (var configStr = new TonString(_serializer.Serialize(Config)))
             {
-                var result = Interop.tc_create_context(configStr);
+                var result = Interop.tc_create_context(configStr.ToStruct());
                 if (result == IntPtr.Zero)
                 {
                     Logger.Error("Init context returned null");
@@ -175,6 +176,42 @@ namespace TonSdk
             }
 
             return context;
+        }
+    }
+
+    internal class TonString : IDisposable
+    {
+        private readonly string _str;
+        private readonly IntPtr _content;
+        private readonly uint _len;
+
+        public TonString(string str)
+        {
+            _str = str;
+            var bytes = Encoding.UTF8.GetBytes(str);
+            var length = bytes.Length;
+            _content = Marshal.AllocHGlobal(length);
+            Marshal.Copy(bytes, 0, _content, length);
+            _len = (uint)length;
+        }
+
+        public void Dispose()
+        {
+            Marshal.FreeHGlobal(_content);
+        }
+
+        public Interop.tc_string_data_t ToStruct()
+        {
+            return new Interop.tc_string_data_t
+            {
+                content = _content,
+                len = _len
+            };
+        }
+
+        public override string ToString()
+        {
+            return _str;
         }
     }
 }
