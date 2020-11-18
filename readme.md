@@ -1,5 +1,9 @@
 ﻿# TON SDK .NET Wrapper
 
+**Community links:**
+
+[![Chat on Telegram](https://img.shields.io/badge/chat-on%20telegram-9cf.svg)](https://t.me/RADIANCE_TON_SDK)
+
 ## Supported Platforms
 
  - Windows x86, x64
