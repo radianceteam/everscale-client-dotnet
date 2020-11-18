@@ -102,6 +102,29 @@ namespace TonSdk.Tests.Modules
                 Assert.NotNull(result);
                 Assert.Equal(result.Transaction.Value<string>("in_msg"), message.MessageId);
                 Assert.True(result.Fees.TotalAccountFees > 0);
+
+                parsed = await _client.Boc.ParseAccountAsync(new ParamsOfParse
+                {
+                    Boc = result.Account
+                });
+
+                Assert.NotNull(parsed);
+                Assert.Equal(originalBalance, parsed.Parsed["balance"]);
+
+                result = await _client.Tvm.RunExecutorAsync(new ParamsOfRunExecutor
+                {
+                    Message = message.Message,
+                    Abi = abi,
+                    Account = new AccountForExecutor.Account
+                    {
+                        Boc = account
+                    }
+                });
+
+                Assert.NotNull(result);
+                Assert.Equal(result.Transaction.Value<string>("in_msg"), message.MessageId);
+                Assert.True(result.Fees.TotalAccountFees > 0);
+
                 return result.Account;
             });
         }
