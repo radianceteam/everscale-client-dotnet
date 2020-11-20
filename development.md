@@ -112,3 +112,17 @@ from Rust programming language to C# (this is basically how all the tests are wr
 
 Create tag named after TON SDK version and push it. GitHub CI/CD will take care of the rest, 
 like, running tests, creating Release, pushing to NuGet. Enjoy!
+
+## Versioning
+
+Package versioning mirrors TON SDK releases. So for example package `1.1.1` works 
+with TON SDK binaries of the same version, and contains all the functions from the 
+corresponding `api.json`. 
+
+## License
+
+Apache License, Version 2.0.
+
+## Troubleshooting
+
+Fire any question to our [Telegram channel](https://t.me/RADIANCE_TON_SDK).

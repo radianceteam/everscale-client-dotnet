@@ -161,3 +161,11 @@ from .NET object of anonymous type.
 ## Development
 
 See [Development documentation](development.md).
+
+## License
+
+Apache License, Version 2.0.
+
+## Troubleshooting
+
+Fire any question to our [Telegram channel](https://t.me/RADIANCE_TON_SDK).
