@@ -51,7 +51,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Windows')) And '$(PlatformTarget)' == 'x86'">
-    <None Include="../../runtimes/win-x86/ton_client.dll" CopyToOutputDirectory="PreserveNewest">
+    <None Include="../../runtimes/win-x86/native/ton_client.dll" CopyToOutputDirectory="PreserveNewest">
       <Visible>false</Visible>
     </None>
   </ItemGroup>
