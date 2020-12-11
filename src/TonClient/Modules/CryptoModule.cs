@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.0.0, crypto module.
+* TON API version 1.2.0, crypto module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -107,7 +107,7 @@ namespace TonSdk.Modules
     public class ResultOfConvertPublicKeyToTonSafeFormat
     {
         /// <summary>
-        ///  Public key represented in TON safe format. 
+        ///  Public key represented in TON safe format.
         /// </summary>
         [JsonProperty("ton_public_key", NullValueHandling = NullValueHandling.Ignore)]
         public string TonPublicKey { get; set; }
@@ -253,7 +253,7 @@ namespace TonSdk.Modules
     public class ParamsOfNaclSignKeyPairFromSecret
     {
         /// <summary>
-        ///  Secret key - unprefixed 0-padded to 64 symbols hex string 
+        ///  Secret key - unprefixed 0-padded to 64 symbols hex string
         /// </summary>
         [JsonProperty("secret", NullValueHandling = NullValueHandling.Ignore)]
         public string Secret { get; set; }
@@ -268,7 +268,7 @@ namespace TonSdk.Modules
         public string Unsigned { get; set; }
 
         /// <summary>
-        ///  Signer's secret key - unprefixed 0-padded to 64 symbols hex string 
+        ///  Signer's secret key - unprefixed 0-padded to 64 symbols hex string
         /// </summary>
         [JsonProperty("secret", NullValueHandling = NullValueHandling.Ignore)]
         public string Secret { get; set; }
@@ -292,7 +292,7 @@ namespace TonSdk.Modules
         public string Signed { get; set; }
 
         /// <summary>
-        ///  Signer's public key - unprefixed 0-padded to 64 symbols hex string 
+        ///  Signer's public key - unprefixed 0-padded to 64 symbols hex string
         /// </summary>
         [JsonProperty("public", NullValueHandling = NullValueHandling.Ignore)]
         public string Public { get; set; }
@@ -319,7 +319,7 @@ namespace TonSdk.Modules
     public class ParamsOfNaclBoxKeyPairFromSecret
     {
         /// <summary>
-        ///  Secret key - unprefixed 0-padded to 64 symbols hex string 
+        ///  Secret key - unprefixed 0-padded to 64 symbols hex string
         /// </summary>
         [JsonProperty("secret", NullValueHandling = NullValueHandling.Ignore)]
         public string Secret { get; set; }
@@ -340,13 +340,13 @@ namespace TonSdk.Modules
         public string Nonce { get; set; }
 
         /// <summary>
-        ///  Receiver's public key - unprefixed 0-padded to 64 symbols hex string 
+        ///  Receiver's public key - unprefixed 0-padded to 64 symbols hex string
         /// </summary>
         [JsonProperty("their_public", NullValueHandling = NullValueHandling.Ignore)]
         public string TheirPublic { get; set; }
 
         /// <summary>
-        ///  Sender's private key - unprefixed 0-padded to 64 symbols hex string 
+        ///  Sender's private key - unprefixed 0-padded to 64 symbols hex string
         /// </summary>
         [JsonProperty("secret", NullValueHandling = NullValueHandling.Ignore)]
         public string Secret { get; set; }
@@ -373,13 +373,13 @@ namespace TonSdk.Modules
         public string Nonce { get; set; }
 
         /// <summary>
-        ///  Sender's public key - unprefixed 0-padded to 64 symbols hex string 
+        ///  Sender's public key - unprefixed 0-padded to 64 symbols hex string
         /// </summary>
         [JsonProperty("their_public", NullValueHandling = NullValueHandling.Ignore)]
         public string TheirPublic { get; set; }
 
         /// <summary>
-        ///  Receiver's private key - unprefixed 0-padded to 64 symbols hex string 
+        ///  Receiver's private key - unprefixed 0-padded to 64 symbols hex string
         /// </summary>
         [JsonProperty("secret", NullValueHandling = NullValueHandling.Ignore)]
         public string Secret { get; set; }
@@ -409,7 +409,7 @@ namespace TonSdk.Modules
         public string Nonce { get; set; }
 
         /// <summary>
-        ///  Secret key - unprefixed 0-padded to 64 symbols hex string 
+        ///  Secret key - unprefixed 0-padded to 64 symbols hex string
         /// </summary>
         [JsonProperty("key", NullValueHandling = NullValueHandling.Ignore)]
         public string Key { get; set; }
@@ -430,7 +430,7 @@ namespace TonSdk.Modules
         public string Nonce { get; set; }
 
         /// <summary>
-        ///  Public key - unprefixed 0-padded to 64 symbols hex string 
+        ///  Public key - unprefixed 0-padded to 64 symbols hex string
         /// </summary>
         [JsonProperty("key", NullValueHandling = NullValueHandling.Ignore)]
         public string Key { get; set; }
@@ -715,6 +715,103 @@ namespace TonSdk.Modules
         public string Data { get; set; }
     }
 
+    public class RegisteredSigningBox
+    {
+        /// <summary>
+        ///  Handle of the signing box.
+        /// </summary>
+        [JsonProperty("handle", NullValueHandling = NullValueHandling.Ignore)]
+        public uint Handle { get; set; }
+    }
+
+    /// <summary>
+    ///  Signing box callbacks.
+    /// </summary>
+    public abstract class ParamsOfAppSigningBox
+    {
+        /// <summary>
+        ///  Get signing box public key
+        /// </summary>
+        public class GetPublicKey : ParamsOfAppSigningBox
+        {
+        }
+
+        /// <summary>
+        ///  Sign data
+        /// </summary>
+        public class Sign : ParamsOfAppSigningBox
+        {
+            /// <summary>
+            ///  Data to sign encoded as base64
+            /// </summary>
+            [JsonProperty("unsigned", NullValueHandling = NullValueHandling.Ignore)]
+            public string Unsigned { get; set; }
+        }
+    }
+
+    /// <summary>
+    ///  Returning values from signing box callbacks.
+    /// </summary>
+    public abstract class ResultOfAppSigningBox
+    {
+        /// <summary>
+        ///  Result of getting public key
+        /// </summary>
+        public class GetPublicKey : ResultOfAppSigningBox
+        {
+            /// <summary>
+            ///  Signing box public key
+            /// </summary>
+            [JsonProperty("public_key", NullValueHandling = NullValueHandling.Ignore)]
+            public string PublicKey { get; set; }
+        }
+
+        /// <summary>
+        ///  Result of signing data
+        /// </summary>
+        public class Sign : ResultOfAppSigningBox
+        {
+            /// <summary>
+            ///  Data signature encoded as hex
+            /// </summary>
+            [JsonProperty("signature", NullValueHandling = NullValueHandling.Ignore)]
+            public string Signature { get; set; }
+        }
+    }
+
+    public class ResultOfSigningBoxGetPublicKey
+    {
+        /// <summary>
+        ///  Public key of signing box. Encoded with hex
+        /// </summary>
+        [JsonProperty("pubkey", NullValueHandling = NullValueHandling.Ignore)]
+        public string Pubkey { get; set; }
+    }
+
+    public class ParamsOfSigningBoxSign
+    {
+        /// <summary>
+        ///  Signing Box handle.
+        /// </summary>
+        [JsonProperty("signing_box", NullValueHandling = NullValueHandling.Ignore)]
+        public uint SigningBox { get; set; }
+
+        /// <summary>
+        ///  Unsigned user data. Must be encoded with `base64`.
+        /// </summary>
+        [JsonProperty("unsigned", NullValueHandling = NullValueHandling.Ignore)]
+        public string Unsigned { get; set; }
+    }
+
+    public class ResultOfSigningBoxSign
+    {
+        /// <summary>
+        ///  Data signature. Encoded with `base64`.
+        /// </summary>
+        [JsonProperty("signature", NullValueHandling = NullValueHandling.Ignore)]
+        public string Signature { get; set; }
+    }
+
     /// <summary>
     ///  Crypto functions.
     /// </summary>
@@ -818,7 +915,7 @@ namespace TonSdk.Modules
         ///  Public key authenticated encryption
         /// 
         ///  Encrypt and authenticate a message using the senders secret key, the recievers public
-        ///  key, and a nonce. 
+        ///  key, and a nonce.
         /// </summary>
         Task<ResultOfNaclBox> NaclBoxAsync(ParamsOfNaclBox @params);
 
@@ -876,7 +973,7 @@ namespace TonSdk.Modules
         Task<ResultOfHDKeyDeriveFromXPrv> HdkeyDeriveFromXprvAsync(ParamsOfHDKeyDeriveFromXPrv @params);
 
         /// <summary>
-        ///  Derives the exented private key from the specified key and path
+        ///  Derives the extended private key from the specified key and path
         /// </summary>
         Task<ResultOfHDKeyDeriveFromXPrvPath> HdkeyDeriveFromXprvPathAsync(ParamsOfHDKeyDeriveFromXPrvPath @params);
 
@@ -894,6 +991,31 @@ namespace TonSdk.Modules
         ///  Performs symmetric `chacha20` encryption.
         /// </summary>
         Task<ResultOfChaCha20> Chacha20Async(ParamsOfChaCha20 @params);
+
+        /// <summary>
+        ///  Register an application implemented signing box.
+        /// </summary>
+        Task<RegisteredSigningBox> RegisterSigningBoxAsync(Func<ParamsOfAppSigningBox, Task<ResultOfAppSigningBox>> app_object);
+
+        /// <summary>
+        ///  Creates a default signing box implementation.
+        /// </summary>
+        Task<RegisteredSigningBox> GetSigningBoxAsync(KeyPair @params);
+
+        /// <summary>
+        ///  Returns public key of signing key pair.
+        /// </summary>
+        Task<ResultOfSigningBoxGetPublicKey> SigningBoxGetPublicKeyAsync(RegisteredSigningBox @params);
+
+        /// <summary>
+        ///  Returns signed user data.
+        /// </summary>
+        Task<ResultOfSigningBoxSign> SigningBoxSignAsync(ParamsOfSigningBoxSign @params);
+
+        /// <summary>
+        ///  Removes signing box from SDK.
+        /// </summary>
+        Task RemoveSigningBoxAsync(RegisteredSigningBox @params);
     }
 
     internal class CryptoModule : ICryptoModule
@@ -1063,6 +1185,31 @@ namespace TonSdk.Modules
         public async Task<ResultOfChaCha20> Chacha20Async(ParamsOfChaCha20 @params)
         {
             return await _client.CallFunctionAsync<ResultOfChaCha20>("crypto.chacha20", @params).ConfigureAwait(false);
+        }
+
+        public async Task<RegisteredSigningBox> RegisterSigningBoxAsync(Func<ParamsOfAppSigningBox, Task<ResultOfAppSigningBox>> app_object)
+        {
+            return await _client.CallFunctionAsync<RegisteredSigningBox, ParamsOfAppSigningBox, ResultOfAppSigningBox>("crypto.register_signing_box", app_object).ConfigureAwait(false);
+        }
+
+        public async Task<RegisteredSigningBox> GetSigningBoxAsync(KeyPair @params)
+        {
+            return await _client.CallFunctionAsync<RegisteredSigningBox>("crypto.get_signing_box", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfSigningBoxGetPublicKey> SigningBoxGetPublicKeyAsync(RegisteredSigningBox @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfSigningBoxGetPublicKey>("crypto.signing_box_get_public_key", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfSigningBoxSign> SigningBoxSignAsync(ParamsOfSigningBoxSign @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfSigningBoxSign>("crypto.signing_box_sign", @params).ConfigureAwait(false);
+        }
+
+        public async Task RemoveSigningBoxAsync(RegisteredSigningBox @params)
+        {
+            await _client.CallFunctionAsync("crypto.remove_signing_box", @params).ConfigureAwait(false);
         }
     }
 }

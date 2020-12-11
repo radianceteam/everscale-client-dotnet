@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.0.0, processing module.
+* TON API version 1.2.0, processing module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -306,18 +306,18 @@ namespace TonSdk.Modules
     {
         /// <summary>
         ///  Sends message to the network
-        ///  
+        /// 
         ///  Sends message to the network and returns the last generated shard block of the destination account
         ///  before the message was sent. It will be required later for message processing.
         /// </summary>
-        Task<ResultOfSendMessage> SendMessageAsync(ParamsOfSendMessage @params, Action<ProcessingEvent, int> callback = null);
+        Task<ResultOfSendMessage> SendMessageAsync(ParamsOfSendMessage @params, Func<ProcessingEvent, int, Task> callback = null);
 
         /// <summary>
         ///  Performs monitoring of the network for the result transaction
         ///  of the external inbound message processing.
-        ///  
+        /// 
         ///  `send_events` enables intermediate events, such as `WillFetchNextBlock`,
-        ///  `FetchNextBlockFailed` that may be useful for logging of new shard blocks creation 
+        ///  `FetchNextBlockFailed` that may be useful for logging of new shard blocks creation
         ///  during message processing.
         /// 
         ///  Note, that presence of the `abi` parameter is critical for ABI
@@ -337,25 +337,25 @@ namespace TonSdk.Modules
         ///  strategy:
         ///  - The maximum block gen time is set to
         ///    `now() + transaction_wait_timeout`.
-        ///  
-        ///  - If maximum block gen time is reached and no result transaction is found, 
+        /// 
+        ///  - If maximum block gen time is reached and no result transaction is found,
         ///  the processing will exit with an error.
         /// </summary>
-        Task<ResultOfProcessMessage> WaitForTransactionAsync(ParamsOfWaitForTransaction @params, Action<ProcessingEvent, int> callback = null);
+        Task<ResultOfProcessMessage> WaitForTransactionAsync(ParamsOfWaitForTransaction @params, Func<ProcessingEvent, int, Task> callback = null);
 
         /// <summary>
         ///  Creates message, sends it to the network and monitors its processing.
-        ///  
+        /// 
         ///  Creates ABI-compatible message,
         ///  sends it to the network and monitors for the result transaction.
         ///  Decodes the output messages' bodies.
-        ///  
+        /// 
         ///  If contract's ABI includes "expire" header, then
         ///  SDK implements retries in case of unsuccessful message delivery within the expiration
-        ///  timeout: SDK recreates the message, sends it and processes it again. 
-        ///  
+        ///  timeout: SDK recreates the message, sends it and processes it again.
+        /// 
         ///  The intermediate events, such as `WillFetchFirstBlock`, `WillSend`, `DidSend`,
-        ///  `WillFetchNextBlock`, etc - are switched on/off by `send_events` flag 
+        ///  `WillFetchNextBlock`, etc - are switched on/off by `send_events` flag
         ///  and logged into the supplied callback function.
         ///  The retry configuration parameters are defined in config:
         ///  <add correct config params here>
@@ -363,12 +363,12 @@ namespace TonSdk.Modules
         ///  pub const DEFAULT_EXPIRATION_TIMEOUT: u32 = 40000;  - message expiration timeout in ms.
         /// pub const DEFAULT_....expiration_timeout_grow_factor... = 1.5 - factor that increases the
         /// expiration timeout for each retry
-        ///  
+        /// 
         ///  If contract's ABI does not include "expire" header
         /// then, if no transaction is found within the network timeout (see config parameter ), exits with
         /// error.
         /// </summary>
-        Task<ResultOfProcessMessage> ProcessMessageAsync(ParamsOfProcessMessage @params, Action<ProcessingEvent, int> request = null);
+        Task<ResultOfProcessMessage> ProcessMessageAsync(ParamsOfProcessMessage @params, Func<ProcessingEvent, int, Task> request = null);
     }
 
     internal class ProcessingModule : IProcessingModule
@@ -380,17 +380,17 @@ namespace TonSdk.Modules
             _client = client ?? throw new ArgumentNullException(nameof(client));
         }
 
-        public async Task<ResultOfSendMessage> SendMessageAsync(ParamsOfSendMessage @params, Action<ProcessingEvent, int> callback = null)
+        public async Task<ResultOfSendMessage> SendMessageAsync(ParamsOfSendMessage @params, Func<ProcessingEvent, int, Task> callback = null)
         {
             return await _client.CallFunctionAsync<ResultOfSendMessage, ProcessingEvent>("processing.send_message", @params, callback).ConfigureAwait(false);
         }
 
-        public async Task<ResultOfProcessMessage> WaitForTransactionAsync(ParamsOfWaitForTransaction @params, Action<ProcessingEvent, int> callback = null)
+        public async Task<ResultOfProcessMessage> WaitForTransactionAsync(ParamsOfWaitForTransaction @params, Func<ProcessingEvent, int, Task> callback = null)
         {
             return await _client.CallFunctionAsync<ResultOfProcessMessage, ProcessingEvent>("processing.wait_for_transaction", @params, callback).ConfigureAwait(false);
         }
 
-        public async Task<ResultOfProcessMessage> ProcessMessageAsync(ParamsOfProcessMessage @params, Action<ProcessingEvent, int> request = null)
+        public async Task<ResultOfProcessMessage> ProcessMessageAsync(ParamsOfProcessMessage @params, Func<ProcessingEvent, int, Task> request = null)
         {
             return await _client.CallFunctionAsync<ResultOfProcessMessage, ProcessingEvent>("processing.process_message", @params, request).ConfigureAwait(false);
         }

@@ -2,7 +2,7 @@
 
 namespace TonSdk
 {
-    public partial interface ITonClient : IDisposable
+    public partial interface ITonClient : IDisposable, ICloneable
     {
     }
 }

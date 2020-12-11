@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.0.0, net module.
+* TON API version 1.2.0, net module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -169,12 +169,12 @@ namespace TonSdk.Modules
 
         /// <summary>
         ///  Creates a subscription
-        ///  
+        /// 
         ///  Triggers for each insert/update of data
         ///  that satisfies the `filter` conditions.
         ///  The projection fields are limited to `result` fields.
         /// </summary>
-        Task<ResultOfSubscribeCollection> SubscribeCollectionAsync(ParamsOfSubscribeCollection @params, Action<Newtonsoft.Json.Linq.JToken, int> callback = null);
+        Task<ResultOfSubscribeCollection> SubscribeCollectionAsync(ParamsOfSubscribeCollection @params, Func<Newtonsoft.Json.Linq.JToken, int, Task> callback = null);
     }
 
     internal class NetModule : INetModule
@@ -201,7 +201,7 @@ namespace TonSdk.Modules
             await _client.CallFunctionAsync("net.unsubscribe", @params).ConfigureAwait(false);
         }
 
-        public async Task<ResultOfSubscribeCollection> SubscribeCollectionAsync(ParamsOfSubscribeCollection @params, Action<Newtonsoft.Json.Linq.JToken, int> callback = null)
+        public async Task<ResultOfSubscribeCollection> SubscribeCollectionAsync(ParamsOfSubscribeCollection @params, Func<Newtonsoft.Json.Linq.JToken, int, Task> callback = null)
         {
             return await _client.CallFunctionAsync<ResultOfSubscribeCollection, Newtonsoft.Json.Linq.JToken>("net.subscribe_collection", @params, callback).ConfigureAwait(false);
         }

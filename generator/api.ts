@@ -1,10 +1,5 @@
 export module TonApiSpec {
 
-    export interface Api {
-        version: string;
-        modules: Module[];
-    }
-
     export type ValueType = 'String' | 'Optional' | 'Number' | 'Boolean' | 'Ref' | 'BigInt' | 'Array';
 
     export interface Numeric {

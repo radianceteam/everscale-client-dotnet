@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.0.0, boc module.
+* TON API version 1.2.0, boc module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -44,7 +44,7 @@ namespace TonSdk.Modules
         public string Id { get; set; }
 
         /// <summary>
-        ///  Workchain shardstate belongs to 
+        ///  Workchain shardstate belongs to
         /// </summary>
         [JsonProperty("workchain_id", NullValueHandling = NullValueHandling.Ignore)]
         public int WorkchainId { get; set; }
@@ -92,36 +92,36 @@ namespace TonSdk.Modules
     public interface IBocModule
     {
         /// <summary>
-        ///  Parses message boc into a JSON 
-        ///  
+        ///  Parses message boc into a JSON
+        /// 
         ///  JSON structure is compatible with GraphQL API message object
         /// </summary>
         Task<ResultOfParse> ParseMessageAsync(ParamsOfParse @params);
 
         /// <summary>
-        ///  Parses transaction boc into a JSON 
-        ///  
+        ///  Parses transaction boc into a JSON
+        /// 
         ///  JSON structure is compatible with GraphQL API transaction object
         /// </summary>
         Task<ResultOfParse> ParseTransactionAsync(ParamsOfParse @params);
 
         /// <summary>
-        ///  Parses account boc into a JSON 
-        ///  
+        ///  Parses account boc into a JSON
+        /// 
         ///  JSON structure is compatible with GraphQL API account object
         /// </summary>
         Task<ResultOfParse> ParseAccountAsync(ParamsOfParse @params);
 
         /// <summary>
-        ///  Parses block boc into a JSON 
-        ///  
+        ///  Parses block boc into a JSON
+        /// 
         ///  JSON structure is compatible with GraphQL API block object
         /// </summary>
         Task<ResultOfParse> ParseBlockAsync(ParamsOfParse @params);
 
         /// <summary>
-        ///  Parses shardstate boc into a JSON 
-        ///  
+        ///  Parses shardstate boc into a JSON
+        /// 
         ///  JSON structure is compatible with GraphQL API shardstate object
         /// </summary>
         Task<ResultOfParse> ParseShardstateAsync(ParamsOfParseShardstate @params);

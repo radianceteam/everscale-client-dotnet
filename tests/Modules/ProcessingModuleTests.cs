@@ -52,11 +52,12 @@ namespace TonSdk.Tests.Modules
 
             var events = new List<ProcessingEvent>();
 
-            void ProcessingCallback(ProcessingEvent @event, int code)
+            Task ProcessingCallback(ProcessingEvent @event, int code)
             {
                 Assert.Equal(100, code);
                 Assert.NotNull(@event);
                 events.Add(@event);
+                return Task.CompletedTask;
             }
 
             var result = await _client.Processing.SendMessageAsync(new ParamsOfSendMessage

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.0.0, client module.
+* TON API version 1.2.0, client module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -69,9 +69,6 @@ namespace TonSdk.Modules
 
         [JsonProperty("hdkey_derivation_path", NullValueHandling = NullValueHandling.Ignore)]
         public string HdkeyDerivationPath { get; set; }
-
-        [JsonProperty("hdkey_compliant", NullValueHandling = NullValueHandling.Ignore)]
-        public bool? HdkeyCompliant { get; set; }
     }
 
     public class AbiConfig
@@ -99,6 +96,30 @@ namespace TonSdk.Modules
         /// </summary>
         [JsonProperty("git_commit", NullValueHandling = NullValueHandling.Ignore)]
         public string GitCommit { get; set; }
+    }
+
+    public class ParamsOfAppRequest
+    {
+        [JsonProperty("app_request_id", NullValueHandling = NullValueHandling.Ignore)]
+        public uint AppRequestId { get; set; }
+
+        [JsonProperty("request_data", NullValueHandling = NullValueHandling.Ignore)]
+        public Newtonsoft.Json.Linq.JToken RequestData { get; set; }
+    }
+
+    public abstract class AppRequestResult
+    {
+        public class Error : AppRequestResult
+        {
+            [JsonProperty("text", NullValueHandling = NullValueHandling.Ignore)]
+            public string Text { get; set; }
+        }
+
+        public class Ok : AppRequestResult
+        {
+            [JsonProperty("result", NullValueHandling = NullValueHandling.Ignore)]
+            public Newtonsoft.Json.Linq.JToken Result { get; set; }
+        }
     }
 
     public class ResultOfGetApiReference
@@ -131,6 +152,16 @@ namespace TonSdk.Modules
         public BuildInfoDependency[] Dependencies { get; set; }
     }
 
+    public class ParamsOfResolveAppRequest
+    {
+        [JsonProperty("app_request_id", NullValueHandling = NullValueHandling.Ignore)]
+        public uint AppRequestId { get; set; }
+
+        [JsonProperty("result", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+        public AppRequestResult Result { get; set; }
+    }
+
     /// <summary>
     ///  Provides information about library.
     /// </summary>
@@ -150,6 +181,8 @@ namespace TonSdk.Modules
         ///  Returns detailed information about this build.
         /// </summary>
         Task<ResultOfBuildInfo> BuildInfoAsync();
+
+        Task ResolveAppRequestAsync(ParamsOfResolveAppRequest @params);
     }
 
     internal class ClientModule : IClientModule
@@ -174,6 +207,11 @@ namespace TonSdk.Modules
         public async Task<ResultOfBuildInfo> BuildInfoAsync()
         {
             return await _client.CallFunctionAsync<ResultOfBuildInfo>("client.build_info").ConfigureAwait(false);
+        }
+
+        public async Task ResolveAppRequestAsync(ParamsOfResolveAppRequest @params)
+        {
+            await _client.CallFunctionAsync("client.resolve_app_request", @params).ConfigureAwait(false);
         }
     }
 }

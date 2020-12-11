@@ -54,6 +54,13 @@ namespace TonSdk
             return arr;
         }
 
+        public static string ToHexString(this string input)
+        {
+            var ba = Encoding.UTF8.GetBytes(input);
+            var hexString = BitConverter.ToString(ba);
+            return hexString.Replace("-", "").ToLower();
+        }
+
         public static int GetHexVal(int val)
         {
             return val - (val < 58 ? 48 : val < 97 ? 55 : 87);

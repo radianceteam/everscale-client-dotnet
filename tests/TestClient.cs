@@ -10,7 +10,8 @@ namespace TonSdk.Tests
     {
         public const string NodeSeNetworkAddressEnvVar = "TON_NETWORK_ADDRESS";
         public const string AbiVersionEnvVar = "ABI_VERSION";
-        public const int DefaultAbiVersion = 2;
+        public const string TestDebotTarget = "testDebotTarget";
+        public const string TestDebot = "testDebot";
 
         public static ITonClient Create(ILogger logger = null)
         {
@@ -25,14 +26,14 @@ namespace TonSdk.Tests
             } : null, logger);
         }
 
-        public static Tuple<Abi, string> Package(string name, int? version = DefaultAbiVersion)
+        public static Tuple<Abi, string> Package(string name, int? version = TonClient.DefaultAbiVersion)
         {
             return new Tuple<Abi, string>(
                 Abi(name, version),
                 Tvc(name, version));
         }
 
-        public static Abi Abi(string name, int? version = DefaultAbiVersion)
+        public static Abi Abi(string name, int? version = TonClient.DefaultAbiVersion)
         {
             using var stream = TestFiles.OpenStream($"contracts/abi_v{version}/{name}.abi.json");
             using var reader = new StreamReader(stream, Encoding.UTF8);
@@ -42,7 +43,7 @@ namespace TonSdk.Tests
             };
         }
 
-        public static string Tvc(string name, int? version = DefaultAbiVersion)
+        public static string Tvc(string name, int? version = TonClient.DefaultAbiVersion)
         {
             using var stream = TestFiles.OpenStream($"contracts/abi_v{version}/{name}.tvc");
             using var memoryStream = new MemoryStream();
@@ -59,7 +60,7 @@ namespace TonSdk.Tests
 
         public static bool UseNodeSe => !string.IsNullOrEmpty(NodeSeNetworkAddress);
 
-        public static int AbiVersion => int.Parse(Environment.GetEnvironmentVariable(AbiVersionEnvVar) ?? DefaultAbiVersion.ToString());
+        public static int AbiVersion => int.Parse(Environment.GetEnvironmentVariable(AbiVersionEnvVar) ?? TonClient.DefaultAbiVersion.ToString());
 
         public static string GiverAddress => UseNodeSe
             ? "0:841288ed3b55d9cdafa806807f02a0ae0c169aa5edfe88a789a6482429756a94"

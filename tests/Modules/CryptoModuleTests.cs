@@ -10,10 +10,11 @@ namespace TonSdk.Tests.Modules
     public class CryptoModuleTests : IDisposable
     {
         private readonly ITonClient _client;
+        private readonly ILogger _logger;
 
         public CryptoModuleTests(ITestOutputHelper outputHelper)
         {
-            _client = TestClient.Create(new XUnitTestLogger(outputHelper));
+            _client = TestClient.Create(_logger = new XUnitTestLogger(outputHelper));
         }
 
         public void Dispose()
@@ -862,6 +863,64 @@ namespace TonSdk.Tests.Modules
 
             Assert.NotNull(result);
             Assert.Equal("TWVzc2FnZQ==", result.Data);
+        }
+
+        [Fact]
+        public async Task Should_Call_Signing_Box()
+        {
+            var keys = await _client.Crypto.GenerateRandomSignKeysAsync();
+            var keysBox = await _client.Crypto.GetSigningBoxAsync(keys);
+            var externalBox = await _client.Crypto.RegisterSigningBoxAsync(async @params =>
+            {
+                switch (@params)
+                {
+                    case ParamsOfAppSigningBox.GetPublicKey:
+                        return new ResultOfAppSigningBox.GetPublicKey
+                        {
+                            PublicKey = (await _client.Crypto.SigningBoxGetPublicKeyAsync(new RegisteredSigningBox
+                            {
+                                Handle = keysBox.Handle
+                            })).Pubkey
+                        };
+                    case ParamsOfAppSigningBox.Sign sign:
+                        return new ResultOfAppSigningBox.Sign
+                        {
+                            Signature = (await _client.Crypto.SigningBoxSignAsync(new ParamsOfSigningBoxSign
+                            {
+                                SigningBox = keysBox.Handle,
+                                Unsigned = sign.Unsigned
+                            })).Signature
+                        };
+
+                    default:
+                        throw new NotSupportedException($"RegisterSigningBoxAsync param type {@params.GetType()} not supported");
+                }
+            });
+
+            var boxPubKey = await _client.Crypto.SigningBoxGetPublicKeyAsync(new RegisteredSigningBox
+            {
+                Handle = externalBox.Handle
+            });
+
+            Assert.Equal(keys.Public, boxPubKey.Pubkey);
+
+            var unsigned = "Test Message".ToBase64String();
+            var boxSign = await _client.Crypto.SigningBoxSignAsync(new ParamsOfSigningBoxSign
+            {
+                Unsigned = unsigned,
+                SigningBox = externalBox.Handle
+            });
+
+            var keysSign = await _client.Crypto.SignAsync(new ParamsOfSign
+            {
+                Unsigned = unsigned,
+                Keys = keys
+            });
+
+            Assert.Equal(boxSign.Signature, keysSign.Signature);
+
+            await _client.Crypto.RemoveSigningBoxAsync(externalBox);
+            await _client.Crypto.RemoveSigningBoxAsync(keysBox);
         }
     }
 }

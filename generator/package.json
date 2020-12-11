@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "description": "Generate TON Client .NET Wrapper modules from `api.json`.",
   "scripts": {
-    "generate": "node node_modules/@yellicode/cli/dist/es6/index.js",
-    "index": "npx ts-node index.ts"
+    "generate": "node node_modules/@yellicode/cli/dist/es6/index.js"
   },
   "devDependencies": {
     "@types/node": "^14.14.11",

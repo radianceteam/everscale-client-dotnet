@@ -5,6 +5,8 @@
     <RootNamespace>TonSdk.Tests</RootNamespace>
 
     <IsPackable>false</IsPackable>
+
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

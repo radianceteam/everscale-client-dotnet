@@ -44,3 +44,12 @@ jobs:
           --skip-duplicate
           --source https://api.nuget.org/v3/index.json
           --no-symbols true
+      - name: Send Telegram Notification
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TGBOT_RADIANCEDEPLOY_TO }}
+          token: ${{ secrets.TGBOT_RADIANCEDEPLOY_TOKEN }}
+          message: |
+            .NET SDK Wrapper ${{ steps.vars.outputs.version }} has been released.
+            https://github.com/radianceteam/ton-client-dotnet/releases/tag/${{ steps.vars.outputs.version }}.
+          

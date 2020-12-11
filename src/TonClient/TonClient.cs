@@ -1,8 +1,10 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using TonSdk.Modules;
 
 namespace TonSdk
 {
@@ -12,6 +14,8 @@ namespace TonSdk
         private volatile bool _initialized;
         private readonly TonSerializer _serializer;
         internal readonly object Config;
+
+        public const int DefaultAbiVersion = 2;
 
         internal ILogger Logger { get; }
 
@@ -48,29 +52,116 @@ namespace TonSdk
             }
         }
 
+        public object Clone()
+        {
+            return Create(Config, Logger);
+        }
+
         public async Task<T> CallFunctionAsync<T>(string functionName, object @params = null)
         {
-            var result = await GetJsonResponse<T>(functionName, @params);
+            var result = await GetJsonResponse<T>(functionName, @params).ConfigureAwait(false);
             return _serializer.Deserialize<T>(result);
         }
 
         public async Task CallFunctionAsync(string functionName, object @params = null)
         {
-            await GetJsonResponse<string>(functionName, @params);
+            await GetJsonResponse<string>(functionName, @params).ConfigureAwait(false);
         }
 
-        public async Task<T> CallFunctionAsync<T, TC>(string functionName, object @params, Action<TC, int> callback)
+        public async Task<T> CallFunctionAsync<T, TC>(string functionName, object @params, Func<TC, int, Task> callback)
         {
-            var result = await GetJsonResponse(functionName, @params, callback);
+            var result = await GetJsonResponse(functionName, @params, callback).ConfigureAwait(false);
             return _serializer.Deserialize<T>(result);
         }
 
-        public async Task CallFunctionAsync<TC>(string functionName, object @params, Action<TC, int> callback)
+        public async Task CallFunctionAsync<TC>(string functionName, object @params, Func<TC, int, Task> callback)
         {
-            await GetJsonResponse(functionName, @params, callback);
+            await GetJsonResponse(functionName, @params, callback).ConfigureAwait(false);
         }
 
-        private async Task<string> GetJsonResponse<TC>(string functionName, object @params, Action<TC, int> callback = null)
+        public async Task<T> CallFunctionAsync<T, TP, TR>(string functionName, object @params, Func<TP, Task<TR>> f)
+        {
+            return await CallFunctionAsync<T, JToken>(functionName, @params, CreateCallback(f))
+                .ConfigureAwait(false);
+        }
+
+        public Task<T> CallFunctionAsync<T, TP, TR>(string functionName, Func<TP, Task<TR>> f)
+        {
+            return CallFunctionAsync<T, TP, TR>(functionName, null, f);
+        }
+
+        public async Task CallFunctionAsync<TP, TR>(string functionName, object @params, Func<TP, Task<TR>> f)
+        {
+            await GetJsonResponse(functionName, @params, CreateCallback(f))
+                .ConfigureAwait(false);
+        }
+
+        public Task CallFunctionAsync<TP, TR>(string functionName, Func<TP, Task<TR>> f)
+        {
+            return CallFunctionAsync(functionName, null, f);
+        }
+
+        private Func<JToken, int, Task> CreateCallback<TP, TR>(Func<TP, Task<TR>> f)
+        {
+            return async (token, responseType) =>
+            {
+                TP data;
+                switch (responseType)
+                {
+                    case (int)Interop.tc_response_types_t.tc_response_app_request:
+                        var appRequest = _serializer.Deserialize<ParamsOfAppRequest>(token);
+                        try
+                        {
+                            data = _serializer.Deserialize<TP>(appRequest.RequestData);
+                            if (data == null)
+                            {
+                                throw new SerializationException($"{appRequest.RequestData} deserialized to null");
+                            }
+                            var result = await f(data).ConfigureAwait(false);
+                            await Client.ResolveAppRequestAsync(new ParamsOfResolveAppRequest
+                            {
+                                AppRequestId = appRequest.AppRequestId,
+                                Result = new AppRequestResult.Ok
+                                {
+                                    Result = _serializer.SerializeToken(result)
+                                }
+                            }).ConfigureAwait(false);
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Error($"Failed to process request {appRequest.AppRequestId} callback ({appRequest.RequestData})", e);
+                            try
+                            {
+                                await Client.ResolveAppRequestAsync(new ParamsOfResolveAppRequest
+                                {
+                                    AppRequestId = appRequest.AppRequestId,
+                                    Result = new AppRequestResult.Error
+                                    {
+                                        Text = e.Message
+                                    }
+                                }).ConfigureAwait(false);
+                            }
+                            catch (Exception e2)
+                            {
+                                Logger.Error($"Failed to send error result for app request {appRequest.AppRequestId}", e2);
+                            }
+                        }
+                        break;
+
+                    case (int)Interop.tc_response_types_t.tc_response_app_notify:
+                        data = _serializer.Deserialize<TP>(token);
+                        if (data == null)
+                        {
+                            Logger.Warning($"{token} deserialized to null while processing app notification");
+                            return;
+                        }
+                        await f(data).ConfigureAwait(false);
+                        break;
+                }
+            };
+        }
+
+        private async Task<string> GetJsonResponse<TC>(string functionName, object @params, Func<TC, int, Task> callback = null)
         {
             var functionParamsJson = @params != null
                 ? _serializer.Serialize(@params)
@@ -109,7 +200,7 @@ namespace TonSdk
                         if (callback != null)
                         {
                             var value = _serializer.Deserialize<TC>(json);
-                            callback.Invoke(value, (int)type);
+                            callback.Invoke(value, (int)type); // TODO: call Wait here?
                         }
                     }
                 }

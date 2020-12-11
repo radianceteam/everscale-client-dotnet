@@ -139,6 +139,7 @@ namespace TonSdk.Tests.Modules
                 Assert.NotNull(json["result"]);
                 Assert.Equal(address, json.SelectToken("result.account_addr"));
                 transactionIds.Add((string)json.SelectToken("result.id"));
+                return Task.CompletedTask;
             });
 
             await _client.DeployWithGiverAsync(deployParams);
@@ -175,6 +176,7 @@ namespace TonSdk.Tests.Modules
                 Assert.NotNull(json);
                 Assert.NotNull(json["result"]);
                 messages.Add(json["result"].ToString());
+                return Task.CompletedTask;
             });
 
             await _client.GetGramsFromGiverAsync(TestClient.GiverAddress);

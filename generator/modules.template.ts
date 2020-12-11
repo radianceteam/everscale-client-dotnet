@@ -7,6 +7,7 @@ import {TextWriter} from '@yellicode/core';
 import {Generator} from '@yellicode/templating';
 import {CSharpWriter, EnumDefinition, EnumMemberDefinition, ParameterDefinition} from '@yellicode/csharp';
 import {TonApiSpec} from './api';
+import * as fs from 'fs';
 
 const numericTypes: { [moduleName: string]: { [typeName: string]: TonApiSpec.Numeric } } = {};
 const referenceTypes: { [moduleName: string]: { [typeName: string]: TonApiSpec.Type } } = {};
@@ -164,6 +165,15 @@ function isCallbackParam(param: TonApiSpec.Param): boolean {
         param.generic_args[0].ref_name === 'Request';
 }
 
+function isAppRequestCallbackParam(param: TonApiSpec.Param): boolean {
+    return param.type === 'Generic' &&
+        param.generic_name === 'AppObject' &&
+        param.generic_args &&
+        param.generic_args.length === 2 &&
+        param.generic_args[0].type === 'Ref' &&
+        param.generic_args[1].type === 'Ref';
+}
+
 function toCSharpValueType(value: TonApiSpec.HasValue, optional: boolean = false): string {
     switch (value.type) {
         case 'String':
@@ -255,6 +265,10 @@ function getReturnType(result: TonApiSpec.Result): string {
     return typeName;
 }
 
+function isAbiVersionField(field: TonApiSpec.Field): boolean {
+    return field.name === 'abi_version' || field.name === 'ABI version';
+}
+
 function writeTypeMembers(type: TonApiSpec.Type, writer: CSharpWriter) {
     for (let i = 0, n = type.struct_fields.length; i < n; ++i) {
         const field = type.struct_fields[i];
@@ -278,7 +292,8 @@ function writeTypeMembers(type: TonApiSpec.Type, writer: CSharpWriter) {
         writer.writeAutoProperty({
             accessModifier: 'public',
             typeName: toCSharpValueType(field),
-            name: toCSharpPropertyName(field.name, type.name)
+            name: toCSharpPropertyName(field.name, type.name),
+            defaultValue: isAbiVersionField(field) ? 'TonClient.DefaultAbiVersion' : undefined
         });
         if (i < n - 1) {
             writer.writeLine();
@@ -382,6 +397,15 @@ function functionHasCallback(fn: TonApiSpec.Function): boolean {
     return fn.params.filter(p => isCallbackParam(p)).length > 0;
 }
 
+function findFunctionAppRequestParam(fn: TonApiSpec.Function): TonApiSpec.Param | null {
+    let params = fn.params.filter(p => isAppRequestCallbackParam(p));
+    return params.length ? params[0] : null;
+}
+
+function functionHasAppRequestCallback(fn: TonApiSpec.Function): boolean {
+    return !!findFunctionAppRequestParam(fn);
+}
+
 function getFunctionCallbackType(module: TonApiSpec.Module, fn: TonApiSpec.Function): string {
     if (!functionHasCallback(fn)) {
         return null;
@@ -391,13 +415,41 @@ function getFunctionCallbackType(module: TonApiSpec.Module, fn: TonApiSpec.Funct
         ? concreteType : 'Newtonsoft.Json.Linq.JToken';
 }
 
+function getFunctionAppRequestCallbackInputType(module: TonApiSpec.Module, fn: TonApiSpec.Function): string {
+    let p = findFunctionAppRequestParam(fn);
+    if (!p) {
+        return null;
+    }
+    return parseRef(p.generic_args[0].ref_name)[1];
+}
+
+function getFunctionAppRequestCallbackOutputType(module: TonApiSpec.Module, fn: TonApiSpec.Function): string {
+    let p = findFunctionAppRequestParam(fn);
+    if (!p) {
+        return null;
+    }
+    return parseRef(p.generic_args[1].ref_name)[1];
+}
+
 function toCSharpParameterDefinition(module: TonApiSpec.Module, fn: TonApiSpec.Function, p: TonApiSpec.Param): ParameterDefinition {
+
+    if (isAppRequestCallbackParam(p)) {
+        const inputTypeName = getFunctionAppRequestCallbackInputType(module, fn);
+        const outputTypeName = getFunctionAppRequestCallbackOutputType(module, fn);
+        return {
+            name: toCSharpParameterName(p.name),
+            typeName: `Func<${inputTypeName}, Task<${outputTypeName}>>`,
+            xmlDocSummary: getXmlDocSummary(p.summary, p.description)
+        } as ParameterDefinition
+    }
+
     const callbackType = isCallbackParam(p) &&
         getFunctionCallbackType(module, fn);
+
     const result = {
         name: toCSharpParameterName(p.name),
         typeName: callbackType
-            ? `Action<${callbackType}, int>`
+            ? `Func<${callbackType}, int, Task>`
             : getParameterType(p),
         xmlDocSummary: getXmlDocSummary(p.summary, p.description)
     } as ParameterDefinition;
@@ -446,6 +498,11 @@ function writeMethodImplementation(module: TonApiSpec.Module, fn: TonApiSpec.Fun
             const callbackType = getFunctionCallbackType(module, fn);
             if (callbackType) {
                 genericArguments.push(callbackType);
+            }
+
+            if (functionHasAppRequestCallback(fn)) {
+                genericArguments.push(getFunctionAppRequestCallbackInputType(module, fn));
+                genericArguments.push(getFunctionAppRequestCallbackOutputType(module, fn));
             }
 
             if (genericArguments.length) {
@@ -568,7 +625,7 @@ function generateModuleClass(module: TonApiSpec.Module, version: string, output:
     writeClientExtension(module, writer).writeLine();
 }
 
-function indexType(module: TonApiSpec.Module, type: TonApiSpec.Type) {
+function buildTypeMappings(module: TonApiSpec.Module, type: TonApiSpec.Type) {
     if ('Number' === type.type) {
         console.debug(`Found numeric type: ${module.name}.${type.name}`);
         if (!numericTypes[module.name]) {
@@ -584,12 +641,12 @@ function indexType(module: TonApiSpec.Module, type: TonApiSpec.Type) {
         referenceTypes[module.name][type.name] = getTypeByName(moduleName, typeName);
     } else if ('EnumOfTypes' === type.type) {
         type.enum_types.forEach(t => {
-            indexType(module, t);
+            buildTypeMappings(module, t);
         });
     }
 }
 
-function indexModuleTypes(modules: TonApiSpec.Module[]) {
+function buildModuleTypeMappings(modules: TonApiSpec.Module[]) {
 
     modules.forEach(module => {
         if (!typesByModuleAndName[module.name]) {
@@ -601,16 +658,56 @@ function indexModuleTypes(modules: TonApiSpec.Module[]) {
     });
 
     modules.forEach(module => {
-        module.types.forEach(type => indexType(module, type))
+        module.types.forEach(type => buildTypeMappings(module, type))
     });
+}
+
+function indexModuleType(module: TonApiSpec.Module, type: TonApiSpec.Type, stream: fs.WriteStream) {
+    stream.write(`${module.name}.${type.name}\n`);
+}
+
+function indexModuleFunction(module: TonApiSpec.Module, f: TonApiSpec.Function, stream: fs.WriteStream) {
+    stream.write(`${module.name}.${f.name}\n`);
+}
+
+function indexModuleTypes(module: TonApiSpec.Module, stream: fs.WriteStream) {
+    for (const t of module.types) {
+        indexModuleType(module, t, stream);
+    }
+}
+
+function indexModuleFunctions(module: TonApiSpec.Module, stream: fs.WriteStream) {
+    for (const f of module.functions) {
+        indexModuleFunction(module, f, stream);
+    }
+}
+
+/**
+ * Build textual index of the API, so it's easier to find changes
+ * visually and write tests etc.
+ * @param api
+ */
+function indexApi(api: TonApiSpec.RootObject) {
+    const stream = fs.createWriteStream('api.index.txt');
+    stream.write(`${api.version}\n`);
+    stream.write(`TYPES\n`);
+    for (const module of api.modules) {
+        indexModuleTypes(module, stream);
+    }
+    stream.write(`FUNCTIONS\n`);
+    for (const module of api.modules) {
+        indexModuleFunctions(module, stream);
+    }
+    stream.end();
 }
 
 Generator.getModel().then((model: any) => {
     const root = model as TonApiSpec.RootObject;
-    indexModuleTypes(root.modules);
+    buildModuleTypeMappings(root.modules);
     root.modules.forEach((module) => {
         Generator.generate({
             outputFile: getCSharpModuleClassLocation(module)
         }, (writer: TextWriter) => generateModuleClass(module, root.version, writer));
     });
+    indexApi(root);
 });

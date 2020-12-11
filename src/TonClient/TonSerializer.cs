@@ -15,9 +15,9 @@ namespace TonSdk
         private readonly JsonSerializerSettings _polymorphicTypeSerializerSettings;
         private readonly JsonSerializerSettings _polymorphicTypeDeserializerSettings;
 
-        public TonSerializer(ILogger logger)
+        public TonSerializer(ILogger logger = null)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger ?? DummyLogger.Instance;
             _defaultSerializerSettings = new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore
@@ -43,7 +43,6 @@ namespace TonSdk
                 _logger.Warning("Empty JSON passed to deserialize method");
                 return default;
             }
-
             if (typeof(T) == typeof(JToken))
             {
                 object token = JObject.Parse(json);
@@ -53,6 +52,25 @@ namespace TonSdk
                 typeof(T).IsTonPolymorphicAbstractType()
                     ? _polymorphicTypeDeserializerSettings
                     : _defaultSerializerSettings);
+        }
+
+        public T Deserialize<T>(JToken t)
+        {
+            if (t == null)
+            {
+                _logger.Warning("null token passed to deserialize method");
+                return default;
+            }
+
+            if (typeof(T) == typeof(JToken))
+            {
+                object token = t;
+                return (T)token;
+            }
+            return t.ToObject<T>(JsonSerializer.Create(
+                typeof(T).IsTonPolymorphicAbstractType()
+                ? _polymorphicTypeDeserializerSettings
+                : _defaultSerializerSettings));
         }
 
         public string Serialize(object any)
@@ -67,6 +85,22 @@ namespace TonSdk
                 any.GetType().IsTonPolymorphicConcreteType()
                     ? _polymorphicTypeSerializerSettings
                     : _defaultSerializerSettings);
+        }
+
+        public JToken SerializeToken(object any)
+        {
+            if (any == null)
+            {
+                _logger.Warning("Null passed to serialize method");
+                return "null";
+            }
+
+            var token = JObject.FromObject(any);
+            if (any.GetType().IsTonPolymorphicConcreteType())
+            {
+                token.Add("type", any.GetType().Name);
+            }
+            return token;
         }
     }
 

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.0.0, abi module.
+* TON API version 1.2.0, abi module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -121,14 +121,14 @@ namespace TonSdk.Modules
     public abstract class Signer
     {
         /// <summary>
-        ///  No keys are provided. Creates an unsigned message. 
+        ///  No keys are provided. Creates an unsigned message.
         /// </summary>
         public class None : Signer
         {
         }
 
         /// <summary>
-        ///  Only public key is provided in unprefixed hex string format to generate unsigned message 
+        ///  Only public key is provided in unprefixed hex string format to generate unsigned message
         ///  and `data_to_sign` which can be signed later.  
         /// </summary>
         public class External : Signer
@@ -338,7 +338,7 @@ namespace TonSdk.Modules
         public AbiParam[] Inputs { get; set; }
 
         [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
-        public uint? Id { get; set; }
+        public string Id { get; set; }
     }
 
     public class AbiData
@@ -368,16 +368,16 @@ namespace TonSdk.Modules
         public AbiParam[] Outputs { get; set; }
 
         [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
-        public uint? Id { get; set; }
+        public string Id { get; set; }
     }
 
     public class AbiContract
     {
         [JsonProperty("ABI version", NullValueHandling = NullValueHandling.Ignore)]
-        public uint? ABIVersion { get; set; }
+        public uint? ABIVersion { get; set; } = TonClient.DefaultAbiVersion;
 
         [JsonProperty("abi_version", NullValueHandling = NullValueHandling.Ignore)]
-        public uint? AbiVersion { get; set; }
+        public uint? AbiVersion { get; set; } = TonClient.DefaultAbiVersion;
 
         [JsonProperty("header", NullValueHandling = NullValueHandling.Ignore)]
         public string[] Header { get; set; }
@@ -475,7 +475,7 @@ namespace TonSdk.Modules
         public string PublicKey { get; set; }
 
         /// <summary>
-        ///  Unsigned message BOC. Must be encoded with `base64`.
+        ///  Unsigned message body BOC. Must be encoded with `base64`.
         /// </summary>
         [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
         public string Message { get; set; }
@@ -797,7 +797,7 @@ namespace TonSdk.Modules
 
         /// <summary>
         ///  Creates account state BOC
-        ///  
+        /// 
         ///  Creates account state provided with one of these sets of data :
         ///  1. BOC of code, BOC of data, BOC of library
         ///  2. TVC (string in `base64`), keys, init params
