@@ -8,18 +8,43 @@ on:
       - '*'
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  test:
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {
+            os: ubuntu-latest,
+            docker: true
+          }
+          - {
+            os: windows-latest,
+            docker: false
+          }
+          - {
+            os: macos-latest,
+            docker: false
+          }
+
+    name: Test on ${{ matrix.config.os }}
+    
     steps:
       - uses: actions/checkout@v1
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 3.1.x
-      - name: Run Tests
-        env:
-          TON_NETWORK_ADDRESS: http://localhost:8888
+
+      - name: Setup Environment
+        if: ${{ matrix.config.docker }}
         run: |
           docker run -d --name local-node -p8888:80 tonlabs/local-node
+          
+      - name: Run Tests
+        env:
+          TON_NETWORK_ADDRESS: ${{ matrix.config.docker && 'http://localhost:8888' || '' }}
+        run: |
           dotnet restore
           dotnet test
+          
