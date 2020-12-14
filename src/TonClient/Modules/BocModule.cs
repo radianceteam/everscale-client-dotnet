@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.2.0, boc module.
+* TON API version 1.3.0, boc module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -14,7 +14,7 @@ namespace TonSdk.Modules
     public class ParamsOfParse
     {
         /// <summary>
-        ///  BOC encoded as base64
+        /// BOC encoded as base64
         /// </summary>
         [JsonProperty("boc", NullValueHandling = NullValueHandling.Ignore)]
         public string Boc { get; set; }
@@ -23,7 +23,7 @@ namespace TonSdk.Modules
     public class ResultOfParse
     {
         /// <summary>
-        ///  JSON containing parsed BOC
+        /// JSON containing parsed BOC
         /// </summary>
         [JsonProperty("parsed", NullValueHandling = NullValueHandling.Ignore)]
         public Newtonsoft.Json.Linq.JToken Parsed { get; set; }
@@ -32,19 +32,19 @@ namespace TonSdk.Modules
     public class ParamsOfParseShardstate
     {
         /// <summary>
-        ///  BOC encoded as base64
+        /// BOC encoded as base64
         /// </summary>
         [JsonProperty("boc", NullValueHandling = NullValueHandling.Ignore)]
         public string Boc { get; set; }
 
         /// <summary>
-        ///  Shardstate identificator
+        /// Shardstate identificator
         /// </summary>
         [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
         public string Id { get; set; }
 
         /// <summary>
-        ///  Workchain shardstate belongs to
+        /// Workchain shardstate belongs to
         /// </summary>
         [JsonProperty("workchain_id", NullValueHandling = NullValueHandling.Ignore)]
         public int WorkchainId { get; set; }
@@ -53,7 +53,7 @@ namespace TonSdk.Modules
     public class ParamsOfGetBlockchainConfig
     {
         /// <summary>
-        ///  Key block BOC encoded as base64
+        /// Key block BOC encoded as base64
         /// </summary>
         [JsonProperty("block_boc", NullValueHandling = NullValueHandling.Ignore)]
         public string BlockBoc { get; set; }
@@ -62,7 +62,7 @@ namespace TonSdk.Modules
     public class ResultOfGetBlockchainConfig
     {
         /// <summary>
-        ///  Blockchain config BOC encoded as base64
+        /// Blockchain config BOC encoded as base64
         /// </summary>
         [JsonProperty("config_boc", NullValueHandling = NullValueHandling.Ignore)]
         public string ConfigBoc { get; set; }
@@ -71,7 +71,7 @@ namespace TonSdk.Modules
     public class ParamsOfGetBocHash
     {
         /// <summary>
-        ///  BOC encoded as base64
+        /// BOC encoded as base64
         /// </summary>
         [JsonProperty("boc", NullValueHandling = NullValueHandling.Ignore)]
         public string Boc { get; set; }
@@ -80,56 +80,46 @@ namespace TonSdk.Modules
     public class ResultOfGetBocHash
     {
         /// <summary>
-        ///  BOC root hash encoded with hex
+        /// BOC root hash encoded with hex
         /// </summary>
         [JsonProperty("hash", NullValueHandling = NullValueHandling.Ignore)]
         public string Hash { get; set; }
     }
 
     /// <summary>
-    ///  BOC manipulation module.
+    /// BOC manipulation module.
     /// </summary>
     public interface IBocModule
     {
         /// <summary>
-        ///  Parses message boc into a JSON
-        /// 
-        ///  JSON structure is compatible with GraphQL API message object
+        /// JSON structure is compatible with GraphQL API message object
         /// </summary>
         Task<ResultOfParse> ParseMessageAsync(ParamsOfParse @params);
 
         /// <summary>
-        ///  Parses transaction boc into a JSON
-        /// 
-        ///  JSON structure is compatible with GraphQL API transaction object
+        /// JSON structure is compatible with GraphQL API transaction object
         /// </summary>
         Task<ResultOfParse> ParseTransactionAsync(ParamsOfParse @params);
 
         /// <summary>
-        ///  Parses account boc into a JSON
-        /// 
-        ///  JSON structure is compatible with GraphQL API account object
+        /// JSON structure is compatible with GraphQL API account object
         /// </summary>
         Task<ResultOfParse> ParseAccountAsync(ParamsOfParse @params);
 
         /// <summary>
-        ///  Parses block boc into a JSON
-        /// 
-        ///  JSON structure is compatible with GraphQL API block object
+        /// JSON structure is compatible with GraphQL API block object
         /// </summary>
         Task<ResultOfParse> ParseBlockAsync(ParamsOfParse @params);
 
         /// <summary>
-        ///  Parses shardstate boc into a JSON
-        /// 
-        ///  JSON structure is compatible with GraphQL API shardstate object
+        /// JSON structure is compatible with GraphQL API shardstate object
         /// </summary>
         Task<ResultOfParse> ParseShardstateAsync(ParamsOfParseShardstate @params);
 
         Task<ResultOfGetBlockchainConfig> GetBlockchainConfigAsync(ParamsOfGetBlockchainConfig @params);
 
         /// <summary>
-        ///  Calculates BOC root hash
+        /// Calculates BOC root hash
         /// </summary>
         Task<ResultOfGetBocHash> GetBocHashAsync(ParamsOfGetBocHash @params);
     }

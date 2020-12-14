@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.2.0, utils module.
+* TON API version 1.3.0, utils module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -37,13 +37,13 @@ namespace TonSdk.Modules
     public class ParamsOfConvertAddress
     {
         /// <summary>
-        ///  Account address in any TON format.
+        /// Account address in any TON format.
         /// </summary>
         [JsonProperty("address", NullValueHandling = NullValueHandling.Ignore)]
         public string Address { get; set; }
 
         /// <summary>
-        ///  Specify the format to convert to.
+        /// Specify the format to convert to.
         /// </summary>
         [JsonProperty("output_format", NullValueHandling = NullValueHandling.Ignore)]
         [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
@@ -53,19 +53,19 @@ namespace TonSdk.Modules
     public class ResultOfConvertAddress
     {
         /// <summary>
-        ///  Address in the specified format
+        /// Address in the specified format
         /// </summary>
         [JsonProperty("address", NullValueHandling = NullValueHandling.Ignore)]
         public string Address { get; set; }
     }
 
     /// <summary>
-    ///  Misc utility Functions.
+    /// Misc utility Functions.
     /// </summary>
     public interface IUtilsModule
     {
         /// <summary>
-        ///  Converts address from any TON format to any TON format
+        /// Converts address from any TON format to any TON format
         /// </summary>
         Task<ResultOfConvertAddress> ConvertAddressAsync(ParamsOfConvertAddress @params);
     }

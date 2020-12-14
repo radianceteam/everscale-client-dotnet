@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.2.0, client module.
+* TON API version 1.3.0, client module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -86,13 +86,13 @@ namespace TonSdk.Modules
     public class BuildInfoDependency
     {
         /// <summary>
-        ///  Dependency name. Usually it is a crate name.
+        /// Usually it is a crate name.
         /// </summary>
         [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
         public string Name { get; set; }
 
         /// <summary>
-        ///  Git commit hash of the related repository.
+        /// Git commit hash of the related repository.
         /// </summary>
         [JsonProperty("git_commit", NullValueHandling = NullValueHandling.Ignore)]
         public string GitCommit { get; set; }
@@ -100,23 +100,41 @@ namespace TonSdk.Modules
 
     public class ParamsOfAppRequest
     {
+        /// <summary>
+        /// Should be used in `resolve_app_request` call
+        /// </summary>
         [JsonProperty("app_request_id", NullValueHandling = NullValueHandling.Ignore)]
         public uint AppRequestId { get; set; }
 
+        /// <summary>
+        /// Request describing data
+        /// </summary>
         [JsonProperty("request_data", NullValueHandling = NullValueHandling.Ignore)]
         public Newtonsoft.Json.Linq.JToken RequestData { get; set; }
     }
 
     public abstract class AppRequestResult
     {
+        /// <summary>
+        /// Error occured during request processing
+        /// </summary>
         public class Error : AppRequestResult
         {
+            /// <summary>
+            /// Error description
+            /// </summary>
             [JsonProperty("text", NullValueHandling = NullValueHandling.Ignore)]
             public string Text { get; set; }
         }
 
+        /// <summary>
+        /// Request processed successfully
+        /// </summary>
         public class Ok : AppRequestResult
         {
+            /// <summary>
+            /// Request processing result
+            /// </summary>
             [JsonProperty("result", NullValueHandling = NullValueHandling.Ignore)]
             public Newtonsoft.Json.Linq.JToken Result { get; set; }
         }
@@ -131,7 +149,7 @@ namespace TonSdk.Modules
     public class ResultOfVersion
     {
         /// <summary>
-        ///  Core Library version
+        /// Core Library version
         /// </summary>
         [JsonProperty("version", NullValueHandling = NullValueHandling.Ignore)]
         public string Version { get; set; }
@@ -140,13 +158,13 @@ namespace TonSdk.Modules
     public class ResultOfBuildInfo
     {
         /// <summary>
-        ///  Build number assigned to this build by the CI.
+        /// Build number assigned to this build by the CI.
         /// </summary>
         [JsonProperty("build_number", NullValueHandling = NullValueHandling.Ignore)]
         public uint BuildNumber { get; set; }
 
         /// <summary>
-        ///  Fingerprint of the most important dependencies.
+        /// Fingerprint of the most important dependencies.
         /// </summary>
         [JsonProperty("dependencies", NullValueHandling = NullValueHandling.Ignore)]
         public BuildInfoDependency[] Dependencies { get; set; }
@@ -154,34 +172,43 @@ namespace TonSdk.Modules
 
     public class ParamsOfResolveAppRequest
     {
+        /// <summary>
+        /// Request ID received from SDK
+        /// </summary>
         [JsonProperty("app_request_id", NullValueHandling = NullValueHandling.Ignore)]
         public uint AppRequestId { get; set; }
 
+        /// <summary>
+        /// Result of request processing
+        /// </summary>
         [JsonProperty("result", NullValueHandling = NullValueHandling.Ignore)]
         [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
         public AppRequestResult Result { get; set; }
     }
 
     /// <summary>
-    ///  Provides information about library.
+    /// Provides information about library.
     /// </summary>
     public interface IClientModule
     {
         /// <summary>
-        ///  Returns Core Library API reference
+        /// Returns Core Library API reference
         /// </summary>
         Task<ResultOfGetApiReference> GetApiReferenceAsync();
 
         /// <summary>
-        ///  Returns Core Library version
+        /// Returns Core Library version
         /// </summary>
         Task<ResultOfVersion> VersionAsync();
 
         /// <summary>
-        ///  Returns detailed information about this build.
+        /// Returns detailed information about this build.
         /// </summary>
         Task<ResultOfBuildInfo> BuildInfoAsync();
 
+        /// <summary>
+        /// Resolves application request processing result
+        /// </summary>
         Task ResolveAppRequestAsync(ParamsOfResolveAppRequest @params);
     }
 

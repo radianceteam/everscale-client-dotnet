@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.2.0, processing module.
+* TON API version 1.3.0, processing module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -14,20 +14,14 @@ namespace TonSdk.Modules
     public abstract class ProcessingEvent
     {
         /// <summary>
-        ///  Notifies the app that the current shard block will be fetched
-        ///  from the network.
-        /// 
-        ///  Fetched block will be used later in waiting phase.
+        /// Fetched block will be used later in waiting phase.
         /// </summary>
         public class WillFetchFirstBlock : ProcessingEvent
         {
         }
 
         /// <summary>
-        ///  Notifies the app that the client has failed to fetch current
-        ///  shard block.
-        /// 
-        ///  Message processing has finished.
+        /// Message processing has finished.
         /// </summary>
         public class FetchFirstBlockFailed : ProcessingEvent
         {
@@ -36,8 +30,7 @@ namespace TonSdk.Modules
         }
 
         /// <summary>
-        ///  Notifies the app that the message will be sent to the
-        ///  network.
+        /// Notifies the app that the message will be sent to the network.
         /// </summary>
         public class WillSend : ProcessingEvent
         {
@@ -52,7 +45,7 @@ namespace TonSdk.Modules
         }
 
         /// <summary>
-        ///  Notifies the app that the message was sent to the network.
+        /// Notifies the app that the message was sent to the network.
         /// </summary>
         public class DidSend : ProcessingEvent
         {
@@ -67,12 +60,9 @@ namespace TonSdk.Modules
         }
 
         /// <summary>
-        ///  Notifies the app that the sending operation was failed with
-        ///  network error.
-        /// 
-        ///  Nevertheless the processing will be continued at the waiting
-        ///  phase because the message possibly has been delivered to the
-        ///  node.
+        /// Nevertheless the processing will be continued at the waiting
+        /// phase because the message possibly has been delivered to the
+        /// node.
         /// </summary>
         public class SendFailed : ProcessingEvent
         {
@@ -90,11 +80,8 @@ namespace TonSdk.Modules
         }
 
         /// <summary>
-        ///  Notifies the app that the next shard block will be fetched
-        ///  from the network.
-        /// 
-        ///  Event can occurs more than one time due to block walking
-        ///  procedure.
+        /// Event can occurs more than one time due to block walking
+        /// procedure.
         /// </summary>
         public class WillFetchNextBlock : ProcessingEvent
         {
@@ -109,10 +96,7 @@ namespace TonSdk.Modules
         }
 
         /// <summary>
-        ///  Notifies the app that the next block can't be fetched due to
-        ///  error.
-        /// 
-        ///  Processing will be continued after `network_resume_timeout`.
+        /// Processing will be continued after `network_resume_timeout`.
         /// </summary>
         public class FetchNextBlockFailed : ProcessingEvent
         {
@@ -130,12 +114,10 @@ namespace TonSdk.Modules
         }
 
         /// <summary>
-        ///  Notifies the app that the message was expired.
+        /// Event occurs for contracts which ABI includes header "expire"
         /// 
-        ///  Event occurs for contracts which ABI includes header "expire"
-        /// 
-        ///  Processing will be continued from encoding phase after
-        ///  `expiration_retries_timeout`.
+        /// Processing will be continued from encoding phase after
+        /// `expiration_retries_timeout`.
         /// </summary>
         public class MessageExpired : ProcessingEvent
         {
@@ -153,30 +135,27 @@ namespace TonSdk.Modules
     public class ResultOfProcessMessage
     {
         /// <summary>
-        ///  Parsed transaction.
-        /// 
-        ///  In addition to the regular transaction fields there is a
-        ///  `boc` field encoded with `base64` which contains source
-        ///  transaction BOC.
+        /// In addition to the regular transaction fields there is a
+        /// `boc` field encoded with `base64` which contains source
+        /// transaction BOC.
         /// </summary>
         [JsonProperty("transaction", NullValueHandling = NullValueHandling.Ignore)]
         public Newtonsoft.Json.Linq.JToken Transaction { get; set; }
 
         /// <summary>
-        ///  List of output messages' BOCs. Encoded as `base64`
+        /// Encoded as `base64`
         /// </summary>
         [JsonProperty("out_messages", NullValueHandling = NullValueHandling.Ignore)]
         public string[] OutMessages { get; set; }
 
         /// <summary>
-        ///  Optional decoded message bodies according to the optional
-        ///  `abi` parameter.
+        /// Optional decoded message bodies according to the optional `abi` parameter.
         /// </summary>
         [JsonProperty("decoded", NullValueHandling = NullValueHandling.Ignore)]
         public DecodedOutput Decoded { get; set; }
 
         /// <summary>
-        ///  Transaction fees
+        /// Transaction fees
         /// </summary>
         [JsonProperty("fees", NullValueHandling = NullValueHandling.Ignore)]
         public TransactionFees Fees { get; set; }
@@ -185,16 +164,14 @@ namespace TonSdk.Modules
     public class DecodedOutput
     {
         /// <summary>
-        ///  Decoded bodies of the out messages.
-        /// 
-        ///  If the message can't be decoded, then `None` will be stored in
-        ///  the appropriate position.
+        /// If the message can't be decoded, then `None` will be stored in
+        /// the appropriate position.
         /// </summary>
         [JsonProperty("out_messages", NullValueHandling = NullValueHandling.Ignore)]
         public DecodedMessageBody[] OutMessages { get; set; }
 
         /// <summary>
-        ///  Decoded body of the function output message.
+        /// Decoded body of the function output message.
         /// </summary>
         [JsonProperty("output", NullValueHandling = NullValueHandling.Ignore)]
         public Newtonsoft.Json.Linq.JToken Output { get; set; }
@@ -203,31 +180,29 @@ namespace TonSdk.Modules
     public class ParamsOfSendMessage
     {
         /// <summary>
-        ///  Message BOC.
+        /// Message BOC.
         /// </summary>
         [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
         public string Message { get; set; }
 
         /// <summary>
-        ///  Optional message ABI.
+        /// If this parameter is specified and the message has the
+        /// `expire` header then expiration time will be checked against
+        /// the current time to prevent unnecessary sending of already expired message.
         /// 
-        ///  If this parameter is specified and the message has the
-        ///  `expire` header then expiration time will be checked against
-        ///  the current time to prevent unnecessary sending of already expired message.
+        /// The `message already expired` error will be returned in this
+        /// case.
         /// 
-        ///  The `message already expired` error will be returned in this
-        ///  case.
-        /// 
-        ///  Note, that specifying `abi` for ABI compliant contracts is
-        ///  strongly recommended, so that proper processing strategy can be
-        ///  chosen.
+        /// Note, that specifying `abi` for ABI compliant contracts is
+        /// strongly recommended, so that proper processing strategy can be
+        /// chosen.
         /// </summary>
         [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
         [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
         public Abi Abi { get; set; }
 
         /// <summary>
-        ///  Flag for requesting events sending
+        /// Flag for requesting events sending
         /// </summary>
         [JsonProperty("send_events", NullValueHandling = NullValueHandling.Ignore)]
         public bool SendEvents { get; set; }
@@ -236,11 +211,8 @@ namespace TonSdk.Modules
     public class ResultOfSendMessage
     {
         /// <summary>
-        ///  The last generated shard block of the message destination account before the
-        ///  message was sent.
-        /// 
-        ///  This block id must be used as a parameter of the
-        ///  `wait_for_transaction`.
+        /// This block id must be used as a parameter of the
+        /// `wait_for_transaction`.
         /// </summary>
         [JsonProperty("shard_block_id", NullValueHandling = NullValueHandling.Ignore)]
         public string ShardBlockId { get; set; }
@@ -249,33 +221,29 @@ namespace TonSdk.Modules
     public class ParamsOfWaitForTransaction
     {
         /// <summary>
-        ///  Optional ABI for decoding the transaction result.
+        /// If it is specified, then the output messages' bodies will be
+        /// decoded according to this ABI.
         /// 
-        ///  If it is specified, then the output messages' bodies will be
-        ///  decoded according to this ABI.
-        /// 
-        ///  The `abi_decoded` result field will be filled out.
+        /// The `abi_decoded` result field will be filled out.
         /// </summary>
         [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
         [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
         public Abi Abi { get; set; }
 
         /// <summary>
-        ///  Message BOC. Encoded with `base64`.
+        /// Encoded with `base64`.
         /// </summary>
         [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
         public string Message { get; set; }
 
         /// <summary>
-        ///  The last generated block id of the destination account shard before the message was sent.
-        /// 
-        ///  You must provide the same value as the `send_message` has returned.
+        /// You must provide the same value as the `send_message` has returned.
         /// </summary>
         [JsonProperty("shard_block_id", NullValueHandling = NullValueHandling.Ignore)]
         public string ShardBlockId { get; set; }
 
         /// <summary>
-        ///  Flag that enables/disables intermediate events
+        /// Flag that enables/disables intermediate events
         /// </summary>
         [JsonProperty("send_events", NullValueHandling = NullValueHandling.Ignore)]
         public bool SendEvents { get; set; }
@@ -284,87 +252,78 @@ namespace TonSdk.Modules
     public class ParamsOfProcessMessage
     {
         /// <summary>
-        ///  Message encode parameters.
+        /// Message encode parameters.
         /// </summary>
         [JsonProperty("message_encode_params", NullValueHandling = NullValueHandling.Ignore)]
         public ParamsOfEncodeMessage MessageEncodeParams { get; set; }
 
         /// <summary>
-        ///  Flag for requesting events sending
+        /// Flag for requesting events sending
         /// </summary>
         [JsonProperty("send_events", NullValueHandling = NullValueHandling.Ignore)]
         public bool SendEvents { get; set; }
     }
 
     /// <summary>
-    ///  Message processing module.
-    /// 
-    ///  This module incorporates functions related to complex message
-    ///  processing scenarios.
+    /// This module incorporates functions related to complex message
+    /// processing scenarios.
     /// </summary>
     public interface IProcessingModule
     {
         /// <summary>
-        ///  Sends message to the network
-        /// 
-        ///  Sends message to the network and returns the last generated shard block of the destination account
-        ///  before the message was sent. It will be required later for message processing.
+        /// Sends message to the network and returns the last generated shard block of the destination account
+        /// before the message was sent. It will be required later for message processing.
         /// </summary>
         Task<ResultOfSendMessage> SendMessageAsync(ParamsOfSendMessage @params, Func<ProcessingEvent, int, Task> callback = null);
 
         /// <summary>
-        ///  Performs monitoring of the network for the result transaction
-        ///  of the external inbound message processing.
+        /// `send_events` enables intermediate events, such as `WillFetchNextBlock`,
+        /// `FetchNextBlockFailed` that may be useful for logging of new shard blocks creation
+        /// during message processing.
         /// 
-        ///  `send_events` enables intermediate events, such as `WillFetchNextBlock`,
-        ///  `FetchNextBlockFailed` that may be useful for logging of new shard blocks creation
-        ///  during message processing.
+        /// Note, that presence of the `abi` parameter is critical for ABI
+        /// compliant contracts. Message processing uses drastically
+        /// different strategy for processing message for contracts which
+        /// ABI includes "expire" header.
         /// 
-        ///  Note, that presence of the `abi` parameter is critical for ABI
-        ///  compliant contracts. Message processing uses drastically
-        ///  different strategy for processing message for contracts which
-        ///  ABI includes "expire" header.
+        /// When the ABI header `expire` is present, the processing uses
+        /// `message expiration` strategy:
+        /// - The maximum block gen time is set to
+        ///   `message_expiration_timeout + transaction_wait_timeout`.
+        /// - When maximum block gen time is reached, the processing will
+        ///   be finished with `MessageExpired` error.
         /// 
-        ///  When the ABI header `expire` is present, the processing uses
-        ///  `message expiration` strategy:
-        ///  - The maximum block gen time is set to
-        ///    `message_expiration_timeout + transaction_wait_timeout`.
-        ///  - When maximum block gen time is reached, the processing will
-        ///    be finished with `MessageExpired` error.
+        /// When the ABI header `expire` isn't present or `abi` parameter
+        /// isn't specified, the processing uses `transaction waiting`
+        /// strategy:
+        /// - The maximum block gen time is set to
+        ///   `now() + transaction_wait_timeout`.
         /// 
-        ///  When the ABI header `expire` isn't present or `abi` parameter
-        ///  isn't specified, the processing uses `transaction waiting`
-        ///  strategy:
-        ///  - The maximum block gen time is set to
-        ///    `now() + transaction_wait_timeout`.
-        /// 
-        ///  - If maximum block gen time is reached and no result transaction is found,
-        ///  the processing will exit with an error.
+        /// - If maximum block gen time is reached and no result transaction is found,
+        /// the processing will exit with an error.
         /// </summary>
         Task<ResultOfProcessMessage> WaitForTransactionAsync(ParamsOfWaitForTransaction @params, Func<ProcessingEvent, int, Task> callback = null);
 
         /// <summary>
-        ///  Creates message, sends it to the network and monitors its processing.
+        /// Creates ABI-compatible message,
+        /// sends it to the network and monitors for the result transaction.
+        /// Decodes the output messages' bodies.
         /// 
-        ///  Creates ABI-compatible message,
-        ///  sends it to the network and monitors for the result transaction.
-        ///  Decodes the output messages' bodies.
+        /// If contract's ABI includes "expire" header, then
+        /// SDK implements retries in case of unsuccessful message delivery within the expiration
+        /// timeout: SDK recreates the message, sends it and processes it again.
         /// 
-        ///  If contract's ABI includes "expire" header, then
-        ///  SDK implements retries in case of unsuccessful message delivery within the expiration
-        ///  timeout: SDK recreates the message, sends it and processes it again.
+        /// The intermediate events, such as `WillFetchFirstBlock`, `WillSend`, `DidSend`,
+        /// `WillFetchNextBlock`, etc - are switched on/off by `send_events` flag
+        /// and logged into the supplied callback function.
+        /// The retry configuration parameters are defined in config:
+        /// <add correct config params here>
+        /// pub const DEFAULT_EXPIRATION_RETRIES_LIMIT: i8 = 3; - max number of retries
+        /// pub const DEFAULT_EXPIRATION_TIMEOUT: u32 = 40000;  - message expiration timeout in ms.
+        /// pub const DEFAULT_....expiration_timeout_grow_factor... = 1.5 - factor that increases the expiration
+        /// timeout for each retry
         /// 
-        ///  The intermediate events, such as `WillFetchFirstBlock`, `WillSend`, `DidSend`,
-        ///  `WillFetchNextBlock`, etc - are switched on/off by `send_events` flag
-        ///  and logged into the supplied callback function.
-        ///  The retry configuration parameters are defined in config:
-        ///  <add correct config params here>
-        ///  pub const DEFAULT_EXPIRATION_RETRIES_LIMIT: i8 = 3; - max number of retries
-        ///  pub const DEFAULT_EXPIRATION_TIMEOUT: u32 = 40000;  - message expiration timeout in ms.
-        /// pub const DEFAULT_....expiration_timeout_grow_factor... = 1.5 - factor that increases the
-        /// expiration timeout for each retry
-        /// 
-        ///  If contract's ABI does not include "expire" header
+        /// If contract's ABI does not include "expire" header
         /// then, if no transaction is found within the network timeout (see config parameter ), exits with
         /// error.
         /// </summary>

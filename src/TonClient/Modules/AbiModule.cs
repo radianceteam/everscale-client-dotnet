@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.2.0, abi module.
+* TON API version 1.3.0, abi module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -39,34 +39,30 @@ namespace TonSdk.Modules
     }
 
     /// <summary>
-    ///  The ABI function header.
+    /// Includes several hidden function parameters that contract
+    /// uses for security, message delivery monitoring and replay protection reasons.
     /// 
-    ///  Includes several hidden function parameters that contract
-    ///  uses for security, message delivery monitoring and replay protection reasons.
-    /// 
-    ///  The actual set of header fields depends on the contract's ABI.
-    ///  If a contract's ABI does not include some headers, then they are not filled.
+    /// The actual set of header fields depends on the contract's ABI.
+    /// If a contract's ABI does not include some headers, then they are not filled.
     /// </summary>
     public class FunctionHeader
     {
         /// <summary>
-        ///  Message expiration time in seconds.
-        ///  If not specified - calculated automatically from message_expiration_timeout(),
-        ///  try_index and message_expiration_timeout_grow_factor() (if ABI includes `expire` header).
+        /// Message expiration time in seconds. If not specified - calculated automatically from
+        /// message_expiration_timeout(), try_index and message_expiration_timeout_grow_factor() (if ABI
+        /// includes `expire` header).
         /// </summary>
         [JsonProperty("expire", NullValueHandling = NullValueHandling.Ignore)]
         public uint? Expire { get; set; }
 
         /// <summary>
-        ///  Message creation time in milliseconds. If not specified, `now` is used
-        ///  (if ABI includes `time` header).
+        /// If not specified, `now` is used(if ABI includes `time` header).
         /// </summary>
         [JsonProperty("time", NullValueHandling = NullValueHandling.Ignore)]
         public BigInteger Time { get; set; }
 
         /// <summary>
-        ///  Public key is used by the contract to check the signature. Encoded in `hex`.
-        ///  If not specified, method fails with exception (if ABI includes `pubkey` header)..
+        /// Encoded in `hex`.If not specified, method fails with exception (if ABI includes `pubkey` header)..
         /// </summary>
         [JsonProperty("pubkey", NullValueHandling = NullValueHandling.Ignore)]
         public string Pubkey { get; set; }
@@ -75,23 +71,21 @@ namespace TonSdk.Modules
     public class CallSet
     {
         /// <summary>
-        ///  Function name that is being called.
+        /// Function name that is being called.
         /// </summary>
         [JsonProperty("function_name", NullValueHandling = NullValueHandling.Ignore)]
         public string FunctionName { get; set; }
 
         /// <summary>
-        ///  Function header.
-        /// 
-        ///  If an application omits some header parameters required by the
-        ///  contract's ABI, the library will set the default values for
-        ///  them.
+        /// If an application omits some header parameters required by the
+        /// contract's ABI, the library will set the default values for
+        /// them.
         /// </summary>
         [JsonProperty("header", NullValueHandling = NullValueHandling.Ignore)]
         public FunctionHeader Header { get; set; }
 
         /// <summary>
-        ///  Function input parameters according to ABI.
+        /// Function input parameters according to ABI.
         /// </summary>
         [JsonProperty("input", NullValueHandling = NullValueHandling.Ignore)]
         public Newtonsoft.Json.Linq.JToken Input { get; set; }
@@ -100,19 +94,19 @@ namespace TonSdk.Modules
     public class DeploySet
     {
         /// <summary>
-        ///  Content of TVC file encoded in `base64`.
+        /// Content of TVC file encoded in `base64`.
         /// </summary>
         [JsonProperty("tvc", NullValueHandling = NullValueHandling.Ignore)]
         public string Tvc { get; set; }
 
         /// <summary>
-        ///  Target workchain for destination address. Default is `0`.
+        /// Default is `0`.
         /// </summary>
         [JsonProperty("workchain_id", NullValueHandling = NullValueHandling.Ignore)]
         public int? WorkchainId { get; set; }
 
         /// <summary>
-        ///  List of initial values for contract's public variables.
+        /// List of initial values for contract's public variables.
         /// </summary>
         [JsonProperty("initial_data", NullValueHandling = NullValueHandling.Ignore)]
         public Newtonsoft.Json.Linq.JToken InitialData { get; set; }
@@ -121,15 +115,15 @@ namespace TonSdk.Modules
     public abstract class Signer
     {
         /// <summary>
-        ///  No keys are provided. Creates an unsigned message.
+        /// Creates an unsigned message.
         /// </summary>
         public class None : Signer
         {
         }
 
         /// <summary>
-        ///  Only public key is provided in unprefixed hex string format to generate unsigned message
-        ///  and `data_to_sign` which can be signed later.  
+        /// Only public key is provided in unprefixed hex string format to generate unsigned message and
+        /// `data_to_sign` which can be signed later.
         /// </summary>
         public class External : Signer
         {
@@ -138,7 +132,7 @@ namespace TonSdk.Modules
         }
 
         /// <summary>
-        ///  Key pair is provided for signing
+        /// Key pair is provided for signing
         /// </summary>
         public class Keys : Signer
         {
@@ -147,8 +141,8 @@ namespace TonSdk.Modules
         }
 
         /// <summary>
-        ///  Signing Box interface is provided for signing, allows Dapps to sign messages using external APIs,
-        ///  such as HSM, cold wallet, etc.
+        /// Signing Box interface is provided for signing, allows Dapps to sign messages using external APIs,
+        /// such as HSM, cold wallet, etc.
         /// </summary>
         public class SigningBox : Signer
         {
@@ -160,22 +154,20 @@ namespace TonSdk.Modules
     public enum MessageBodyType
     {
         /// <summary>
-        ///  Message contains the input of the ABI function.
+        /// Message contains the input of the ABI function.
         /// </summary>
         Input,
         /// <summary>
-        ///  Message contains the output of the ABI function.
+        /// Message contains the output of the ABI function.
         /// </summary>
         Output,
         /// <summary>
-        ///  Message contains the input of the imported ABI function.
-        /// 
-        ///  Occurs when contract sends an internal message to other
-        ///  contract.
+        /// Occurs when contract sends an internal message to other
+        /// contract.
         /// </summary>
         InternalOutput,
         /// <summary>
-        ///  Message contains the input of the ABI event.
+        /// Message contains the input of the ABI event.
         /// </summary>
         Event,
     }
@@ -183,7 +175,7 @@ namespace TonSdk.Modules
     public abstract class StateInitSource
     {
         /// <summary>
-        ///  Deploy message.
+        /// Deploy message.
         /// </summary>
         public class Message : StateInitSource
         {
@@ -193,31 +185,31 @@ namespace TonSdk.Modules
         }
 
         /// <summary>
-        ///  State init data.
+        /// State init data.
         /// </summary>
         public class StateInit : StateInitSource
         {
             /// <summary>
-            ///  Code BOC. Encoded in `base64`.
+            /// Encoded in `base64`.
             /// </summary>
             [JsonProperty("code", NullValueHandling = NullValueHandling.Ignore)]
             public string Code { get; set; }
 
             /// <summary>
-            ///  Data BOC. Encoded in `base64`.
+            /// Encoded in `base64`.
             /// </summary>
             [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
             public string Data { get; set; }
 
             /// <summary>
-            ///  Library BOC. Encoded in `base64`.
+            /// Encoded in `base64`.
             /// </summary>
             [JsonProperty("library", NullValueHandling = NullValueHandling.Ignore)]
             public string Library { get; set; }
         }
 
         /// <summary>
-        ///  Content of the TVC file. Encoded in `base64`.
+        /// Encoded in `base64`.
         /// </summary>
         public class Tvc : StateInitSource
         {
@@ -257,60 +249,52 @@ namespace TonSdk.Modules
         public class EncodingParams : MessageSource
         {
             /// <summary>
-            ///  Contract ABI.
+            /// Contract ABI.
             /// </summary>
             [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
             [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
             public Abi Abi { get; set; }
 
             /// <summary>
-            ///  Target address the message will be sent to.
-            /// 
-            ///  Must be specified in case of non-deploy message.
+            /// Must be specified in case of non-deploy message.
             /// </summary>
             [JsonProperty("address", NullValueHandling = NullValueHandling.Ignore)]
             public string Address { get; set; }
 
             /// <summary>
-            ///  Deploy parameters.
-            /// 
-            ///  Must be specified in case of deploy message.
+            /// Must be specified in case of deploy message.
             /// </summary>
             [JsonProperty("deploy_set", NullValueHandling = NullValueHandling.Ignore)]
             public DeploySet DeploySet { get; set; }
 
             /// <summary>
-            ///  Function call parameters.
+            /// Must be specified in case of non-deploy message.
             /// 
-            ///  Must be specified in case of non-deploy message.
-            /// 
-            ///  In case of deploy message it is optional and contains parameters
-            ///  of the functions that will to be called upon deploy transaction.
+            /// In case of deploy message it is optional and contains parameters
+            /// of the functions that will to be called upon deploy transaction.
             /// </summary>
             [JsonProperty("call_set", NullValueHandling = NullValueHandling.Ignore)]
             public CallSet CallSet { get; set; }
 
             /// <summary>
-            ///  Signing parameters.
+            /// Signing parameters.
             /// </summary>
             [JsonProperty("signer", NullValueHandling = NullValueHandling.Ignore)]
             [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
             public Signer Signer { get; set; }
 
             /// <summary>
-            ///  Processing try index.
+            /// Used in message processing with retries (if contract's ABI includes "expire" header).
             /// 
-            ///  Used in message processing with retries (if contract's ABI includes "expire" header).
+            /// Encoder uses the provided try index to calculate message
+            /// expiration time. The 1st message expiration time is specified in
+            /// Client config.
             /// 
-            ///  Encoder uses the provided try index to calculate message
-            ///  expiration time. The 1st message expiration time is specified in
-            ///  Client config.
+            /// Expiration timeouts will grow with every retry.
+            /// Retry grow factor is set in Client config:
+            /// <.....add config parameter with default value here>
             /// 
-            ///  Expiration timeouts will grow with every retry.
-            ///  Retry grow factor is set in Client config:
-            ///  <.....add config parameter with default value here>
-            /// 
-            ///  Default value is 0.
+            /// Default value is 0.
             /// </summary>
             [JsonProperty("processing_try_index", NullValueHandling = NullValueHandling.Ignore)]
             public byte? ProcessingTryIndex { get; set; }
@@ -395,46 +379,42 @@ namespace TonSdk.Modules
     public class ParamsOfEncodeMessageBody
     {
         /// <summary>
-        ///  Contract ABI.
+        /// Contract ABI.
         /// </summary>
         [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
         [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
         public Abi Abi { get; set; }
 
         /// <summary>
-        ///  Function call parameters.
+        /// Must be specified in non deploy message.
         /// 
-        ///  Must be specified in non deploy message.
-        /// 
-        ///  In case of deploy message contains parameters of constructor.
+        /// In case of deploy message contains parameters of constructor.
         /// </summary>
         [JsonProperty("call_set", NullValueHandling = NullValueHandling.Ignore)]
         public CallSet CallSet { get; set; }
 
         /// <summary>
-        ///  True if internal message body must be encoded.
+        /// True if internal message body must be encoded.
         /// </summary>
         [JsonProperty("is_internal", NullValueHandling = NullValueHandling.Ignore)]
         public bool IsInternal { get; set; }
 
         /// <summary>
-        ///  Signing parameters.
+        /// Signing parameters.
         /// </summary>
         [JsonProperty("signer", NullValueHandling = NullValueHandling.Ignore)]
         [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
         public Signer Signer { get; set; }
 
         /// <summary>
-        ///  Processing try index.
+        /// Used in message processing with retries.
         /// 
-        ///  Used in message processing with retries.
+        /// Encoder uses the provided try index to calculate message
+        /// expiration time.
         /// 
-        ///  Encoder uses the provided try index to calculate message
-        ///  expiration time.
+        /// Expiration timeouts will grow with every retry.
         /// 
-        ///  Expiration timeouts will grow with every retry.
-        /// 
-        ///  Default value is 0.
+        /// Default value is 0.
         /// </summary>
         [JsonProperty("processing_try_index", NullValueHandling = NullValueHandling.Ignore)]
         public byte? ProcessingTryIndex { get; set; }
@@ -443,17 +423,16 @@ namespace TonSdk.Modules
     public class ResultOfEncodeMessageBody
     {
         /// <summary>
-        ///  Message body BOC encoded with `base64`.
+        /// Message body BOC encoded with `base64`.
         /// </summary>
         [JsonProperty("body", NullValueHandling = NullValueHandling.Ignore)]
         public string Body { get; set; }
 
         /// <summary>
-        ///  Optional data to sign. Encoded with `base64`.
-        /// 
-        ///  Presents when `message` is unsigned. Can be used for external
-        ///  message signing. Is this case you need to sing this data and
-        ///  produce signed message using `abi.attach_signature`.
+        /// Encoded with `base64`.
+        /// Presents when `message` is unsigned. Can be used for external
+        /// message signing. Is this case you need to sing this data and
+        /// produce signed message using `abi.attach_signature`.
         /// </summary>
         [JsonProperty("data_to_sign", NullValueHandling = NullValueHandling.Ignore)]
         public string DataToSign { get; set; }
@@ -462,26 +441,26 @@ namespace TonSdk.Modules
     public class ParamsOfAttachSignatureToMessageBody
     {
         /// <summary>
-        ///  Contract ABI
+        /// Contract ABI
         /// </summary>
         [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
         [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
         public Abi Abi { get; set; }
 
         /// <summary>
-        ///  Public key. Must be encoded with `hex`.
+        /// Must be encoded with `hex`.
         /// </summary>
         [JsonProperty("public_key", NullValueHandling = NullValueHandling.Ignore)]
         public string PublicKey { get; set; }
 
         /// <summary>
-        ///  Unsigned message body BOC. Must be encoded with `base64`.
+        /// Must be encoded with `base64`.
         /// </summary>
         [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
         public string Message { get; set; }
 
         /// <summary>
-        ///  Signature. Must be encoded with `hex`.
+        /// Must be encoded with `hex`.
         /// </summary>
         [JsonProperty("signature", NullValueHandling = NullValueHandling.Ignore)]
         public string Signature { get; set; }
@@ -496,60 +475,52 @@ namespace TonSdk.Modules
     public class ParamsOfEncodeMessage
     {
         /// <summary>
-        ///  Contract ABI.
+        /// Contract ABI.
         /// </summary>
         [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
         [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
         public Abi Abi { get; set; }
 
         /// <summary>
-        ///  Target address the message will be sent to.
-        /// 
-        ///  Must be specified in case of non-deploy message.
+        /// Must be specified in case of non-deploy message.
         /// </summary>
         [JsonProperty("address", NullValueHandling = NullValueHandling.Ignore)]
         public string Address { get; set; }
 
         /// <summary>
-        ///  Deploy parameters.
-        /// 
-        ///  Must be specified in case of deploy message.
+        /// Must be specified in case of deploy message.
         /// </summary>
         [JsonProperty("deploy_set", NullValueHandling = NullValueHandling.Ignore)]
         public DeploySet DeploySet { get; set; }
 
         /// <summary>
-        ///  Function call parameters.
+        /// Must be specified in case of non-deploy message.
         /// 
-        ///  Must be specified in case of non-deploy message.
-        /// 
-        ///  In case of deploy message it is optional and contains parameters
-        ///  of the functions that will to be called upon deploy transaction.
+        /// In case of deploy message it is optional and contains parameters
+        /// of the functions that will to be called upon deploy transaction.
         /// </summary>
         [JsonProperty("call_set", NullValueHandling = NullValueHandling.Ignore)]
         public CallSet CallSet { get; set; }
 
         /// <summary>
-        ///  Signing parameters.
+        /// Signing parameters.
         /// </summary>
         [JsonProperty("signer", NullValueHandling = NullValueHandling.Ignore)]
         [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
         public Signer Signer { get; set; }
 
         /// <summary>
-        ///  Processing try index.
+        /// Used in message processing with retries (if contract's ABI includes "expire" header).
         /// 
-        ///  Used in message processing with retries (if contract's ABI includes "expire" header).
+        /// Encoder uses the provided try index to calculate message
+        /// expiration time. The 1st message expiration time is specified in
+        /// Client config.
         /// 
-        ///  Encoder uses the provided try index to calculate message
-        ///  expiration time. The 1st message expiration time is specified in
-        ///  Client config.
+        /// Expiration timeouts will grow with every retry.
+        /// Retry grow factor is set in Client config:
+        /// <.....add config parameter with default value here>
         /// 
-        ///  Expiration timeouts will grow with every retry.
-        ///  Retry grow factor is set in Client config:
-        ///  <.....add config parameter with default value here>
-        /// 
-        ///  Default value is 0.
+        /// Default value is 0.
         /// </summary>
         [JsonProperty("processing_try_index", NullValueHandling = NullValueHandling.Ignore)]
         public byte? ProcessingTryIndex { get; set; }
@@ -558,29 +529,27 @@ namespace TonSdk.Modules
     public class ResultOfEncodeMessage
     {
         /// <summary>
-        ///  Message BOC encoded with `base64`.
+        /// Message BOC encoded with `base64`.
         /// </summary>
         [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
         public string Message { get; set; }
 
         /// <summary>
-        ///  Optional data to be signed encoded in `base64`.
-        /// 
-        ///  Returned in case of `Signer::External`. Can be used for external
-        ///  message signing. Is this case you need to use this data to create signature and
-        ///  then produce signed message using `abi.attach_signature`.
+        /// Returned in case of `Signer::External`. Can be used for external
+        /// message signing. Is this case you need to use this data to create signature and
+        /// then produce signed message using `abi.attach_signature`.
         /// </summary>
         [JsonProperty("data_to_sign", NullValueHandling = NullValueHandling.Ignore)]
         public string DataToSign { get; set; }
 
         /// <summary>
-        ///  Destination address.
+        /// Destination address.
         /// </summary>
         [JsonProperty("address", NullValueHandling = NullValueHandling.Ignore)]
         public string Address { get; set; }
 
         /// <summary>
-        ///  Message id.
+        /// Message id.
         /// </summary>
         [JsonProperty("message_id", NullValueHandling = NullValueHandling.Ignore)]
         public string MessageId { get; set; }
@@ -589,26 +558,26 @@ namespace TonSdk.Modules
     public class ParamsOfAttachSignature
     {
         /// <summary>
-        ///  Contract ABI
+        /// Contract ABI
         /// </summary>
         [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
         [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
         public Abi Abi { get; set; }
 
         /// <summary>
-        ///  Public key encoded in `hex`.
+        /// Public key encoded in `hex`.
         /// </summary>
         [JsonProperty("public_key", NullValueHandling = NullValueHandling.Ignore)]
         public string PublicKey { get; set; }
 
         /// <summary>
-        ///  Unsigned message BOC encoded in `base64`.
+        /// Unsigned message BOC encoded in `base64`.
         /// </summary>
         [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
         public string Message { get; set; }
 
         /// <summary>
-        ///  Signature encoded in `hex`.
+        /// Signature encoded in `hex`.
         /// </summary>
         [JsonProperty("signature", NullValueHandling = NullValueHandling.Ignore)]
         public string Signature { get; set; }
@@ -617,13 +586,13 @@ namespace TonSdk.Modules
     public class ResultOfAttachSignature
     {
         /// <summary>
-        ///  Signed message BOC
+        /// Signed message BOC
         /// </summary>
         [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
         public string Message { get; set; }
 
         /// <summary>
-        ///  Message ID
+        /// Message ID
         /// </summary>
         [JsonProperty("message_id", NullValueHandling = NullValueHandling.Ignore)]
         public string MessageId { get; set; }
@@ -632,14 +601,14 @@ namespace TonSdk.Modules
     public class ParamsOfDecodeMessage
     {
         /// <summary>
-        ///  contract ABI
+        /// contract ABI
         /// </summary>
         [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
         [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
         public Abi Abi { get; set; }
 
         /// <summary>
-        ///  Message BOC
+        /// Message BOC
         /// </summary>
         [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
         public string Message { get; set; }
@@ -648,25 +617,25 @@ namespace TonSdk.Modules
     public class DecodedMessageBody
     {
         /// <summary>
-        ///  Type of the message body content.
+        /// Type of the message body content.
         /// </summary>
         [JsonProperty("body_type", NullValueHandling = NullValueHandling.Ignore)]
         public MessageBodyType BodyType { get; set; }
 
         /// <summary>
-        ///  Function or event name.
+        /// Function or event name.
         /// </summary>
         [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
         public string Name { get; set; }
 
         /// <summary>
-        ///  Parameters or result value.
+        /// Parameters or result value.
         /// </summary>
         [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
         public Newtonsoft.Json.Linq.JToken Value { get; set; }
 
         /// <summary>
-        ///  Function header.
+        /// Function header.
         /// </summary>
         [JsonProperty("header", NullValueHandling = NullValueHandling.Ignore)]
         public FunctionHeader Header { get; set; }
@@ -675,20 +644,20 @@ namespace TonSdk.Modules
     public class ParamsOfDecodeMessageBody
     {
         /// <summary>
-        ///  Contract ABI used to decode.
+        /// Contract ABI used to decode.
         /// </summary>
         [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
         [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
         public Abi Abi { get; set; }
 
         /// <summary>
-        ///  Message body BOC encoded in `base64`.
+        /// Message body BOC encoded in `base64`.
         /// </summary>
         [JsonProperty("body", NullValueHandling = NullValueHandling.Ignore)]
         public string Body { get; set; }
 
         /// <summary>
-        ///  True if the body belongs to the internal message.
+        /// True if the body belongs to the internal message.
         /// </summary>
         [JsonProperty("is_internal", NullValueHandling = NullValueHandling.Ignore)]
         public bool IsInternal { get; set; }
@@ -697,26 +666,26 @@ namespace TonSdk.Modules
     public class ParamsOfEncodeAccount
     {
         /// <summary>
-        ///  Source of the account state init.
+        /// Source of the account state init.
         /// </summary>
         [JsonProperty("state_init", NullValueHandling = NullValueHandling.Ignore)]
         [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
         public StateInitSource StateInit { get; set; }
 
         /// <summary>
-        ///  Initial balance.
+        /// Initial balance.
         /// </summary>
         [JsonProperty("balance", NullValueHandling = NullValueHandling.Ignore)]
         public BigInteger Balance { get; set; }
 
         /// <summary>
-        ///  Initial value for the `last_trans_lt`.
+        /// Initial value for the `last_trans_lt`.
         /// </summary>
         [JsonProperty("last_trans_lt", NullValueHandling = NullValueHandling.Ignore)]
         public BigInteger LastTransLt { get; set; }
 
         /// <summary>
-        ///  Initial value for the `last_paid`.
+        /// Initial value for the `last_paid`.
         /// </summary>
         [JsonProperty("last_paid", NullValueHandling = NullValueHandling.Ignore)]
         public uint? LastPaid { get; set; }
@@ -725,82 +694,77 @@ namespace TonSdk.Modules
     public class ResultOfEncodeAccount
     {
         /// <summary>
-        ///  Account BOC encoded in `base64`.
+        /// Account BOC encoded in `base64`.
         /// </summary>
         [JsonProperty("account", NullValueHandling = NullValueHandling.Ignore)]
         public string Account { get; set; }
 
         /// <summary>
-        ///  Account ID  encoded in `hex`.
+        /// Account ID  encoded in `hex`.
         /// </summary>
         [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
         public string Id { get; set; }
     }
 
     /// <summary>
-    ///  Provides message encoding and decoding according to the ABI
-    ///  specification.
+    /// Provides message encoding and decoding according to the ABI specification.
     /// </summary>
     public interface IAbiModule
     {
         /// <summary>
-        ///  Encodes message body according to ABI function call.
+        /// Encodes message body according to ABI function call.
         /// </summary>
         Task<ResultOfEncodeMessageBody> EncodeMessageBodyAsync(ParamsOfEncodeMessageBody @params);
 
         Task<ResultOfAttachSignatureToMessageBody> AttachSignatureToMessageBodyAsync(ParamsOfAttachSignatureToMessageBody @params);
 
         /// <summary>
-        ///  Encodes an ABI-compatible message
+        /// Allows to encode deploy and function call messages,
+        /// both signed and unsigned.
         /// 
-        ///  Allows to encode deploy and function call messages,
-        ///  both signed and unsigned.
-        /// 
-        ///  Use cases include messages of any possible type:
+        /// Use cases include messages of any possible type:
         /// - deploy with initial function call (i.e. `constructor` or any other function that is used for some
         /// kind
-        ///  of initialization);
-        ///  - deploy without initial function call;
-        ///  - signed/unsigned + data for signing.
+        /// of initialization);
+        /// - deploy without initial function call;
+        /// - signed/unsigned + data for signing.
         /// 
-        ///  `Signer` defines how the message should or shouldn't be signed:
+        /// `Signer` defines how the message should or shouldn't be signed:
         /// 
-        ///  `Signer::None` creates an unsigned message. This may be needed in case of some public methods,
-        ///  that do not require authorization by pubkey.
+        /// `Signer::None` creates an unsigned message. This may be needed in case of some public methods,
+        /// that do not require authorization by pubkey.
         /// 
-        ///  `Signer::External` takes public key and returns `data_to_sign` for later signing.
-        ///  Use `attach_signature` method with the result signature to get the signed message.
+        /// `Signer::External` takes public key and returns `data_to_sign` for later signing.
+        /// Use `attach_signature` method with the result signature to get the signed message.
         /// 
-        ///  `Signer::Keys` creates a signed message with provided key pair.
+        /// `Signer::Keys` creates a signed message with provided key pair.
         /// 
-        ///  [SOON] `Signer::SigningBox` Allows using a special interface to imlepement signing
-        ///  without private key disclosure to SDK. For instance, in case of using a cold wallet or HSM,
-        ///  when application calls some API to sign data.
+        /// [SOON] `Signer::SigningBox` Allows using a special interface to imlepement signing
+        /// without private key disclosure to SDK. For instance, in case of using a cold wallet or HSM,
+        /// when application calls some API to sign data.
         /// </summary>
         Task<ResultOfEncodeMessage> EncodeMessageAsync(ParamsOfEncodeMessage @params);
 
         /// <summary>
-        ///  Combines `hex`-encoded `signature` with `base64`-encoded `unsigned_message`.
-        ///  Returns signed message encoded in `base64`.
+        /// Combines `hex`-encoded `signature` with `base64`-encoded `unsigned_message`. Returns signed message
+        /// encoded in `base64`.
         /// </summary>
         Task<ResultOfAttachSignature> AttachSignatureAsync(ParamsOfAttachSignature @params);
 
         /// <summary>
-        ///  Decodes message body using provided message BOC and ABI.
+        /// Decodes message body using provided message BOC and ABI.
         /// </summary>
         Task<DecodedMessageBody> DecodeMessageAsync(ParamsOfDecodeMessage @params);
 
         /// <summary>
-        ///  Decodes message body using provided body BOC and ABI.
+        /// Decodes message body using provided body BOC and ABI.
         /// </summary>
         Task<DecodedMessageBody> DecodeMessageBodyAsync(ParamsOfDecodeMessageBody @params);
 
         /// <summary>
-        ///  Creates account state BOC
-        /// 
-        ///  Creates account state provided with one of these sets of data :
-        ///  1. BOC of code, BOC of data, BOC of library
-        ///  2. TVC (string in `base64`), keys, init params
+        /// Creates account state provided with one of these sets of data :
+        /// 1. BOC of code, BOC of data, BOC of library
+        /// 2. TVC (string in `base64`), keys, init params
         /// </summary>
         Task<ResultOfEncodeAccount> EncodeAccountAsync(ParamsOfEncodeAccount @params);
     }

@@ -1,4 +1,4 @@
-1.2.0
+1.3.0
 TYPES
 client.ClientError
 client.ClientConfig
@@ -128,6 +128,8 @@ tvm.ParamsOfRunGet
 tvm.ResultOfRunGet
 net.OrderBy
 net.SortDirection
+net.ParamsOfQuery
+net.ResultOfQuery
 net.ParamsOfQueryCollection
 net.ResultOfQueryCollection
 net.ParamsOfWaitForCollection
@@ -205,10 +207,13 @@ utils.convert_address
 tvm.run_executor
 tvm.run_tvm
 tvm.run_get
+net.query
 net.query_collection
 net.wait_for_collection
 net.unsubscribe
 net.subscribe_collection
+net.suspend
+net.resume
 debot.start
 debot.fetch
 debot.execute

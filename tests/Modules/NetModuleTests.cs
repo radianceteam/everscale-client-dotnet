@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using TonSdk.Modules;
 using Xunit;
 using Xunit.Abstractions;
@@ -145,16 +146,10 @@ namespace TonSdk.Tests.Modules
             await _client.DeployWithGiverAsync(deployParams);
 
             // give some time for subscription to receive all data
-            await Task.Delay(TimeSpan.FromMinutes(1));
+            await Task.Delay(TimeSpan.FromSeconds(1));
+            Assert.Equal(2, transactionIds.Distinct().Count());
 
-            Assert.Equal(2, transactionIds.Count);
-            Assert.All(transactionIds, Assert.NotEmpty);
-            Assert.NotEqual(transactionIds[0], transactionIds[1]);
-
-            await _client.Net.UnsubscribeAsync(new ResultOfSubscribeCollection
-            {
-                Handle = handle.Handle
-            });
+            await _client.Net.UnsubscribeAsync(handle);
         }
 
         [EnvDependentFact]
@@ -183,10 +178,111 @@ namespace TonSdk.Tests.Modules
 
             Assert.Empty(messages);
 
-            await _client.Net.UnsubscribeAsync(new ResultOfSubscribeCollection
+            await _client.Net.UnsubscribeAsync(handle);
+        }
+
+        [EnvDependentFact]
+        public async Task Should_Run_Query()
+        {
+            var info = await _client.Net.QueryAsync(new ParamsOfQuery
             {
-                Handle = handle.Handle
+                Query = "query{info{version}}"
             });
+
+            Assert.NotNull(info);
+            Assert.NotNull(info.Result);
+
+            var version = info.Result["data"]?["info"]?["version"]?.ToString();
+            Assert.NotNull(version);
+            Assert.NotEmpty(version);
+            Assert.Equal(3, version.Split(".").Length);
+        }
+
+        [EnvDependentFact]
+        public async Task Should_Suspend_Resume()
+        {
+            var keys = await _client.Crypto.GenerateRandomSignKeysAsync();
+            var (abi, tvc) = TestClient.Package("Hello");
+
+            var deployParams = new ParamsOfEncodeMessage
+            {
+                Abi = abi,
+                DeploySet = new DeploySet
+                {
+                    Tvc = tvc
+                },
+                Signer = new Signer.Keys
+                {
+                    KeysProperty = keys
+                },
+                CallSet = new CallSet
+                {
+                    FunctionName = "constructor"
+                }
+            };
+
+            var msg = await _client.Abi.EncodeMessageAsync(deployParams);
+            var address = msg.Address;
+            var transactionIds = new List<string>();
+
+            var subscriptionClient = TestClient.Create(_logger);
+            var handle = await subscriptionClient.Net.SubscribeCollectionAsync(new ParamsOfSubscribeCollection
+            {
+                Collection = "transactions",
+                Filter = JObject.FromObject(new
+                {
+                    account_addr = new { eq = address },
+                    status = new { eq = 3 } // Finalized
+                }),
+                Result = "id account_addr"
+            }, (json, result) =>
+            {
+                transactionIds.Add((string)json.SelectToken("result.id"));
+                return Task.CompletedTask;
+            });
+
+            await _client.GetGramsFromGiverAsync(msg.Address);
+            await Task.Delay(TimeSpan.FromSeconds(1));
+            Assert.Single(transactionIds);
+
+            // suspend subscription
+            await subscriptionClient.Net.SuspendAsync();
+
+            // deploy to create second transaction
+            await _client.Processing.ProcessMessageAsync(new ParamsOfProcessMessage
+            {
+                MessageEncodeParams = deployParams
+            });
+
+            // check that second transaction is not received when subscription suspended
+            Assert.Single(transactionIds);
+
+            // resume subscription
+            await subscriptionClient.Net.ResumeAsync();
+
+            // run contract function to create new transaction
+            await _client.Processing.ProcessMessageAsync(new ParamsOfProcessMessage
+            {
+                MessageEncodeParams = new ParamsOfEncodeMessage
+                {
+                    Abi = abi,
+                    Signer = new Signer.Keys
+                    {
+                        KeysProperty = keys
+                    },
+                    Address = msg.Address,
+                    CallSet = new CallSet
+                    {
+                        FunctionName = "touch"
+                    }
+                },
+                SendEvents = false
+            });
+
+            await Task.Delay(TimeSpan.FromSeconds(1));
+            Assert.Equal(2, transactionIds.Distinct().Count());
+
+            await subscriptionClient.Net.UnsubscribeAsync(handle);
         }
     }
 }
