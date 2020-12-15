@@ -35,7 +35,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.vars.outputs.version }}
-          release_name: Release ${{ steps.vars.outputs.version }}
+          release_name: ${{ steps.vars.outputs.version }}
           draft: false
           prerelease: false
       - name: Deploy Nuget Packages
