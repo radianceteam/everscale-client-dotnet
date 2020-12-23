@@ -46,15 +46,17 @@ namespace TonSdk.Tests.Modules
         }
 
         [EnvDependentFact]
-        public async Task Test_Debot_Run()
+        public async Task Test_Debot_RunAct()
         {
             await new TestBrowser(_fixture.Client, _logger)
                 .ExecuteAsync(_fixture.DebotAddr, _fixture.Keys, new List<DebotStep>
                 {
-                    new DebotStep { Choice = 3, Inputs = new List<string>{ "-1:1111111111111111111111111111111111111111111111111111111111111111" }, Outputs = new List<string> { "Test Run Action", "test1: instant run 1", "test2: instant run 2" } },
-                    new DebotStep { Choice = 1, Inputs = new List<string> { "hello" } },
-                    new DebotStep { Choice = 2, Outputs = new List<string> { "integer=2,addr=-1:1111111111111111111111111111111111111111111111111111111111111111,string=hello" } },
-                    new DebotStep { Choice = 3, Outputs = new List<string> { "Debot Tests" } },
+                    new DebotStep { Choice = 3, Outputs = new List<string> { "Test Run Action" } },
+                    new DebotStep { Choice = 1, Inputs = new List<string>{ "-1:1111111111111111111111111111111111111111111111111111111111111111" }, Outputs = new List<string> { "Test Instant Run", "test1: instant run 1", "test2: instant run 2" } },
+                    new DebotStep { Choice = 1, Outputs = new List<string> { "Test Run Action" } },
+                    new DebotStep { Choice = 2, Inputs = new List<string> { "hello" } },
+                    new DebotStep { Choice = 3, Outputs = new List<string> { "integer=2,addr=-1:1111111111111111111111111111111111111111111111111111111111111111,string=hello" } },
+                    new DebotStep { Choice = 4, Outputs = new List<string> { "Debot Tests" } },
                     new DebotStep { Choice = 8 }
                 });
         }
@@ -95,15 +97,39 @@ namespace TonSdk.Tests.Modules
                 .ExecuteAsync(_fixture.DebotAddr, _fixture.Keys, new List<DebotStep>
                 {
                     new DebotStep { Choice = 6, Inputs = new List<string>{ _fixture.DebotAddr }, Outputs = new List<string>{ "Test Invoke Debot Action", "enter debot address:" } },
-                    new DebotStep { Choice = 1, Invokes = new List<List<DebotStep>> { new List<DebotStep>
+                    new DebotStep { Choice = 1, Inputs = new List<string>{ _fixture.DebotAddr }, Outputs = new List<string>{ "Test Invoke Debot Action", "enter debot address:" },
+                        Invokes = new List<List<DebotStep>> { new List<DebotStep>
                         {
                             new DebotStep
                             {
                                 Choice = 1,
                                 Outputs = new List<string>{ "Print test string", "Debot is invoked" }
-                            } }
+                            },
+                            new DebotStep
+                            {
+                                Choice = 1,
+                                Outputs = new List<string>{ "Sending message {}", "Transaction succeeded." }
+                            }
+                        }
                         } },
                     new DebotStep { Choice = 2, Outputs = new List<string> { "Debot Tests" } },
+                    new DebotStep { Choice = 8 }
+                });
+        }
+
+        [EnvDependentFact]
+        public async Task Test_Debot_Engine_Calls()
+        {
+            await new TestBrowser(_fixture.Client, _logger)
+                .ExecuteAsync(_fixture.DebotAddr, _fixture.Keys, new List<DebotStep>
+                {
+                    new DebotStep { Choice = 7, Outputs = new List<string>{ "Test Engine Calls" } },
+                    new DebotStep { Choice = 1 },
+                    new DebotStep { Choice = 2 },
+                    new DebotStep { Choice = 3 },
+                    new DebotStep { Choice = 4 },
+                    new DebotStep { Choice = 5 },
+                    new DebotStep { Choice = 6, Outputs = new List<string>{ "Debot Tests" } },
                     new DebotStep { Choice = 8 }
                 });
         }
@@ -131,6 +157,7 @@ namespace TonSdk.Tests.Modules
         public KeyPair Keys { get; set; }
         public string Address { get; set; }
         public bool Finished { get; set; }
+        public Mutex<bool> SwitchStarted { get; set; } = new Mutex<bool>(false);
     }
 
     internal class TestBrowser
@@ -243,6 +270,10 @@ namespace TonSdk.Tests.Modules
                         return null;
 
                     case ParamsOfAppDebotBrowser.Switch @switch:
+                        using (var switchStarted = await state.SwitchStarted.LockAsync())
+                        {
+                            Assert.False(switchStarted.Swap(true));
+                        }
                         if (@switch.ContextId == 255) // STATE_EXIT
                         {
                             state.Finished = true;
@@ -257,6 +288,13 @@ namespace TonSdk.Tests.Modules
                         using (var step = await state.Current.LockAsync())
                         {
                             step.Instance.AvailableActions.Add(action.Action);
+                        }
+                        return null;
+
+                    case ParamsOfAppDebotBrowser.SwitchCompleted:
+                        using (var switchStarted = await state.SwitchStarted.LockAsync())
+                        {
+                            Assert.True(switchStarted.Swap(false));
                         }
                         return null;
 

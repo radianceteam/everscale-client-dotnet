@@ -284,5 +284,17 @@ namespace TonSdk.Tests.Modules
 
             await subscriptionClient.Net.UnsubscribeAsync(handle);
         }
+
+        [EnvDependentFact]
+        public async Task Should_Find_Last_Shard_Block()
+        {
+            var block = await _client.Net.FindLastShardBlockAsync(new ParamsOfFindLastShardBlock
+            {
+                Address = TestClient.GiverAddress
+            });
+
+            Assert.NotNull(block);
+            Assert.NotEmpty(block.BlockId);
+        }
     }
 }

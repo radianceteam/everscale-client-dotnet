@@ -39,7 +39,7 @@ jobs:
       - name: Setup Environment
         if: ${{ matrix.config.docker }}
         run: |
-          docker run -d --name local-node -p8888:80 tonlabs/local-node
+          docker run -d --name local-node -p8888:80 tonlabs/local-node:0.24.8
           
       - name: Run Tests
         env:

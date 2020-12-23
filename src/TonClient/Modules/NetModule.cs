@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.3.0, net module.
+* TON API version 1.4.0, net module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -158,6 +158,24 @@ namespace TonSdk.Modules
         public string Result { get; set; }
     }
 
+    public class ParamsOfFindLastShardBlock
+    {
+        /// <summary>
+        /// Account address
+        /// </summary>
+        [JsonProperty("address", NullValueHandling = NullValueHandling.Ignore)]
+        public string Address { get; set; }
+    }
+
+    public class ResultOfFindLastShardBlock
+    {
+        /// <summary>
+        /// Account shard last block ID
+        /// </summary>
+        [JsonProperty("block_id", NullValueHandling = NullValueHandling.Ignore)]
+        public string BlockId { get; set; }
+    }
+
     /// <summary>
     /// Network access.
     /// </summary>
@@ -198,14 +216,19 @@ namespace TonSdk.Modules
         Task<ResultOfSubscribeCollection> SubscribeCollectionAsync(ParamsOfSubscribeCollection @params, Func<Newtonsoft.Json.Linq.JToken, int, Task> callback = null);
 
         /// <summary>
-        ///  Suspends network module to stop any network activity
+        /// Suspends network module to stop any network activity
         /// </summary>
         Task SuspendAsync();
 
         /// <summary>
-        ///  Resumes network module to enable network activity
+        /// Resumes network module to enable network activity
         /// </summary>
         Task ResumeAsync();
+
+        /// <summary>
+        /// Returns ID of the last block in a specified account shard
+        /// </summary>
+        Task<ResultOfFindLastShardBlock> FindLastShardBlockAsync(ParamsOfFindLastShardBlock @params);
     }
 
     internal class NetModule : INetModule
@@ -250,6 +273,11 @@ namespace TonSdk.Modules
         public async Task ResumeAsync()
         {
             await _client.CallFunctionAsync("net.resume").ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfFindLastShardBlock> FindLastShardBlockAsync(ParamsOfFindLastShardBlock @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfFindLastShardBlock>("net.find_last_shard_block", @params).ConfigureAwait(false);
         }
     }
 }

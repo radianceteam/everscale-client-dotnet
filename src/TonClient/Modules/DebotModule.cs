@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.3.0, debot module.
+* TON API version 1.4.0, debot module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -105,6 +105,13 @@ namespace TonSdk.Modules
             /// </summary>
             [JsonProperty("context_id", NullValueHandling = NullValueHandling.Ignore)]
             public byte ContextId { get; set; }
+        }
+
+        /// <summary>
+        /// Notify browser that all context actions are shown.
+        /// </summary>
+        public class SwitchCompleted : ParamsOfAppDebotBrowser
+        {
         }
 
         /// <summary>

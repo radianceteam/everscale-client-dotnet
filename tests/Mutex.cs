@@ -6,42 +6,44 @@ namespace TonSdk.Tests
 {
     internal class Mutex<T>
     {
-        private readonly T _instance;
+        internal T Instance;
         private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
 
         public Mutex(T instance)
         {
-            _instance = instance ?? throw new ArgumentNullException(nameof(instance));
+            Instance = instance ?? throw new ArgumentNullException(nameof(instance));
         }
 
         public async Task<Lock<T>> LockAsync()
         {
             await _semaphoreSlim.WaitAsync();
-            return new Lock<T>(_instance, _semaphoreSlim);
+            return new Lock<T>(this, _semaphoreSlim);
         }
     }
 
     internal class Lock<T> : IDisposable
     {
         private readonly SemaphoreSlim _semaphoreSlim;
-        private readonly T _instance;
+        private readonly Mutex<T> _mutex;
         private bool _disposed;
 
         public T Instance
         {
             get
             {
-                if (_disposed)
-                {
-                    throw new InvalidOperationException("Lock already disposed");
-                }
-                return _instance;
+                CheckNotDisposed();
+                return _mutex.Instance;
+            }
+            set
+            {
+                CheckNotDisposed();
+                _mutex.Instance = value;
             }
         }
 
-        public Lock(T instance, SemaphoreSlim semaphoreSlim)
+        public Lock(Mutex<T> mutex, SemaphoreSlim semaphoreSlim)
         {
-            _instance = instance;
+            _mutex = mutex;
             _semaphoreSlim = semaphoreSlim;
         }
 
@@ -49,6 +51,22 @@ namespace TonSdk.Tests
         {
             _semaphoreSlim.Release();
             _disposed = true;
+        }
+
+        public T Swap(T newValue)
+        {
+            CheckNotDisposed();
+            var oldValue = _mutex.Instance;
+            _mutex.Instance = newValue;
+            return oldValue;
+        }
+
+        private void CheckNotDisposed()
+        {
+            if (_disposed)
+            {
+                throw new InvalidOperationException("Lock already disposed");
+            }
         }
     }
 }

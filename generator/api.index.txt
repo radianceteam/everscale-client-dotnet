@@ -1,4 +1,4 @@
-1.3.0
+1.4.0
 TYPES
 client.ClientError
 client.ClientConfig
@@ -107,6 +107,8 @@ boc.ParamsOfGetBlockchainConfig
 boc.ResultOfGetBlockchainConfig
 boc.ParamsOfGetBocHash
 boc.ResultOfGetBocHash
+boc.ParamsOfGetCodeFromTvc
+boc.ResultOfGetCodeFromTvc
 processing.ProcessingEvent
 processing.ResultOfProcessMessage
 processing.DecodedOutput
@@ -136,6 +138,8 @@ net.ParamsOfWaitForCollection
 net.ResultOfWaitForCollection
 net.ResultOfSubscribeCollection
 net.ParamsOfSubscribeCollection
+net.ParamsOfFindLastShardBlock
+net.ResultOfFindLastShardBlock
 debot.DebotHandle
 debot.DebotAction
 debot.ParamsOfStart
@@ -200,6 +204,7 @@ boc.parse_block
 boc.parse_shardstate
 boc.get_blockchain_config
 boc.get_boc_hash
+boc.get_code_from_tvc
 processing.send_message
 processing.wait_for_transaction
 processing.process_message
@@ -214,6 +219,7 @@ net.unsubscribe
 net.subscribe_collection
 net.suspend
 net.resume
+net.find_last_shard_block
 debot.start
 debot.fetch
 debot.execute

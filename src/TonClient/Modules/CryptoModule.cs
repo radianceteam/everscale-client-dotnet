@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.3.0, crypto module.
+* TON API version 1.4.0, crypto module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -894,10 +894,23 @@ namespace TonSdk.Modules
         /// </summary>
         Task<ResultOfNaclSign> NaclSignAsync(ParamsOfNaclSign @params);
 
+        /// <summary>
+        /// Verifies the signature in `signed` using the signer's public key `public`
+        /// and returns the message `unsigned`.
+        /// 
+        /// If the signature fails verification, crypto_sign_open raises an exception.
+        /// </summary>
         Task<ResultOfNaclSignOpen> NaclSignOpenAsync(ParamsOfNaclSignOpen @params);
 
+        /// <summary>
+        /// Signs the message `unsigned` using the secret key `secret`
+        /// and returns a signature `signature`.
+        /// </summary>
         Task<ResultOfNaclSignDetached> NaclSignDetachedAsync(ParamsOfNaclSign @params);
 
+        /// <summary>
+        /// Generates a random NaCl key pair
+        /// </summary>
         Task<KeyPair> NaclBoxKeypairAsync();
 
         /// <summary>

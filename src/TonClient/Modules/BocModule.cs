@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.3.0, boc module.
+* TON API version 1.4.0, boc module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -86,6 +86,24 @@ namespace TonSdk.Modules
         public string Hash { get; set; }
     }
 
+    public class ParamsOfGetCodeFromTvc
+    {
+        /// <summary>
+        /// Contract TVC image encoded as base64
+        /// </summary>
+        [JsonProperty("tvc", NullValueHandling = NullValueHandling.Ignore)]
+        public string Tvc { get; set; }
+    }
+
+    public class ResultOfGetCodeFromTvc
+    {
+        /// <summary>
+        /// Contract code encoded as base64
+        /// </summary>
+        [JsonProperty("code", NullValueHandling = NullValueHandling.Ignore)]
+        public string Code { get; set; }
+    }
+
     /// <summary>
     /// BOC manipulation module.
     /// </summary>
@@ -122,6 +140,11 @@ namespace TonSdk.Modules
         /// Calculates BOC root hash
         /// </summary>
         Task<ResultOfGetBocHash> GetBocHashAsync(ParamsOfGetBocHash @params);
+
+        /// <summary>
+        /// Extracts code from TVC contract image
+        /// </summary>
+        Task<ResultOfGetCodeFromTvc> GetCodeFromTvcAsync(ParamsOfGetCodeFromTvc @params);
     }
 
     internal class BocModule : IBocModule
@@ -166,6 +189,11 @@ namespace TonSdk.Modules
         public async Task<ResultOfGetBocHash> GetBocHashAsync(ParamsOfGetBocHash @params)
         {
             return await _client.CallFunctionAsync<ResultOfGetBocHash>("boc.get_boc_hash", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfGetCodeFromTvc> GetCodeFromTvcAsync(ParamsOfGetCodeFromTvc @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfGetCodeFromTvc>("boc.get_code_from_tvc", @params).ConfigureAwait(false);
         }
     }
 }
