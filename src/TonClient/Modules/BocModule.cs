@@ -5,12 +5,20 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.4.0, boc module.
+* TON API version 1.5.0, boc module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
 namespace TonSdk.Modules
 {
+    public enum BocErrorCode
+    {
+        InvalidBoc = 201,
+        SerializationError = 202,
+        InappropriateBlock = 203,
+        MissingSourceBoc = 204,
+    }
+
     public class ParamsOfParse
     {
         /// <summary>

@@ -7,7 +7,6 @@ namespace TonSdk.Tests
 {
     internal static class TestClientExtensions
     {
-        public const string WalletAddress = "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1efbb13";
         public const string GiverAddress = "0:841288ed3b55d9cdafa806807f02a0ae0c169aa5edfe88a789a6482429756a94";
 
         public static async Task<string> SignDetachedAsync(this ITonClient client, string data, KeyPair keyPair)
@@ -43,11 +42,11 @@ namespace TonSdk.Tests
             var runResult = await client.NetProcessFunctionAsync(GiverAddress,
                 TestClient.GiverAbi,
                 "sendGrams",
-                JObject.FromObject(new
+                new
                 {
                     dest = account,
                     amount = value ?? 500_000_000ul,
-                }),
+                }.ToJson(),
                 new Signer.None());
 
             foreach (var outMessage in runResult.OutMessages)
@@ -65,13 +64,13 @@ namespace TonSdk.Tests
                     await client.Net.WaitForCollectionAsync(new ParamsOfWaitForCollection
                     {
                         Collection = "transactions",
-                        Filter = JObject.FromObject(new
+                        Filter = new
                         {
                             in_msg = new
                             {
                                 eq = message.Id
                             }
-                        }),
+                        }.ToJson(),
                         Result = "id"
                     });
                 }
@@ -108,10 +107,10 @@ namespace TonSdk.Tests
             var result = await client.Net.WaitForCollectionAsync(new ParamsOfWaitForCollection
             {
                 Collection = "accounts",
-                Filter = JObject.FromObject(new
+                Filter = new
                 {
                     id = new { eq = address }
-                }),
+                }.ToJson(),
                 Result = "id boc"
             });
 

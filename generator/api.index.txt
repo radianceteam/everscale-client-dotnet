@@ -1,5 +1,6 @@
-1.4.0
+1.5.0
 TYPES
+client.ClientErrorCode
 client.ClientError
 client.ClientConfig
 client.NetworkConfig
@@ -12,6 +13,7 @@ client.ResultOfGetApiReference
 client.ResultOfVersion
 client.ResultOfBuildInfo
 client.ParamsOfResolveAppRequest
+crypto.CryptoErrorCode
 crypto.SigningBoxHandle
 crypto.ParamsOfFactorize
 crypto.ResultOfFactorize
@@ -72,6 +74,7 @@ crypto.ResultOfAppSigningBox
 crypto.ResultOfSigningBoxGetPublicKey
 crypto.ParamsOfSigningBoxSign
 crypto.ResultOfSigningBoxSign
+abi.AbiErrorCode
 abi.Abi
 abi.AbiHandle
 abi.FunctionHeader
@@ -100,6 +103,7 @@ abi.DecodedMessageBody
 abi.ParamsOfDecodeMessageBody
 abi.ParamsOfEncodeAccount
 abi.ResultOfEncodeAccount
+boc.BocErrorCode
 boc.ParamsOfParse
 boc.ResultOfParse
 boc.ParamsOfParseShardstate
@@ -109,6 +113,7 @@ boc.ParamsOfGetBocHash
 boc.ResultOfGetBocHash
 boc.ParamsOfGetCodeFromTvc
 boc.ResultOfGetCodeFromTvc
+processing.ProcessingErrorCode
 processing.ProcessingEvent
 processing.ResultOfProcessMessage
 processing.DecodedOutput
@@ -119,6 +124,7 @@ processing.ParamsOfProcessMessage
 utils.AddressStringFormat
 utils.ParamsOfConvertAddress
 utils.ResultOfConvertAddress
+tvm.TvmErrorCode
 tvm.ExecutionOptions
 tvm.AccountForExecutor
 tvm.TransactionFees
@@ -128,6 +134,7 @@ tvm.ParamsOfRunTvm
 tvm.ResultOfRunTvm
 tvm.ParamsOfRunGet
 tvm.ResultOfRunGet
+net.NetErrorCode
 net.OrderBy
 net.SortDirection
 net.ParamsOfQuery
@@ -140,6 +147,8 @@ net.ResultOfSubscribeCollection
 net.ParamsOfSubscribeCollection
 net.ParamsOfFindLastShardBlock
 net.ResultOfFindLastShardBlock
+net.EndpointsSet
+debot.DebotErrorCode
 debot.DebotHandle
 debot.DebotAction
 debot.ParamsOfStart
@@ -220,6 +229,8 @@ net.subscribe_collection
 net.suspend
 net.resume
 net.find_last_shard_block
+net.fetch_endpoints
+net.set_endpoints
 debot.start
 debot.fetch
 debot.execute

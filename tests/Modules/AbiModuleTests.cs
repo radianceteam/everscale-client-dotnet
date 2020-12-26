@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Numerics;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using TonSdk.Modules;
 using Xunit;
 using Xunit.Abstractions;
@@ -128,10 +127,10 @@ namespace TonSdk.Tests.Modules
                         Time = new BigInteger(1599458364291),
                         Expire = 1599458404
                     },
-                    Input = JObject.FromObject(new
+                    Input = new
                     {
                         id = "0"
-                    })
+                    }.ToJson()
                 },
                 Signer = new Signer.External
                 {
@@ -181,10 +180,10 @@ namespace TonSdk.Tests.Modules
                         Time = new BigInteger(1599458364291),
                         Expire = 1599458404
                     },
-                    Input = JObject.FromObject(new
+                    Input = new
                     {
                         id = "0"
-                    })
+                    }.ToJson()
                 },
                 Signer = new Signer.Keys
                 {
@@ -212,10 +211,10 @@ namespace TonSdk.Tests.Modules
                         Time = new BigInteger(1599458364291),
                         Expire = 1599458404
                     },
-                    Input = JObject.FromObject(new
+                    Input = new
                     {
                         id = "0"
-                    })
+                    }.ToJson()
                 },
                 Signer = new Signer.None()
             });
@@ -317,10 +316,10 @@ namespace TonSdk.Tests.Modules
                         Time = new BigInteger(1599458364291),
                         Expire = 1599458404
                     },
-                    Input = JObject.FromObject(new
+                    Input = new
                     {
                         id = "0"
-                    })
+                    }.ToJson()
                 },
                 Signer = new Signer.Keys
                 {

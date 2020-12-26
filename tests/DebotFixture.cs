@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using TonSdk.Modules;
 
 namespace TonSdk.Tests
@@ -73,12 +72,12 @@ namespace TonSdk.Tests
                 CallSet = new CallSet
                 {
                     FunctionName = "constructor",
-                    Input = JToken.FromObject(new
+                    Input = new
                     {
                         debotAbi = serializer.Serialize((debotAbi as Abi.Contract).Value).ToHexString(),
                         targetAbi = serializer.Serialize((targetAbi as Abi.Contract).Value).ToHexString(),
                         targetAddr = TargetAddr
-                    })
+                    }.ToJson()
                 }
             }).Result;
         }

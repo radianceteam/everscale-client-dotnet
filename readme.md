@@ -30,10 +30,9 @@ Install-Package TonClient
 ```cs
 using TonSdk.Modules;
 
-    using (var client = TonClient.Create()) {
-        var version = await client.Client.VersionAsync();
-        Console.WriteLine($"TON SDK client version: {version.Version}");
-    }
+using var client = TonClient.Create();
+var version = await client.Client.VersionAsync();
+Console.WriteLine($"TON SDK client version: {version.Version}");
 ```
 
 ### Advanced usage
@@ -41,23 +40,19 @@ using TonSdk.Modules;
 #### Configuring client
 
 ```cs
-    using (var client = TonClient.Create(new ClientConfig
-        {
-            Network = new NetworkConfig
-            {
-                ServerAddress = "http://localhost",
-                MessageRetriesCount = 10,
-                OutOfSyncThreshold = 2500
-            },
-            Abi = new AbiConfig
-            {
-                MessageExpirationTimeout = 10000
-            }
-        }))
+using var client = TonClient.Create(new ClientConfig
+{
+    Network = new NetworkConfig
     {
-        // ...
+        ServerAddress = "http://localhost",
+        MessageRetriesCount = 10,
+        OutOfSyncThreshold = 2500
+    },
+    Abi = new AbiConfig
+    {
+        MessageExpirationTimeout = 10000
     }
-
+});
 ```
 
 #### Logging
@@ -73,28 +68,28 @@ using ILogger = TonSdk.ILogger;
 
 ...
 
-    public class MyLogger : ILogger
+public class MyLogger : ILogger
+{
+    public void Debug(string message)
     {
-        public void Debug(string message)
-        {
-            Log.Debug(message);
-        }
+        Log.Debug(message);
+    }
 
-        public void Information(string message)
-        {
-            Log.Information(message);
-        }
+    public void Information(string message)
+    {
+        Log.Information(message);
+    }
 
-        public void Warning(string message)
-        {
-            Log.Warning(message);
-        }
+    public void Warning(string message)
+    {
+        Log.Warning(message);
+    }
 
-        public void Error(string message, Exception ex = null)
-        {
-            Log.Error(ex, message);
-        }
-    }   
+    public void Error(string message, Exception ex = null)
+    {
+        Log.Error(ex, message);
+    }
+}
 ``` 
 
 then call `TonClient.Create` method with logger argument:
@@ -104,26 +99,21 @@ using System;
 using Serilog;
 using TonSdk.Modules;
    
-    Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
-                .WriteTo.Console()
-                // ... other logging setup
-                .CreateLogger();
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .WriteTo.Console()
+    // ... other logging setup
+    .CreateLogger();
 
-    using (var client = TonClient.Create(new MyLogger())) {
-        // ...
-    }   
+using var client = TonClient.Create(new MyLogger());
 ```
 
 or with both config and logger:
    
 ```cs 
-    using (var client = TonClient.Create(new ClientConfig { 
-        // ... 
-    }, new MyLogger()))
-    {
-        // ...
-    }
+using var client = TonClient.Create(new ClientConfig { 
+    // ... 
+}, new MyLogger()));
 ```
 
 Note: see [TonClientDemo](src/TonClientDemo) for the complete working demo.
@@ -137,26 +127,22 @@ Here's the example of how to deal with it:
 
 ```cs 
 
-using Newtonsoft.Json.Linq;
 using TonSdk.Modules;
 
-    using (var client = TonClient.Create()) { 
-        var result = await client.Net.WaitForCollectionAsync(new ParamsOfWaitForCollection
-        {
-            Collection = "accounts",
-            Filter = JObject.FromObject(new
-            {
-                id = new { eq = "... some address" }
-            }),
-            Result = "id boc"
-        });
-    }
+using var client = TonClient.Create();
+var result = await client.Net.WaitForCollectionAsync(new ParamsOfWaitForCollection
+{
+    Collection = "accounts",
+    Filter = new
+    {
+        id = new { eq = "... some address" }
+    }).ToJson(),
+    Result = "id boc"
+});
 ```
 
-Note [JObject.FromObject](https://www.newtonsoft.com/json/help/html/M_Newtonsoft_Json_Linq_JObject_FromObject.htm) 
-static method used for constructing [JObject](https://www.newtonsoft.com/json/help/html/T_Newtonsoft_Json_Linq_JObject.htm)
-(which is a descendant of [JToken](https://www.newtonsoft.com/json/help/html/T_Newtonsoft_Json_Linq_JToken.htm) type) 
-from .NET object of anonymous type.
+Note `ToJson` extension method used for constructing [JToken](https://www.newtonsoft.com/json/help/html/T_Newtonsoft_Json_Linq_JToken.htm) from .NET object of anonymous type.
+
 
 ## Development
 

@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,7 +30,7 @@ namespace TonSdk.Tests.Modules
             var result = await _client.Net.QueryCollectionAsync(new ParamsOfQueryCollection
             {
                 Collection = "blocks_signatures",
-                Filter = JToken.FromObject(new { }),
+                Filter = new { }.ToJson(),
                 Result = "id",
                 Limit = 1
             });
@@ -45,7 +44,7 @@ namespace TonSdk.Tests.Modules
             var result = await _client.Net.QueryCollectionAsync(new ParamsOfQueryCollection
             {
                 Collection = "accounts",
-                Filter = JToken.FromObject(new { }),
+                Filter = new { }.ToJson(),
                 Result = "id balance"
             });
 
@@ -59,13 +58,13 @@ namespace TonSdk.Tests.Modules
             var result = await _client.Net.QueryCollectionAsync(new ParamsOfQueryCollection
             {
                 Collection = "messages",
-                Filter = JToken.FromObject(new
+                Filter = new
                 {
                     created_at = new
                     {
                         gt = 1562342740
                     }
-                }),
+                }.ToJson(),
                 Result = "body created_at"
             });
 
@@ -83,10 +82,10 @@ namespace TonSdk.Tests.Modules
                 .WaitForCollectionAsync(new ParamsOfWaitForCollection
                 {
                     Collection = "transactions",
-                    Filter = JObject.FromObject(new
+                    Filter = new
                     {
                         now = new { gt = now }
-                    }),
+                    }.ToJson(),
                     Result = "id now"
                 });
 
@@ -127,11 +126,11 @@ namespace TonSdk.Tests.Modules
             var handle = await _client.Net.SubscribeCollectionAsync(new ParamsOfSubscribeCollection
             {
                 Collection = "transactions",
-                Filter = JObject.FromObject(new
+                Filter = new
                 {
                     account_addr = new { eq = address },
                     status = new { eq = 3 } // Finalized
-                }),
+                }.ToJson(),
                 Result = "id account_addr"
             }, (json, result) =>
             {
@@ -160,10 +159,10 @@ namespace TonSdk.Tests.Modules
             var handle = await _client.Net.SubscribeCollectionAsync(new ParamsOfSubscribeCollection
             {
                 Collection = "messages",
-                Filter = JObject.FromObject(new
+                Filter = new
                 {
                     dst = new { eq = "1" }
-                }),
+                }.ToJson(),
                 Result = "id"
             }, (json, result) =>
             {
@@ -229,11 +228,11 @@ namespace TonSdk.Tests.Modules
             var handle = await subscriptionClient.Net.SubscribeCollectionAsync(new ParamsOfSubscribeCollection
             {
                 Collection = "transactions",
-                Filter = JObject.FromObject(new
+                Filter = new
                 {
                     account_addr = new { eq = address },
                     status = new { eq = 3 } // Finalized
-                }),
+                }.ToJson(),
                 Result = "id account_addr"
             }, (json, result) =>
             {
@@ -295,6 +294,41 @@ namespace TonSdk.Tests.Modules
 
             Assert.NotNull(block);
             Assert.NotEmpty(block.BlockId);
+        }
+
+        [EnvDependentFact]
+        public async Task Should_Fetch_Endpoints()
+        {
+            var client = TonClient.Create(new ClientConfig
+            {
+                Network = new NetworkConfig
+                {
+                    Endpoints = new[] { "cinet.tonlabs.io", "cinet2.tonlabs.io/" }
+                }
+            });
+
+            var result = await client.Net.FetchEndpointsAsync();
+            Assert.NotNull(result);
+            Assert.Equal(2, result.Endpoints.Length);
+            Assert.Contains("https://cinet.tonlabs.io/", result.Endpoints);
+            Assert.Contains("https://cinet2.tonlabs.io/", result.Endpoints);
+        }
+
+        [EnvDependentFact]
+        public async Task Should_Set_Endpoints()
+        {
+            var client = TestClient.Create();
+
+            await client.Net.SetEndpointsAsync(new EndpointsSet
+            {
+                Endpoints = new[] { "cinet.tonlabs.io", "cinet2.tonlabs.io/" }
+            });
+
+            var result = await client.Net.FetchEndpointsAsync();
+            Assert.NotNull(result);
+            Assert.Equal(2, result.Endpoints.Length);
+            Assert.Contains("https://cinet.tonlabs.io/", result.Endpoints);
+            Assert.Contains("https://cinet2.tonlabs.io/", result.Endpoints);
         }
     }
 }

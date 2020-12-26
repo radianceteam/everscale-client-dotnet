@@ -333,6 +333,7 @@ function writeEnumDefinition(module: TonApiSpec.Module, type: TonApiSpec.Type, w
         name: type.name,
         members: type.enum_consts.map(e => ({
             name: e.name,
+            value: e.value !== undefined && e.value !== null ? parseInt(e.value) : undefined,
             xmlDocSummary: getXmlDocSummary(e.summary, e.description)
         } as EnumMemberDefinition))
     } as EnumDefinition);

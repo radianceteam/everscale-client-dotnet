@@ -23,6 +23,7 @@ export module TonApiSpec {
     export interface EnumConst {
         name: string;
         type: string;
+        value?: string;
         summary: string;
         description: string;
     }

@@ -5,12 +5,35 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.4.0, crypto module.
+* TON API version 1.5.0, crypto module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
 namespace TonSdk.Modules
 {
+    public enum CryptoErrorCode
+    {
+        InvalidPublicKey = 100,
+        InvalidSecretKey = 101,
+        InvalidKey = 102,
+        InvalidFactorizeChallenge = 106,
+        InvalidBigInt = 107,
+        ScryptFailed = 108,
+        InvalidKeySize = 109,
+        NaclSecretBoxFailed = 110,
+        NaclBoxFailed = 111,
+        NaclSignFailed = 112,
+        Bip39InvalidEntropy = 113,
+        Bip39InvalidPhrase = 114,
+        Bip32InvalidKey = 115,
+        Bip32InvalidDerivePath = 116,
+        Bip39InvalidDictionary = 117,
+        Bip39InvalidWordCount = 118,
+        MnemonicGenerationFailed = 119,
+        MnemonicFromEntropyFailed = 120,
+        SigningBoxNotRegistered = 121,
+    }
+
     public class ParamsOfFactorize
     {
         /// <summary>

@@ -5,12 +5,20 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.4.0, debot module.
+* TON API version 1.5.0, debot module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
 namespace TonSdk.Modules
 {
+    public enum DebotErrorCode
+    {
+        DebotStartFailed = 801,
+        DebotFetchFailed = 802,
+        DebotExecutionFailed = 803,
+        DebotInvalidHandle = 804,
+    }
+
     /// <summary>
     /// [UNSTABLE](UNSTABLE.md) Describes a debot action in a Debot Context.
     /// </summary>

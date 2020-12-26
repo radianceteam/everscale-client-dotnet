@@ -5,12 +5,28 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.4.0, net module.
+* TON API version 1.5.0, net module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
 namespace TonSdk.Modules
 {
+    public enum NetErrorCode
+    {
+        QueryFailed = 601,
+        SubscribeFailed = 602,
+        WaitForFailed = 603,
+        GetSubscriptionResultFailed = 604,
+        InvalidServerResponse = 605,
+        ClockOutOfSync = 606,
+        WaitForTimeout = 607,
+        GraphqlError = 608,
+        NetworkModuleSuspended = 609,
+        WebsocketDisconnected = 610,
+        NotSupported = 611,
+        NoEndpointsProvided = 612,
+    }
+
     public class OrderBy
     {
         [JsonProperty("path", NullValueHandling = NullValueHandling.Ignore)]
@@ -176,6 +192,15 @@ namespace TonSdk.Modules
         public string BlockId { get; set; }
     }
 
+    public class EndpointsSet
+    {
+        /// <summary>
+        /// List of endpoints provided by server
+        /// </summary>
+        [JsonProperty("endpoints", NullValueHandling = NullValueHandling.Ignore)]
+        public string[] Endpoints { get; set; }
+    }
+
     /// <summary>
     /// Network access.
     /// </summary>
@@ -229,6 +254,16 @@ namespace TonSdk.Modules
         /// Returns ID of the last block in a specified account shard
         /// </summary>
         Task<ResultOfFindLastShardBlock> FindLastShardBlockAsync(ParamsOfFindLastShardBlock @params);
+
+        /// <summary>
+        /// Requests the list of alternative endpoints from server
+        /// </summary>
+        Task<EndpointsSet> FetchEndpointsAsync();
+
+        /// <summary>
+        /// Sets the list of endpoints to use on reinit
+        /// </summary>
+        Task SetEndpointsAsync(EndpointsSet @params);
     }
 
     internal class NetModule : INetModule
@@ -278,6 +313,16 @@ namespace TonSdk.Modules
         public async Task<ResultOfFindLastShardBlock> FindLastShardBlockAsync(ParamsOfFindLastShardBlock @params)
         {
             return await _client.CallFunctionAsync<ResultOfFindLastShardBlock>("net.find_last_shard_block", @params).ConfigureAwait(false);
+        }
+
+        public async Task<EndpointsSet> FetchEndpointsAsync()
+        {
+            return await _client.CallFunctionAsync<EndpointsSet>("net.fetch_endpoints").ConfigureAwait(false);
+        }
+
+        public async Task SetEndpointsAsync(EndpointsSet @params)
+        {
+            await _client.CallFunctionAsync("net.set_endpoints", @params).ConfigureAwait(false);
         }
     }
 }

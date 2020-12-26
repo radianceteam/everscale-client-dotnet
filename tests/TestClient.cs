@@ -1,7 +1,6 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.IO;
-using System.Text;
+using System.Reflection;
 using TonSdk.Modules;
 
 namespace TonSdk.Tests
@@ -35,20 +34,12 @@ namespace TonSdk.Tests
 
         public static Abi Abi(string name, int? version = TonClient.DefaultAbiVersion)
         {
-            using var stream = TestFiles.OpenStream($"contracts/abi_v{version}/{name}.abi.json");
-            using var reader = new StreamReader(stream, Encoding.UTF8);
-            return new Abi.Contract
-            {
-                Value = new JsonSerializer().Deserialize<AbiContract>(new JsonTextReader(reader))
-            };
+            return TonUtil.LoadAbi(GetFilePath($"contracts/abi_v{version}/{name}.abi.json"));
         }
 
         public static string Tvc(string name, int? version = TonClient.DefaultAbiVersion)
         {
-            using var stream = TestFiles.OpenStream($"contracts/abi_v{version}/{name}.tvc");
-            using var memoryStream = new MemoryStream();
-            stream.CopyTo(memoryStream);
-            return Convert.ToBase64String(memoryStream.ToArray());
+            return TonUtil.LoadTvc(GetFilePath($"contracts/abi_v{version}/{name}.tvc"));
         }
 
         public static Abi GiverAbi => UseNodeSe
@@ -65,5 +56,13 @@ namespace TonSdk.Tests
         public static string GiverAddress => UseNodeSe
             ? "0:841288ed3b55d9cdafa806807f02a0ae0c169aa5edfe88a789a6482429756a94"
             : "0:2bb4a0e8391e7ea8877f4825064924bd41ce110fce97e939d3323999e1efbb13";
+
+        private static string GetFilePath(string fileName)
+        {
+            var codeBaseUrl = new Uri(typeof(TestClient).GetTypeInfo().Assembly.CodeBase);
+            var codeBasePath = Uri.UnescapeDataString(codeBaseUrl.AbsolutePath);
+            var dirPath = Path.GetDirectoryName(codeBasePath);
+            return Path.Combine(dirPath, fileName);
+        }
     }
 }

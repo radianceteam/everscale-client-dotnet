@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using TonSdk.Modules;
 using Xunit;
 using Xunit.Abstractions;
@@ -206,10 +205,10 @@ namespace TonSdk.Tests.Modules
                 CallSet = new CallSet
                 {
                     FunctionName = "constructor",
-                    Input = JObject.FromObject(new
+                    Input = new
                     {
                         wallet = walletAddress
-                    })
+                    }.ToJson()
                 },
                 Signer = new Signer.Keys
                 {
@@ -222,14 +221,14 @@ namespace TonSdk.Tests.Modules
 
             var account = accountJson.Value<string>("boc");
 
-            var subscribeParams = JObject.FromObject(new
+            var subscribeParams = new
             {
                 subscriptionId = "0x1111111111111111111111111111111111111111111111111111111111111111",
                 pubkey = "0x2222222222222222222222222222222222222222222222222222222222222222",
                 to = "0:3333333333333333333333333333333333333333333333333333333333333333",
                 value = "0x123",
                 period = "0x456"
-            });
+            }.ToJson();
 
             var message = await _client.Abi.EncodeMessageAsync(new ParamsOfEncodeMessage
             {
@@ -257,10 +256,10 @@ namespace TonSdk.Tests.Modules
                 CallSet = new CallSet
                 {
                     FunctionName = "getSubscription",
-                    Input = JObject.FromObject(new
+                    Input = new
                     {
                         subscriptionId = subscribeParams.Value<string>("subscriptionId")
-                    })
+                    }.ToJson()
                 },
                 Signer = new Signer.Keys
                 {
