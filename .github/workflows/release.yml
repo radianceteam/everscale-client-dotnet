@@ -23,7 +23,7 @@ jobs:
         env:
           TON_NETWORK_ADDRESS: http://localhost:8888
         run: |
-          docker run -d --name local-node -p8888:80 tonlabs/local-node:0.24.8
+          docker run -d --name local-node -e USER_AGREEMENT=yes -p8888:80 tonlabs/local-node
           dotnet restore
           dotnet test
       - name: Pack
