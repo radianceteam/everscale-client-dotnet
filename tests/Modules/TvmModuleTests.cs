@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
+using TonSdk.Extensions.NodeSe;
 using TonSdk.Modules;
 using Xunit;
 using Xunit.Abstractions;

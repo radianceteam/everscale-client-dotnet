@@ -1,4 +1,5 @@
 ﻿using System;
+using TonSdk.Extensions.NodeSe;
 using TonSdk.Modules;
 
 namespace TonSdk.Tests
@@ -22,26 +23,9 @@ namespace TonSdk.Tests
             var (targetAbi, targetTvc) = TestClient.Package(TestClient.TestDebotTarget);
             var (debotAbi, debotTvc) = TestClient.Package(TestClient.TestDebot);
 
-            TargetAddr = (Client.Abi.EncodeMessageAsync(new ParamsOfEncodeMessage
-            {
-                Abi = targetAbi,
-                DeploySet = new DeploySet
-                {
-                    Tvc = targetTvc
-                },
-                Signer = new Signer.Keys
-                {
-                    KeysProperty = Keys
-                },
-                CallSet = new CallSet
-                {
-                    FunctionName = "constructor"
-                }
-            })).Result.Address;
-
             var serializer = new TonSerializer();
 
-            Client.DeployWithGiverAsync(new ParamsOfEncodeMessage
+            TargetAddr = Client.DeployWithGiverAsync(new ParamsOfEncodeMessage
             {
                 Abi = targetAbi,
                 DeploySet = new DeploySet
@@ -56,7 +40,7 @@ namespace TonSdk.Tests
                 {
                     FunctionName = "constructor"
                 }
-            }).Wait();
+            }).Result;
 
             DebotAddr = Client.DeployWithGiverAsync(new ParamsOfEncodeMessage
             {

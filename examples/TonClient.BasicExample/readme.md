@@ -1,4 +1,4 @@
-﻿# TON SDK .NET Wrapper Demo
+﻿# TON SDK .NET Wrapper - Basic Example
 
 ## Requirements
 

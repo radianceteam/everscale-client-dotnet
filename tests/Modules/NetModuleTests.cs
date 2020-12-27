@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TonSdk.Extensions.NodeSe;
 using TonSdk.Modules;
 using Xunit;
 using Xunit.Abstractions;
@@ -89,7 +90,7 @@ namespace TonSdk.Tests.Modules
                     Result = "id now"
                 });
 
-            var task = _client.GetGramsFromGiverAsync(TestClient.GiverAddress);
+            var task = _client.GetGramsFromGiverAsync(TonClientNodeSe.GiverAddress);
 
             var result = await request;
             Assert.NotNull(result);
@@ -173,7 +174,7 @@ namespace TonSdk.Tests.Modules
                 return Task.CompletedTask;
             });
 
-            await _client.GetGramsFromGiverAsync(TestClient.GiverAddress);
+            await _client.GetGramsFromGiverAsync(TonClientNodeSe.GiverAddress);
 
             Assert.Empty(messages);
 
@@ -289,7 +290,7 @@ namespace TonSdk.Tests.Modules
         {
             var block = await _client.Net.FindLastShardBlockAsync(new ParamsOfFindLastShardBlock
             {
-                Address = TestClient.GiverAddress
+                Address = TonClientNodeSe.GiverAddress
             });
 
             Assert.NotNull(block);

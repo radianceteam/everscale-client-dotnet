@@ -143,6 +143,9 @@ var result = await client.Net.WaitForCollectionAsync(new ParamsOfWaitForCollecti
 
 Note `ToJson` extension method used for constructing [JToken](https://www.newtonsoft.com/json/help/html/T_Newtonsoft_Json_Linq_JToken.htm) from .NET object of anonymous type.
 
+## More Examples
+
+See [Examples](examples) directory.
 
 ## Development
 

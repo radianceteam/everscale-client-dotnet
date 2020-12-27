@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\src\TonClient.Extensions.NodeSe\TonClient.Extensions.NodeSe.csproj" />
     <ProjectReference Include="..\src\TonClient\TonClient.csproj" />
   </ItemGroup>
 

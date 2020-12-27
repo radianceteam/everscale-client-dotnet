@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using TonSdk.Extensions.NodeSe;
 using Xunit;
 
 namespace TonSdk.Tests
@@ -13,7 +14,7 @@ namespace TonSdk.Tests
             EnvVariableNames = envVariableNames;
         }
 
-        public EnvDependentFactAttribute() : this(TestClient.NodeSeNetworkAddressEnvVar)
+        public EnvDependentFactAttribute() : this(TonClientNodeSe.NodeSeNetworkAddressEnvVar)
         {
         }
 

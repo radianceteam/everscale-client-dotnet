@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>TonSdk.Extensions.NodeSe</RootNamespace>
+    <AssemblyName>TonClient.Extensions.NodeSe</AssemblyName>
+    <Version>$(VersionSuffix)</Version>
+    <PackageId>TonClient.Extensions.NodeSe</PackageId>
+    <Author>Andrew Anisimov</Author>
+    <Owners>Radiance Team</Owners>
+    <Copyright>Copyright 2020 ©</Copyright>
+    <PackageVersion>$(VersionSuffix)</PackageVersion>
+    <PackageDescription>TON SDK Client .NET Wrapper NodeSE extensions</PackageDescription>
+    <PackageProjectUrl>https://github.com/radianceteam/ton-client-dotnet</PackageProjectUrl>
+    <InformationalVersion>$(VersionSuffix)</InformationalVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TonClient\TonClient.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Giver.abi.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

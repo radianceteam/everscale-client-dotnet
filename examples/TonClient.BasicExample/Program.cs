@@ -1,8 +1,8 @@
 ﻿using System;
 using Serilog;
-using TonSdk;
+using TonClient.Examples.Lib;
 
-namespace TonClientDemo
+namespace TonClient.BasicExample
 {
     public class Program
     {
@@ -14,11 +14,9 @@ namespace TonClientDemo
                 .WriteTo.File("debug.log")
                 .CreateLogger();
 
-            using (var client = TonClient.Create(new DemoLogger()))
-            {
-                var version = client.Client.VersionAsync().Result;
-                Console.WriteLine($"TON SDK client version: {version.Version}");
-            }
+            using var client = TonSdk.TonClient.Create(new SerilogLogger());
+            var version = client.Client.VersionAsync().Result;
+            Console.WriteLine($"TON SDK client version: {version.Version}");
         }
     }
 }

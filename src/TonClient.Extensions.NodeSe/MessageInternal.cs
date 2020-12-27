@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace TonSdk.Tests
+namespace TonSdk.Extensions.NodeSe
 {
     internal class MessageInternal
     {

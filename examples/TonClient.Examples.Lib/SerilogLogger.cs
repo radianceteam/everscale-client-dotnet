@@ -2,9 +2,9 @@
 using Serilog;
 using ILogger = TonSdk.ILogger;
 
-namespace TonClientDemo
+namespace TonClient.Examples.Lib
 {
-    internal class DemoLogger : ILogger
+    public class SerilogLogger : ILogger
     {
         public void Debug(string message)
         {

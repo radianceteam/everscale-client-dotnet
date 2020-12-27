@@ -4,7 +4,7 @@ using System.Text;
 
 namespace TonSdk
 {
-    internal static class StringExtensions
+    public static class StringExtensions
     {
         public static string ToBase64String(this string input)
         {
