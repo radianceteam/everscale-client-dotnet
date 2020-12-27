@@ -136,7 +136,7 @@ var result = await client.Net.WaitForCollectionAsync(new ParamsOfWaitForCollecti
     Filter = new
     {
         id = new { eq = "... some address" }
-    }).ToJson(),
+    }.ToJson(),
     Result = "id boc"
 });
 ```
