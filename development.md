@@ -28,7 +28,7 @@ Tests are located in `tests` dir. To build project and run all tests, do the fol
 1. Run local NodeSE server for testing using [Docker](https://www.docker.com/products/docker-desktop).
 
 ```
-docker run -d -p8888:80 tonlabs/local-node
+docker run -d -p8888:80 -e USER_AGREEMENT=yes tonlabs/local-node
 ```
 
 2. Given that Docker machine host is `localhost`, set `TON_NETWORK_ADDRESS` environment 

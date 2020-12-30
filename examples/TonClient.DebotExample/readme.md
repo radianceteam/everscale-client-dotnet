@@ -16,7 +16,7 @@ To run this demo, you should first start NodeSE locally by running this command:
 docker run -d -p8888:80 -e USER_AGREEMENT=yes tonlabs/local-node
 ```
 
-(requires (Docker)[https://docs.docker.com/get-docker/]).
+(requires [Docker](https://docs.docker.com/get-docker/)).
 
 After starting NodeSE, set `TON_NETWORK_ADDRESS` environment vriable to `http://localhost:8888`.
 
