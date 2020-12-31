@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.5.1, processing module.
+* TON API version 1.5.2, processing module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -333,7 +333,8 @@ namespace TonSdk.Modules
         /// The intermediate events, such as `WillFetchFirstBlock`, `WillSend`, `DidSend`,
         /// `WillFetchNextBlock`, etc - are switched on/off by `send_events` flag
         /// and logged into the supplied callback function.
-        /// The retry configuration parameters are defined in client's `NetworkConfig`.
+        /// 
+        /// The retry configuration parameters are defined in the client's `NetworkConfig` and `AbiConfig`.
         /// 
         /// If contract's ABI does not include "expire" header
         /// then, if no transaction is found within the network timeout (see config parameter ), exits with
