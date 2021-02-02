@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.5.2, debot module.
+* TON API version 1.6.0, debot module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -17,6 +17,9 @@ namespace TonSdk.Modules
         DebotFetchFailed = 802,
         DebotExecutionFailed = 803,
         DebotInvalidHandle = 804,
+        DebotInvalidJsonParams = 805,
+        DebotInvalidFunctionId = 806,
+        DebotInvalidAbi = 807,
     }
 
     /// <summary>
@@ -25,13 +28,13 @@ namespace TonSdk.Modules
     public class DebotAction
     {
         /// <summary>
-        /// Should be used by Debot Browser as name ofmenu item.
+        /// Should be used by Debot Browser as name of menu item.
         /// </summary>
         [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
         public string Description { get; set; }
 
         /// <summary>
-        /// Can be a debot function name or a print string(for Print Action).
+        /// Can be a debot function name or a print string (for Print Action).
         /// </summary>
         [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
         public string Name { get; set; }
@@ -49,7 +52,7 @@ namespace TonSdk.Modules
         public byte To { get; set; }
 
         /// <summary>
-        /// In the form of "param=value,flag".attribute example: instant, args, fargs, sign.
+        /// In the form of "param=value,flag". attribute example: instant, args, fargs, sign.
         /// </summary>
         [JsonProperty("attributes", NullValueHandling = NullValueHandling.Ignore)]
         public string Attributes { get; set; }
@@ -171,6 +174,18 @@ namespace TonSdk.Modules
             [JsonProperty("action", NullValueHandling = NullValueHandling.Ignore)]
             public DebotAction Action { get; set; }
         }
+
+        /// <summary>
+        /// Used by Debot to call DInterface implemented by Debot Browser.
+        /// </summary>
+        public class Send : ParamsOfAppDebotBrowser
+        {
+            /// <summary>
+            /// Message body contains interface function and parameters.
+            /// </summary>
+            [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
+            public string Message { get; set; }
+        }
     }
 
     /// <summary>
@@ -241,6 +256,36 @@ namespace TonSdk.Modules
     }
 
     /// <summary>
+    /// [UNSTABLE](UNSTABLE.md) Parameters of `send` function.
+    /// </summary>
+    public class ParamsOfSend
+    {
+        /// <summary>
+        /// Debot handle which references an instance of debot engine.
+        /// </summary>
+        [JsonProperty("debot_handle", NullValueHandling = NullValueHandling.Ignore)]
+        public uint DebotHandle { get; set; }
+
+        /// <summary>
+        /// Std address of interface or debot.
+        /// </summary>
+        [JsonProperty("source", NullValueHandling = NullValueHandling.Ignore)]
+        public string Source { get; set; }
+
+        /// <summary>
+        /// Function Id to call
+        /// </summary>
+        [JsonProperty("func_id", NullValueHandling = NullValueHandling.Ignore)]
+        public uint FuncId { get; set; }
+
+        /// <summary>
+        /// Json string with parameters
+        /// </summary>
+        [JsonProperty("params", NullValueHandling = NullValueHandling.Ignore)]
+        public string Params { get; set; }
+    }
+
+    /// <summary>
     /// [UNSTABLE](UNSTABLE.md) Module for working with debot.
     /// </summary>
     public interface IDebotModule
@@ -277,6 +322,11 @@ namespace TonSdk.Modules
         Task ExecuteAsync(ParamsOfExecute @params);
 
         /// <summary>
+        /// Used by Debot Browser to send response on Dinterface call or from other Debots.
+        /// </summary>
+        Task SendAsync(ParamsOfSend @params);
+
+        /// <summary>
         /// Removes handle from Client Context and drops debot engine referenced by that handle.
         /// </summary>
         Task RemoveAsync(RegisteredDebot @params);
@@ -304,6 +354,11 @@ namespace TonSdk.Modules
         public async Task ExecuteAsync(ParamsOfExecute @params)
         {
             await _client.CallFunctionAsync("debot.execute", @params).ConfigureAwait(false);
+        }
+
+        public async Task SendAsync(ParamsOfSend @params)
+        {
+            await _client.CallFunctionAsync("debot.send", @params).ConfigureAwait(false);
         }
 
         public async Task RemoveAsync(RegisteredDebot @params)

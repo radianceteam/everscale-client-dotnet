@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.5.2, tvm module.
+* TON API version 1.6.0, tvm module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -86,7 +86,7 @@ namespace TonSdk.Modules
             public string Boc { get; set; }
 
             /// <summary>
-            /// Can be used to calculatetransaction fees without balance check
+            /// Can be used to calculate transaction fees without balance check
             /// </summary>
             [JsonProperty("unlimited_balance", NullValueHandling = NullValueHandling.Ignore)]
             public bool? UnlimitedBalance { get; set; }
@@ -227,7 +227,7 @@ namespace TonSdk.Modules
         public DecodedOutput Decoded { get; set; }
 
         /// <summary>
-        /// Encoded as `base64`.Attention! Only `account_state.storage.state.data` part of the boc is updated.
+        /// Encoded as `base64`. Attention! Only `account_state.storage.state.data` part of the boc is updated.
         /// </summary>
         [JsonProperty("account", NullValueHandling = NullValueHandling.Ignore)]
         public string Account { get; set; }

@@ -123,6 +123,19 @@ namespace TonSdk.Tests
         }
 
         [Fact]
+        public void Should_Serialize_Polymorphic_Array()
+        {
+            Assert.Equal("[{\"collection\":\"test\",\"type\":\"QueryCollection\"}]",
+                _serializer.Serialize(new ParamsOfQueryOperation[]
+            {
+                new ParamsOfQueryOperation.QueryCollection
+                {
+                    Collection = "test"
+                },
+            }));
+        }
+
+        [Fact]
         public void Should_Deserialize_Null()
         {
             Assert.Null(_serializer.Deserialize<string>("null"));
@@ -287,6 +300,17 @@ namespace TonSdk.Tests
             Assert.True(base64.Bounce);
             Assert.True(base64.Test);
             Assert.False(base64.Url);
+        }
+
+        [Fact]
+        public void Should_Deserialize_Polymorphic_Array()
+        {
+            var result = _serializer.Deserialize<ParamsOfQueryOperation[]>(
+                "[{\"collection\":\"test\",\"type\":\"QueryCollection\"}]");
+            Assert.NotNull(result);
+            Assert.Single(result);
+            Assert.IsType<ParamsOfQueryOperation.QueryCollection>(result[0]);
+            Assert.Equal("test", ((ParamsOfQueryOperation.QueryCollection)result[0]).Collection);
         }
     }
 }

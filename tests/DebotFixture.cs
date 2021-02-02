@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 using TonSdk.Extensions.NodeSe;
 using TonSdk.Modules;
 
@@ -58,12 +59,20 @@ namespace TonSdk.Tests
                     FunctionName = "constructor",
                     Input = new
                     {
-                        debotAbi = serializer.Serialize((debotAbi as Abi.Contract).Value).ToHexString(),
                         targetAbi = serializer.Serialize((targetAbi as Abi.Contract).Value).ToHexString(),
                         targetAddr = TargetAddr
                     }.ToJson()
                 }
             }).Result;
+
+            Client.NetProcessFunctionAsync(
+                DebotAddr,
+                debotAbi,
+                "setAbi",
+                JsonConvert.SerializeObject(new
+                {
+                    debotAbi = debotAbi.ToJson().ToString().ToHexString()
+                }), new Signer.None()).Wait();
         }
 
         public void Dispose()

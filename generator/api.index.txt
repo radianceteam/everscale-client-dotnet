@@ -1,4 +1,4 @@
-1.5.2
+1.6.0
 TYPES
 client.ClientErrorCode
 client.ClientError
@@ -40,6 +40,8 @@ crypto.ResultOfNaclSign
 crypto.ParamsOfNaclSignOpen
 crypto.ResultOfNaclSignOpen
 crypto.ResultOfNaclSignDetached
+crypto.ParamsOfNaclSignDetachedVerify
+crypto.ResultOfNaclSignDetachedVerify
 crypto.ParamsOfNaclBoxKeyPairFromSecret
 crypto.ParamsOfNaclBox
 crypto.ResultOfNaclBox
@@ -137,10 +139,17 @@ tvm.ResultOfRunGet
 net.NetErrorCode
 net.OrderBy
 net.SortDirection
+net.ParamsOfQueryOperation
+net.FieldAggregation
+net.AggregationFn
 net.ParamsOfQuery
 net.ResultOfQuery
+net.ParamsOfBatchQuery
+net.ResultOfBatchQuery
 net.ParamsOfQueryCollection
 net.ResultOfQueryCollection
+net.ParamsOfAggregateCollection
+net.ResultOfAggregateCollection
 net.ParamsOfWaitForCollection
 net.ResultOfWaitForCollection
 net.ResultOfSubscribeCollection
@@ -157,6 +166,7 @@ debot.ParamsOfAppDebotBrowser
 debot.ResultOfAppDebotBrowser
 debot.ParamsOfFetch
 debot.ParamsOfExecute
+debot.ParamsOfSend
 FUNCTIONS
 client.get_api_reference
 client.version
@@ -177,6 +187,7 @@ crypto.nacl_sign_keypair_from_secret_key
 crypto.nacl_sign
 crypto.nacl_sign_open
 crypto.nacl_sign_detached
+crypto.nacl_sign_detached_verify
 crypto.nacl_box_keypair
 crypto.nacl_box_keypair_from_secret_key
 crypto.nacl_box
@@ -222,7 +233,9 @@ tvm.run_executor
 tvm.run_tvm
 tvm.run_get
 net.query
+net.batch_query
 net.query_collection
+net.aggregate_collection
 net.wait_for_collection
 net.unsubscribe
 net.subscribe_collection
@@ -234,4 +247,5 @@ net.set_endpoints
 debot.start
 debot.fetch
 debot.execute
+debot.send
 debot.remove

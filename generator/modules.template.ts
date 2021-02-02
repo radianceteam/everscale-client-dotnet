@@ -11,6 +11,8 @@ import * as fs from 'fs';
 
 const numericTypes: { [moduleName: string]: { [typeName: string]: TonApiSpec.Numeric } } = {};
 const referenceTypes: { [moduleName: string]: { [typeName: string]: TonApiSpec.Type } } = {};
+const polymorphicTypes: { [moduleName: string]: { [typeName: string]: TonApiSpec.Type } } = {};
+const stringEnumTypes: { [moduleName: string]: { [typeName: string]: TonApiSpec.Type } } = {};
 const typesByModuleAndName: { [moduleName: string]: { [typeName: string]: TonApiSpec.Type } } = {};
 
 function ucFirst(value: string): string {
@@ -149,6 +151,22 @@ function isUnknownType(refSpec: string): boolean {
     return ('API' === refSpec || 'Value' === refSpec);
 }
 
+function isPolymorphicType(refSpec: string): boolean {
+    if (isUnknownType(refSpec)) {
+        return false;
+    }
+    const [module, type] = parseRef(refSpec);
+    return !!polymorphicTypes[module] && !!polymorphicTypes[module][type];
+}
+
+function isStringEnumType(refSpec: string): boolean {
+    if (isUnknownType(refSpec)) {
+        return false;
+    }
+    const [module, type] = parseRef(refSpec);
+    return !!stringEnumTypes[module] && !!stringEnumTypes[module][type];
+}
+
 function isContextParam(param: TonApiSpec.Param): boolean {
     return param.type === 'Generic' &&
         param.generic_args &&
@@ -208,14 +226,16 @@ function getCSharpModuleClassLocation(module: TonApiSpec.Module): string {
     return `../src/TonClient/Modules/${moduleName}.cs`;
 }
 
-function writeUsingDirectives(writer: CSharpWriter): CSharpWriter {
+function writeUsingDirectives(module: TonApiSpec.Module, writer: CSharpWriter): CSharpWriter {
+    writer.writeUsingDirectives('Newtonsoft.Json');
+    if (stringEnumTypes[module.name]) {
+        writer.writeUsingDirectives('Newtonsoft.Json.Converters');
+    }
     return writer.writeUsingDirectives(
-        'Newtonsoft.Json',
         'System',
         'System.Numerics',
         'System.Threading.Tasks',
-        'TonSdk.Modules'
-    );
+        'TonSdk.Modules');
 }
 
 function writeModuleFileNotes(module: TonApiSpec.Module, version: string, writer: CSharpWriter): CSharpWriter {
@@ -273,7 +293,14 @@ function writeTypeMembers(type: TonApiSpec.Type, writer: CSharpWriter) {
     for (let i = 0, n = type.struct_fields.length; i < n; ++i) {
         const field = type.struct_fields[i];
         writer.writeXmlDocSummary(getXmlDocSummary(field.summary, field.description));
-        writer.writeLine(`[JsonProperty("${field.name}", NullValueHandling = NullValueHandling.Ignore)]`);
+        if (field.type === 'Array' &&
+            field.array_item.type === 'Ref' &&
+            isPolymorphicType(field.array_item.ref_name)) {
+            writer.writeLine(`[JsonProperty("operations", NullValueHandling = NullValueHandling.Ignore,
+            ItemConverterType = typeof(PolymorphicConcreteTypeConverter))]`);
+        } else {
+            writer.writeLine(`[JsonProperty("${field.name}", NullValueHandling = NullValueHandling.Ignore)]`);
+        }
 
         let ref_name = 'Ref' === field.type
             ? field.ref_name
@@ -281,11 +308,11 @@ function writeTypeMembers(type: TonApiSpec.Type, writer: CSharpWriter) {
                 ? field.optional_inner.ref_name
                 : undefined;
 
-        if (ref_name && !isUnknownType(ref_name)) {
-            const [moduleName, typeName] = parseRef(ref_name);
-            const type = getTypeByName(moduleName, typeName);
-            if (type.type === 'EnumOfTypes') {
+        if (ref_name) {
+            if (isPolymorphicType(ref_name)) {
                 writer.writeLine(`[JsonConverter(typeof(PolymorphicConcreteTypeConverter))]`);
+            } else if (isStringEnumType(ref_name)) {
+                writer.writeLine(`[JsonConverter(typeof(StringEnumConverter))]`);
             }
         }
 
@@ -620,7 +647,7 @@ function writeClientExtension(module: TonApiSpec.Module, writer: CSharpWriter): 
 function generateModuleClass(module: TonApiSpec.Module, version: string, output: TextWriter) {
     const writer = new CSharpWriter(output);
     writer.indentString = '    ';
-    writeUsingDirectives(writer).writeLine();
+    writeUsingDirectives(module, writer).writeLine();
     writeModuleFileNotes(module, version, writer).writeLine();
     writeModule(module, writer).writeLine();
     writeClientExtension(module, writer).writeLine();
@@ -641,9 +668,20 @@ function buildTypeMappings(module: TonApiSpec.Module, type: TonApiSpec.Type) {
         const [moduleName, typeName] = parseRef(type.ref_name);
         referenceTypes[module.name][type.name] = getTypeByName(moduleName, typeName);
     } else if ('EnumOfTypes' === type.type) {
+        if (!polymorphicTypes[module.name]) {
+            polymorphicTypes[module.name] = {};
+        }
+        polymorphicTypes[module.name][type.name] = type;
         type.enum_types.forEach(t => {
             buildTypeMappings(module, t);
         });
+    } else if ('EnumOfConsts' === type.type) {
+        if (!type.enum_consts.filter(t => t.type === 'Number').length) {
+            if (!stringEnumTypes[module.name]) {
+                stringEnumTypes[module.name] = {};
+            }
+            stringEnumTypes[module.name][type.name] = type;
+        }
     }
 }
 

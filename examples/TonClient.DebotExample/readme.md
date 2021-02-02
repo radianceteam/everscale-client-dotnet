@@ -2,6 +2,8 @@
 
 (Debot stands for Decentralized Bot.)
 
+NOTE: this example is BROKEN as of 1.6.0.
+
 ## Requirements
 
 .NET SDK 3.1 or later.

@@ -1,11 +1,12 @@
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Numerics;
 using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.5.2, abi module.
+* TON API version 1.6.0, abi module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -71,13 +72,13 @@ namespace TonSdk.Modules
         public uint? Expire { get; set; }
 
         /// <summary>
-        /// If not specified, `now` is used(if ABI includes `time` header).
+        /// If not specified, `now` is used (if ABI includes `time` header).
         /// </summary>
         [JsonProperty("time", NullValueHandling = NullValueHandling.Ignore)]
         public BigInteger Time { get; set; }
 
         /// <summary>
-        /// Encoded in `hex`.If not specified, method fails with exception (if ABI includes `pubkey` header)..
+        /// Encoded in `hex`. If not specified, method fails with exception (if ABI includes `pubkey` header)..
         /// </summary>
         [JsonProperty("pubkey", NullValueHandling = NullValueHandling.Ignore)]
         public string Pubkey { get; set; }
@@ -125,6 +126,15 @@ namespace TonSdk.Modules
         /// </summary>
         [JsonProperty("initial_data", NullValueHandling = NullValueHandling.Ignore)]
         public Newtonsoft.Json.Linq.JToken InitialData { get; set; }
+
+        /// <summary>
+        /// Public key resolving priority:
+        /// 1. Public key from deploy set.
+        /// 2. Public key, specified in TVM file.
+        /// 3. Public key, provided by Signer.
+        /// </summary>
+        [JsonProperty("initial_pubkey", NullValueHandling = NullValueHandling.Ignore)]
+        public string InitialPubkey { get; set; }
     }
 
     public abstract class Signer
@@ -444,7 +454,7 @@ namespace TonSdk.Modules
         public string Body { get; set; }
 
         /// <summary>
-        /// Encoded with `base64`.
+        /// Encoded with `base64`. 
         /// Presents when `message` is unsigned. Can be used for external
         /// message signing. Is this case you need to sing this data and
         /// produce signed message using `abi.attach_signature`.
@@ -635,6 +645,7 @@ namespace TonSdk.Modules
         /// Type of the message body content.
         /// </summary>
         [JsonProperty("body_type", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(StringEnumConverter))]
         public MessageBodyType BodyType { get; set; }
 
         /// <summary>
@@ -754,9 +765,17 @@ namespace TonSdk.Modules
         /// 
         /// `Signer::Keys` creates a signed message with provided key pair.
         /// 
-        /// [SOON] `Signer::SigningBox` Allows using a special interface to imlepement signing
+        /// [SOON] `Signer::SigningBox` Allows using a special interface to implement signing
         /// without private key disclosure to SDK. For instance, in case of using a cold wallet or HSM,
         /// when application calls some API to sign data.
+        /// 
+        /// There is an optional public key can be provided in deploy set in order to substitute one
+        /// in TVM file.
+        /// 
+        /// Public key resolving priority:
+        /// 1. Public key from deploy set.
+        /// 2. Public key, specified in TVM file.
+        /// 3. Public key, provided by signer.
         /// </summary>
         Task<ResultOfEncodeMessage> EncodeMessageAsync(ParamsOfEncodeMessage @params);
 

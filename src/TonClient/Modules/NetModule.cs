@@ -1,11 +1,13 @@
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Numerics;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.5.2, net module.
+* TON API version 1.6.0, net module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -25,6 +27,8 @@ namespace TonSdk.Modules
         WebsocketDisconnected = 610,
         NotSupported = 611,
         NoEndpointsProvided = 612,
+        GraphqlWebsocketInitError = 613,
+        NetworkModuleResumed = 614,
     }
 
     public class OrderBy
@@ -33,6 +37,7 @@ namespace TonSdk.Modules
         public string Path { get; set; }
 
         [JsonProperty("direction", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(StringEnumConverter))]
         public SortDirection Direction { get; set; }
     }
 
@@ -40,6 +45,156 @@ namespace TonSdk.Modules
     {
         ASC,
         DESC,
+    }
+
+    public abstract class ParamsOfQueryOperation
+    {
+        public class QueryCollection : ParamsOfQueryOperation
+        {
+            /// <summary>
+            /// Collection name (accounts, blocks, transactions, messages, block_signatures)
+            /// </summary>
+            [JsonProperty("collection", NullValueHandling = NullValueHandling.Ignore)]
+            public string Collection { get; set; }
+
+            /// <summary>
+            /// Collection filter
+            /// </summary>
+            [JsonProperty("filter", NullValueHandling = NullValueHandling.Ignore)]
+            public Newtonsoft.Json.Linq.JToken Filter { get; set; }
+
+            /// <summary>
+            /// Projection (result) string
+            /// </summary>
+            [JsonProperty("result", NullValueHandling = NullValueHandling.Ignore)]
+            public string Result { get; set; }
+
+            /// <summary>
+            /// Sorting order
+            /// </summary>
+            [JsonProperty("order", NullValueHandling = NullValueHandling.Ignore)]
+            public OrderBy[] Order { get; set; }
+
+            /// <summary>
+            /// Number of documents to return
+            /// </summary>
+            [JsonProperty("limit", NullValueHandling = NullValueHandling.Ignore)]
+            public uint? Limit { get; set; }
+        }
+
+        public class WaitForCollection : ParamsOfQueryOperation
+        {
+            /// <summary>
+            /// Collection name (accounts, blocks, transactions, messages, block_signatures)
+            /// </summary>
+            [JsonProperty("collection", NullValueHandling = NullValueHandling.Ignore)]
+            public string Collection { get; set; }
+
+            /// <summary>
+            /// Collection filter
+            /// </summary>
+            [JsonProperty("filter", NullValueHandling = NullValueHandling.Ignore)]
+            public Newtonsoft.Json.Linq.JToken Filter { get; set; }
+
+            /// <summary>
+            /// Projection (result) string
+            /// </summary>
+            [JsonProperty("result", NullValueHandling = NullValueHandling.Ignore)]
+            public string Result { get; set; }
+
+            /// <summary>
+            /// Query timeout
+            /// </summary>
+            [JsonProperty("timeout", NullValueHandling = NullValueHandling.Ignore)]
+            public uint? Timeout { get; set; }
+        }
+
+        public class AggregateCollection : ParamsOfQueryOperation
+        {
+            /// <summary>
+            /// Collection name (accounts, blocks, transactions, messages, block_signatures)
+            /// </summary>
+            [JsonProperty("collection", NullValueHandling = NullValueHandling.Ignore)]
+            public string Collection { get; set; }
+
+            /// <summary>
+            /// Collection filter.
+            /// </summary>
+            [JsonProperty("filter", NullValueHandling = NullValueHandling.Ignore)]
+            public Newtonsoft.Json.Linq.JToken Filter { get; set; }
+
+            /// <summary>
+            /// Projection (result) string
+            /// </summary>
+            [JsonProperty("fields", NullValueHandling = NullValueHandling.Ignore)]
+            public FieldAggregation[] Fields { get; set; }
+        }
+    }
+
+    // FIXME: https://t.me/ton_sdk/6184
+    internal class ParamsOfQueryOperationTypeConverter : JsonConverter
+    {
+        public override bool CanWrite => true;
+        public override bool CanRead => false;
+
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType.IsAssignableFrom(typeof(ParamsOfQueryOperation));
+        }
+
+        public override object ReadJson(JsonReader reader,
+            Type objectType,
+            object existingValue,
+            JsonSerializer serializer) => throw new NotImplementedException();
+
+        public override void WriteJson(JsonWriter writer,
+            object value,
+            JsonSerializer serializer)
+        {
+            var o = (JObject)JToken.FromObject(value);
+            var wrapper = new JObject { { value.GetType().Name, o } };
+            wrapper.WriteTo(writer);
+        }
+    }
+
+    public class FieldAggregation
+    {
+        /// <summary>
+        /// Dot separated path to the field
+        /// </summary>
+        [JsonProperty("field", NullValueHandling = NullValueHandling.Ignore)]
+        public string Field { get; set; }
+
+        /// <summary>
+        /// Aggregation function that must be applied to field values
+        /// </summary>
+        [JsonProperty("fn", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public AggregationFn Fn { get; set; }
+    }
+
+    public enum AggregationFn
+    {
+        /// <summary>
+        /// Returns count of filtered record
+        /// </summary>
+        COUNT,
+        /// <summary>
+        /// Returns the minimal value for a field in filtered records
+        /// </summary>
+        MIN,
+        /// <summary>
+        /// Returns the maximal value for a field in filtered records
+        /// </summary>
+        MAX,
+        /// <summary>
+        /// Returns a sum of values for a field in filtered records
+        /// </summary>
+        SUM,
+        /// <summary>
+        /// Returns an average value for a field in filtered records
+        /// </summary>
+        AVERAGE,
     }
 
     public class ParamsOfQuery
@@ -51,7 +206,7 @@ namespace TonSdk.Modules
         public string Query { get; set; }
 
         /// <summary>
-        /// Must be a map with named values thatcan be used in query.
+        /// Must be a map with named values that can be used in query.
         /// </summary>
         [JsonProperty("variables", NullValueHandling = NullValueHandling.Ignore)]
         public Newtonsoft.Json.Linq.JToken Variables { get; set; }
@@ -64,6 +219,25 @@ namespace TonSdk.Modules
         /// </summary>
         [JsonProperty("result", NullValueHandling = NullValueHandling.Ignore)]
         public Newtonsoft.Json.Linq.JToken Result { get; set; }
+    }
+
+    public class ParamsOfBatchQuery
+    {
+        /// <summary>
+        /// List of query operations that must be performed per single fetch.
+        /// </summary>
+        [JsonProperty("operations", NullValueHandling = NullValueHandling.Ignore,
+            ItemConverterType = typeof(ParamsOfQueryOperationTypeConverter))] // FIXME: this is a manually written line, see https://t.me/ton_sdk/6184
+        public ParamsOfQueryOperation[] Operations { get; set; }
+    }
+
+    public class ResultOfBatchQuery
+    {
+        /// <summary>
+        /// Returns an array of values. Each value corresponds to `queries` item.
+        /// </summary>
+        [JsonProperty("results", NullValueHandling = NullValueHandling.Ignore)]
+        public Newtonsoft.Json.Linq.JToken[] Results { get; set; }
     }
 
     public class ParamsOfQueryCollection
@@ -106,6 +280,37 @@ namespace TonSdk.Modules
         /// </summary>
         [JsonProperty("result", NullValueHandling = NullValueHandling.Ignore)]
         public Newtonsoft.Json.Linq.JToken[] Result { get; set; }
+    }
+
+    public class ParamsOfAggregateCollection
+    {
+        /// <summary>
+        /// Collection name (accounts, blocks, transactions, messages, block_signatures)
+        /// </summary>
+        [JsonProperty("collection", NullValueHandling = NullValueHandling.Ignore)]
+        public string Collection { get; set; }
+
+        /// <summary>
+        /// Collection filter.
+        /// </summary>
+        [JsonProperty("filter", NullValueHandling = NullValueHandling.Ignore)]
+        public Newtonsoft.Json.Linq.JToken Filter { get; set; }
+
+        /// <summary>
+        /// Projection (result) string
+        /// </summary>
+        [JsonProperty("fields", NullValueHandling = NullValueHandling.Ignore)]
+        public FieldAggregation[] Fields { get; set; }
+    }
+
+    public class ResultOfAggregateCollection
+    {
+        /// <summary>
+        /// Returns an array of strings. Each string refers to the corresponding `fields` item.
+        /// Numeric value is returned as a decimal string representations.
+        /// </summary>
+        [JsonProperty("values", NullValueHandling = NullValueHandling.Ignore)]
+        public Newtonsoft.Json.Linq.JToken Values { get; set; }
     }
 
     public class ParamsOfWaitForCollection
@@ -212,11 +417,22 @@ namespace TonSdk.Modules
         Task<ResultOfQuery> QueryAsync(ParamsOfQuery @params);
 
         /// <summary>
+        /// Performs multiple queries per single fetch.
+        /// </summary>
+        Task<ResultOfBatchQuery> BatchQueryAsync(ParamsOfBatchQuery @params);
+
+        /// <summary>
         /// Queries data that satisfies the `filter` conditions,
         /// limits the number of returned records and orders them.
         /// The projection fields are limited to `result` fields
         /// </summary>
         Task<ResultOfQueryCollection> QueryCollectionAsync(ParamsOfQueryCollection @params);
+
+        /// <summary>
+        /// Aggregates values from the specified `fields` for records
+        /// that satisfies the `filter` conditions,
+        /// </summary>
+        Task<ResultOfAggregateCollection> AggregateCollectionAsync(ParamsOfAggregateCollection @params);
 
         /// <summary>
         /// Triggers only once.
@@ -280,9 +496,19 @@ namespace TonSdk.Modules
             return await _client.CallFunctionAsync<ResultOfQuery>("net.query", @params).ConfigureAwait(false);
         }
 
+        public async Task<ResultOfBatchQuery> BatchQueryAsync(ParamsOfBatchQuery @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfBatchQuery>("net.batch_query", @params).ConfigureAwait(false);
+        }
+
         public async Task<ResultOfQueryCollection> QueryCollectionAsync(ParamsOfQueryCollection @params)
         {
             return await _client.CallFunctionAsync<ResultOfQueryCollection>("net.query_collection", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfAggregateCollection> AggregateCollectionAsync(ParamsOfAggregateCollection @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfAggregateCollection>("net.aggregate_collection", @params).ConfigureAwait(false);
         }
 
         public async Task<ResultOfWaitForCollection> WaitForCollectionAsync(ParamsOfWaitForCollection @params)

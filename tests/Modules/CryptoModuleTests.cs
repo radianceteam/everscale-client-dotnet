@@ -10,11 +10,10 @@ namespace TonSdk.Tests.Modules
     public class CryptoModuleTests : IDisposable
     {
         private readonly ITonClient _client;
-        private readonly ILogger _logger;
 
         public CryptoModuleTests(ITestOutputHelper outputHelper)
         {
-            _client = TestClient.Create(_logger = new XUnitTestLogger(outputHelper));
+            _client = TestClient.Create(new XUnitTestLogger(outputHelper));
         }
 
         public void Dispose()
@@ -438,6 +437,34 @@ namespace TonSdk.Tests.Modules
 
             Assert.NotNull(result);
             Assert.Equal("fb0cfe40eea5d6c960652e6ceb904da8a72ee2fcf6e05089cf835203179ff65bb48c57ecf31dcfcd26510bea67e64f3e6898b7c58300dc14338254268cade103", result.Signature);
+        }
+
+        [Fact]
+        public async Task Should_Call_Nacl_Sign_Detached_Verify()
+        {
+            var result = await _client.Crypto.NaclSignDetachedVerifyAsync(new ParamsOfNaclSignDetachedVerify
+            {
+                Unsigned = "Test Message".ToBase64String(),
+                Signature =
+                    "fb0cfe40eea5d6c960652e6ceb904da8a72ee2fcf6e05089cf835203179ff65bb48c57ecf31dcfcd26510bea67e64f3e6898b7c58300dc14338254268cade103",
+                Public = "1869b7ef29d58026217e9cf163cbfbd0de889bdf1bf4daebf5433a312f5b8d6e"
+            });
+
+            Assert.True(result.Succeeded);
+        }
+
+        [Fact]
+        public async Task Should_Call_Nacl_Sign_Detached_Verify_Negative_Case()
+        {
+            var result = await _client.Crypto.NaclSignDetachedVerifyAsync(new ParamsOfNaclSignDetachedVerify
+            {
+                Unsigned = "Test Message 1".ToBase64String(),
+                Signature =
+                    "fb0cfe40eea5d6c960652e6ceb904da8a72ee2fcf6e05089cf835203179ff65bb48c57ecf31dcfcd26510bea67e64f3e6898b7c58300dc14338254268cade103",
+                Public = "1869b7ef29d58026217e9cf163cbfbd0de889bdf1bf4daebf5433a312f5b8d6e"
+            });
+
+            Assert.False(result.Succeeded);
         }
 
         [Fact]

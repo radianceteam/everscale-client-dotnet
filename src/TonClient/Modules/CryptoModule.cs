@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.5.2, crypto module.
+* TON API version 1.6.0, crypto module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -32,6 +32,7 @@ namespace TonSdk.Modules
         MnemonicGenerationFailed = 119,
         MnemonicFromEntropyFailed = 120,
         SigningBoxNotRegistered = 121,
+        InvalidSignature = 122,
     }
 
     public class ParamsOfFactorize
@@ -336,6 +337,36 @@ namespace TonSdk.Modules
         /// </summary>
         [JsonProperty("signature", NullValueHandling = NullValueHandling.Ignore)]
         public string Signature { get; set; }
+    }
+
+    public class ParamsOfNaclSignDetachedVerify
+    {
+        /// <summary>
+        /// Encoded with `base64`.
+        /// </summary>
+        [JsonProperty("unsigned", NullValueHandling = NullValueHandling.Ignore)]
+        public string Unsigned { get; set; }
+
+        /// <summary>
+        /// Encoded with `hex`.
+        /// </summary>
+        [JsonProperty("signature", NullValueHandling = NullValueHandling.Ignore)]
+        public string Signature { get; set; }
+
+        /// <summary>
+        /// Signer's public key - unprefixed 0-padded to 64 symbols hex string.
+        /// </summary>
+        [JsonProperty("public", NullValueHandling = NullValueHandling.Ignore)]
+        public string Public { get; set; }
+    }
+
+    public class ResultOfNaclSignDetachedVerify
+    {
+        /// <summary>
+        /// `true` if verification succeeded or `false` if it failed
+        /// </summary>
+        [JsonProperty("succeeded", NullValueHandling = NullValueHandling.Ignore)]
+        public bool Succeeded { get; set; }
     }
 
     public class ParamsOfNaclBoxKeyPairFromSecret
@@ -828,7 +859,7 @@ namespace TonSdk.Modules
     public class ResultOfSigningBoxSign
     {
         /// <summary>
-        /// Encoded with `base64`.
+        /// Encoded with `hex`.
         /// </summary>
         [JsonProperty("signature", NullValueHandling = NullValueHandling.Ignore)]
         public string Signature { get; set; }
@@ -930,6 +961,11 @@ namespace TonSdk.Modules
         /// and returns a signature `signature`.
         /// </summary>
         Task<ResultOfNaclSignDetached> NaclSignDetachedAsync(ParamsOfNaclSign @params);
+
+        /// <summary>
+        /// Verifies the signature with public key and `unsigned` data.
+        /// </summary>
+        Task<ResultOfNaclSignDetachedVerify> NaclSignDetachedVerifyAsync(ParamsOfNaclSignDetachedVerify @params);
 
         /// <summary>
         /// Generates a random NaCl key pair
@@ -1128,6 +1164,11 @@ namespace TonSdk.Modules
         public async Task<ResultOfNaclSignDetached> NaclSignDetachedAsync(ParamsOfNaclSign @params)
         {
             return await _client.CallFunctionAsync<ResultOfNaclSignDetached>("crypto.nacl_sign_detached", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfNaclSignDetachedVerify> NaclSignDetachedVerifyAsync(ParamsOfNaclSignDetachedVerify @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfNaclSignDetachedVerify>("crypto.nacl_sign_detached_verify", @params).ConfigureAwait(false);
         }
 
         public async Task<KeyPair> NaclBoxKeypairAsync()

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using TonSdk.Extensions.NodeSe;
 using TonSdk.Modules;
 using Xunit;
@@ -224,8 +225,10 @@ namespace TonSdk.Tests.Modules
             var msg = await _client.Abi.EncodeMessageAsync(deployParams);
             var address = msg.Address;
             var transactionIds = new List<string>();
+            var notifications = new List<ClientError>();
 
             var subscriptionClient = TestClient.Create(_logger);
+
             var handle = await subscriptionClient.Net.SubscribeCollectionAsync(new ParamsOfSubscribeCollection
             {
                 Collection = "transactions",
@@ -237,13 +240,33 @@ namespace TonSdk.Tests.Modules
                 Result = "id account_addr"
             }, (json, result) =>
             {
-                transactionIds.Add((string)json.SelectToken("result.id"));
+                switch (result)
+                {
+                    case 100: // OK
+                        transactionIds.Add((string)json.SelectToken("result.id"));
+                        break;
+
+                    case 101: // Error
+                        var clientError = new TonSerializer(_logger).Deserialize<ClientError>(json);
+                        notifications.Add(clientError);
+                        break;
+
+                    default:
+                        throw new NotSupportedException($"Response code ${result} not supported");
+                }
+
                 return Task.CompletedTask;
             });
 
+            // send grams to create first transaction
             await _client.GetGramsFromGiverAsync(msg.Address);
             await Task.Delay(TimeSpan.FromSeconds(1));
+
+            // check that transaction is received
             Assert.Single(transactionIds);
+
+            // and no error notifications
+            Assert.Empty(notifications);
 
             // suspend subscription
             await subscriptionClient.Net.SuspendAsync();
@@ -251,17 +274,53 @@ namespace TonSdk.Tests.Modules
             // deploy to create second transaction
             await _client.Processing.ProcessMessageAsync(new ParamsOfProcessMessage
             {
-                MessageEncodeParams = deployParams
+                MessageEncodeParams = deployParams,
+                SendEvents = false
             });
+
+            // create second subscription while network is suspended
+            var handle2 = await subscriptionClient.Net.SubscribeCollectionAsync(new ParamsOfSubscribeCollection
+            {
+                Collection = "transactions",
+                Filter = new
+                {
+                    account_addr = new { eq = msg.Address },
+                    status = new { eq = 3 } // Finalized
+                }.ToJson(),
+                Result = "id account_addr"
+            }, (json, result) =>
+            {
+                switch (result)
+                {
+                    case 100: // OK
+                        transactionIds.Add((string)json.SelectToken("result.id"));
+                        break;
+
+                    case 101: // Error
+                        var clientError = new TonSerializer(_logger).Deserialize<ClientError>(json);
+                        notifications.Add(clientError);
+                        break;
+
+                    default:
+                        throw new NotSupportedException($"Response code ${result} not supported");
+                }
+
+                return Task.CompletedTask;
+            });
+
+            await Task.Delay(TimeSpan.FromMilliseconds(500));
 
             // check that second transaction is not received when subscription suspended
             Assert.Single(transactionIds);
+            Assert.Equal(2, notifications.Count);
+            Assert.All(notifications, n =>
+                Assert.Equal((uint)NetErrorCode.NetworkModuleSuspended, n.Code));
 
             // resume subscription
             await subscriptionClient.Net.ResumeAsync();
 
             // run contract function to create new transaction
-            await _client.Processing.ProcessMessageAsync(new ParamsOfProcessMessage
+            await subscriptionClient.Processing.ProcessMessageAsync(new ParamsOfProcessMessage
             {
                 MessageEncodeParams = new ParamsOfEncodeMessage
                 {
@@ -279,10 +338,20 @@ namespace TonSdk.Tests.Modules
                 SendEvents = false
             });
 
-            await Task.Delay(TimeSpan.FromSeconds(1));
+            // give some time for subscription to receive all data
+            await Task.Delay(TimeSpan.FromSeconds(10));
+
+            // check that third transaction is now received after resume
+            Assert.Equal(3, transactionIds.Count);
             Assert.Equal(2, transactionIds.Distinct().Count());
 
+            // and both subscriptions received notification about resume
+            Assert.Equal(4, notifications.Count);
+            Assert.Equal(2, notifications.Count(n => n.Code == (uint)NetErrorCode.NetworkModuleSuspended));
+            Assert.Equal(2, notifications.Count(n => n.Code == (uint)NetErrorCode.NetworkModuleResumed));
+
             await subscriptionClient.Net.UnsubscribeAsync(handle);
+            await subscriptionClient.Net.UnsubscribeAsync(handle2);
         }
 
         [EnvDependentFact]
@@ -330,6 +399,74 @@ namespace TonSdk.Tests.Modules
             Assert.Equal(2, result.Endpoints.Length);
             Assert.Contains("https://cinet.tonlabs.io/", result.Endpoints);
             Assert.Contains("https://cinet2.tonlabs.io/", result.Endpoints);
+        }
+
+        [EnvDependentFact]
+        public async Task Should_Call_Batch_Query()
+        {
+            var batch = await _client.Net.BatchQueryAsync(new ParamsOfBatchQuery
+            {
+                Operations = new ParamsOfQueryOperation[]
+                {
+                    new ParamsOfQueryOperation.QueryCollection
+                    {
+                        Collection = "blocks_signatures",
+                        Result = "id",
+                        Limit = 1
+                    },
+                    new ParamsOfQueryOperation.AggregateCollection
+                    {
+                        Collection = "accounts",
+                        Fields = new[]
+                        {
+                            new FieldAggregation
+                            {
+                                Field = "",
+                                Fn = AggregationFn.COUNT
+                            }
+                        }
+                    },
+                    new ParamsOfQueryOperation.WaitForCollection
+                    {
+                        Collection = "transactions",
+                        Filter = new
+                        {
+                            now = new
+                            {
+                                gt = 20
+                            }
+                        }.ToJson(),
+                        Result = "id now"
+                    }
+                }
+            });
+
+            Assert.Equal(3, batch.Results.Length);
+        }
+
+        [EnvDependentFact]
+        public async Task Should_Call_Aggregate_Collection()
+        {
+            var result = await _client.Net.AggregateCollectionAsync(new ParamsOfAggregateCollection
+            {
+                Collection = "accounts",
+                Fields = new[]
+                {
+                    new FieldAggregation
+                    {
+                        Field = "",
+                        Fn = AggregationFn.COUNT
+                    }
+                }
+            });
+
+            Assert.NotNull(result);
+            Assert.NotNull(result.Values);
+            Assert.NotEmpty(result.Values);
+            Assert.NotNull(result.Values[0]);
+
+            var count = result.Values[0].Value<int>();
+            Assert.True(count > 0);
         }
     }
 }

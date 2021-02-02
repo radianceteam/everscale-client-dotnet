@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.5.2, client module.
+* TON API version 1.6.0, client module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -82,17 +82,30 @@ namespace TonSdk.Modules
         public string ServerAddress { get; set; }
 
         /// <summary>
-        /// Any correct URL format can be specified, including IP addresses
+        /// Any correct URL format can be specified, including IP addresses This parameter is prevailing over
+        /// `server_address`.
         /// </summary>
         [JsonProperty("endpoints", NullValueHandling = NullValueHandling.Ignore)]
         public string[] Endpoints { get; set; }
 
         /// <summary>
-        /// The number of automatic network retries that SDK performs in case of connection problems The default
-        /// value is 5.
+        /// You must use `network.max_reconnect_timeout` that allows to specify maximum network resolving
+        /// timeout.
         /// </summary>
         [JsonProperty("network_retries_count", NullValueHandling = NullValueHandling.Ignore)]
         public sbyte? NetworkRetriesCount { get; set; }
+
+        /// <summary>
+        /// Default value is 120000 (2 min)
+        /// </summary>
+        [JsonProperty("max_reconnect_timeout", NullValueHandling = NullValueHandling.Ignore)]
+        public uint? MaxReconnectTimeout { get; set; }
+
+        /// <summary>
+        /// Deprecated
+        /// </summary>
+        [JsonProperty("reconnect_timeout", NullValueHandling = NullValueHandling.Ignore)]
+        public uint? ReconnectTimeout { get; set; }
 
         /// <summary>
         /// The number of automatic message processing retries that SDK performs in case of `Message Expired
@@ -117,19 +130,13 @@ namespace TonSdk.Modules
         public uint? WaitForTimeout { get; set; }
 
         /// <summary>
-        /// If client's device time is out of sink and difference is more thanthe threshhold then error will
-        /// occur. Also the error will occur if the specified threshhold is more than
+        /// If client's device time is out of sync and difference is more than the threshold then error will
+        /// occur. Also an error will occur if the specified threshold is more than
         /// `message_processing_timeout/2`.
         /// The default value is 15 sec.
         /// </summary>
         [JsonProperty("out_of_sync_threshold", NullValueHandling = NullValueHandling.Ignore)]
         public uint? OutOfSyncThreshold { get; set; }
-
-        /// <summary>
-        /// Timeout between reconnect attempts
-        /// </summary>
-        [JsonProperty("reconnect_timeout", NullValueHandling = NullValueHandling.Ignore)]
-        public uint? ReconnectTimeout { get; set; }
 
         /// <summary>
         /// At the moment is not used in production
@@ -144,7 +151,7 @@ namespace TonSdk.Modules
     public class CryptoConfig
     {
         /// <summary>
-        /// Mnemonic dictionary that will be used by default in crypto funcions. If not specified, 1 dictionary
+        /// Mnemonic dictionary that will be used by default in crypto functions. If not specified, 1 dictionary
         /// will be used.
         /// </summary>
         [JsonProperty("mnemonic_dictionary", NullValueHandling = NullValueHandling.Ignore)]

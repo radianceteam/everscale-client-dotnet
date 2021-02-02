@@ -43,13 +43,16 @@ namespace TonSdk
                 _logger.Warning("Empty JSON passed to deserialize method");
                 return default;
             }
-            if (typeof(T) == typeof(JToken))
+
+            var type = typeof(T);
+            if (type == typeof(JToken))
             {
                 object token = JObject.Parse(json);
                 return (T)token;
             }
             return JsonConvert.DeserializeObject<T>(json,
-                typeof(T).IsTonPolymorphicAbstractType()
+                type.IsTonPolymorphicAbstractType() ||
+                type.IsTonPolymorphicAbstractTypeArray()
                     ? _polymorphicTypeDeserializerSettings
                     : _defaultSerializerSettings);
         }
@@ -82,7 +85,8 @@ namespace TonSdk
             }
 
             return JsonConvert.SerializeObject(any,
-                any.GetType().IsTonPolymorphicConcreteType()
+                any.GetType().IsTonPolymorphicConcreteType() || 
+                any.GetType().IsTonPolymorphicAbstractTypeArray()
                     ? _polymorphicTypeSerializerSettings
                     : _defaultSerializerSettings);
         }
@@ -115,6 +119,11 @@ namespace TonSdk
         public static bool IsTonPolymorphicConcreteType(this Type type)
         {
             return type.BaseType?.GetNestedTypes().Contains(type) == true; // TODO: optimize? cache?
+        }
+
+        public static bool IsTonPolymorphicAbstractTypeArray(this Type type)
+        {
+            return type.IsArray && type.GetElementType().IsTonPolymorphicAbstractType();
         }
     }
 
