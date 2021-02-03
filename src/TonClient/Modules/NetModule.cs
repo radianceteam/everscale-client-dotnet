@@ -1,13 +1,12 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using System;
-using System.Numerics;
-using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.6.0, net module.
+* TON API version 1.6.1, net module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
