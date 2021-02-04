@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.6.1, client module.
+* TON API version 1.6.2, client module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -109,7 +109,7 @@ namespace TonSdk.Modules
 
         /// <summary>
         /// The number of automatic message processing retries that SDK performs in case of `Message Expired
-        /// (507)` error - but only for those messages which local emulation was successfull or failed with
+        /// (507)` error - but only for those messages which local emulation was successful or failed with
         /// replay protection error. The default value is 5.
         /// </summary>
         [JsonProperty("message_retries_count", NullValueHandling = NullValueHandling.Ignore)]
@@ -117,7 +117,7 @@ namespace TonSdk.Modules
 
         /// <summary>
         /// Timeout that is used to process message delivery for the contracts which ABI does not include
-        /// "expire" header. If the message is not delivered within the speficied timeout the appropriate error
+        /// "expire" header. If the message is not delivered within the specified timeout the appropriate error
         /// occurs.
         /// </summary>
         [JsonProperty("message_processing_timeout", NullValueHandling = NullValueHandling.Ignore)]
@@ -226,7 +226,7 @@ namespace TonSdk.Modules
     public abstract class AppRequestResult
     {
         /// <summary>
-        /// Error occured during request processing
+        /// Error occurred during request processing
         /// </summary>
         public class Error : AppRequestResult
         {

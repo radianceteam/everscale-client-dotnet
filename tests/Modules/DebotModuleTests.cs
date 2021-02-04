@@ -11,23 +11,20 @@ using Xunit.Abstractions;
 
 namespace TonSdk.Tests.Modules
 {
-    public class DebotModuleTests/* : IClassFixture<DebotFixture> FIXME: re-enable debot tests */
+    public class DebotModuleTests : IClassFixture<DebotFixture>
     {
         private readonly DebotFixture _fixture;
         private readonly ILogger _logger;
 
         private const int ExitChoice = 9;
 
-        private const string DisabledNote =
-            "Debot tests are DISABLED because the same was done in the original Rust sources";
-
-        public DebotModuleTests(/*DebotFixture fixture, */ITestOutputHelper outputHelper)
+        public DebotModuleTests(DebotFixture fixture, ITestOutputHelper outputHelper)
         {
-            //_fixture = fixture ?? throw new ArgumentNullException(nameof(fixture));
+            _fixture = fixture ?? throw new ArgumentNullException(nameof(fixture));
             _logger = new XUnitTestLogger(outputHelper);
         }
 
-        [EnvDependentFact(Skip = DisabledNote)]
+        [EnvDependentFact]
         public async Task Test_Debot_Goto()
         {
             await new TestBrowser(_fixture.Client, _logger)
@@ -39,7 +36,7 @@ namespace TonSdk.Tests.Modules
                 });
         }
 
-        [EnvDependentFact(Skip = DisabledNote)]
+        [EnvDependentFact]
         public async Task Test_Debot_Print()
         {
             await new TestBrowser(_fixture.Client, _logger)
@@ -53,7 +50,7 @@ namespace TonSdk.Tests.Modules
                 });
         }
 
-        [EnvDependentFact(Skip = DisabledNote)]
+        [EnvDependentFact]
         public async Task Test_Debot_RunAct()
         {
             await new TestBrowser(_fixture.Client, _logger)
@@ -69,7 +66,7 @@ namespace TonSdk.Tests.Modules
                 });
         }
 
-        [EnvDependentFact(Skip = DisabledNote)]
+        [EnvDependentFact]
         public async Task Test_Debot_Run_Method()
         {
             await new TestBrowser(_fixture.Client, _logger)
@@ -83,7 +80,7 @@ namespace TonSdk.Tests.Modules
                 });
         }
 
-        [EnvDependentFact(Skip = DisabledNote)]
+        [EnvDependentFact]
         public async Task Test_Debot_Send_Msg()
         {
             await new TestBrowser(_fixture.Client, _logger)
@@ -98,7 +95,7 @@ namespace TonSdk.Tests.Modules
                 });
         }
 
-        [EnvDependentFact(Skip = DisabledNote)]
+        [EnvDependentFact]
         public async Task Test_Debot_Invoke_Debot()
         {
             await new TestBrowser(_fixture.Client, _logger)
@@ -125,7 +122,7 @@ namespace TonSdk.Tests.Modules
                 });
         }
 
-        [EnvDependentFact(Skip = DisabledNote)]
+        [EnvDependentFact]
         public async Task Test_Debot_Engine_Calls()
         {
             await new TestBrowser(_fixture.Client, _logger)
@@ -142,7 +139,7 @@ namespace TonSdk.Tests.Modules
                 });
         }
 
-        [EnvDependentFact(Skip = DisabledNote)]
+        [EnvDependentFact]
         public async Task Test_Debot_Interface_Call()
         {
             await new TestBrowser(_fixture.Client, _logger)

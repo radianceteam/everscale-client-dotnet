@@ -69,10 +69,10 @@ namespace TonSdk.Tests
                 DebotAddr,
                 debotAbi,
                 "setAbi",
-                JsonConvert.SerializeObject(new
+                new
                 {
-                    debotAbi = debotAbi.ToJson().ToString().ToHexString()
-                }), new Signer.None()).Wait();
+                    debotAbi = ((Abi.Contract)debotAbi).Value.ToJson().ToString().ToHexString()
+                }.ToJson(), new Signer.None()).Wait();
         }
 
         public void Dispose()

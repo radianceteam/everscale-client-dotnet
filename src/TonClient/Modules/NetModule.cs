@@ -1,12 +1,12 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
 using System;
+using System.Numerics;
 using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.6.1, net module.
+* TON API version 1.6.2, net module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -130,32 +130,6 @@ namespace TonSdk.Modules
         }
     }
 
-    // FIXME: https://t.me/ton_sdk/6184
-    internal class ParamsOfQueryOperationTypeConverter : JsonConverter
-    {
-        public override bool CanWrite => true;
-        public override bool CanRead => false;
-
-        public override bool CanConvert(Type objectType)
-        {
-            return objectType.IsAssignableFrom(typeof(ParamsOfQueryOperation));
-        }
-
-        public override object ReadJson(JsonReader reader,
-            Type objectType,
-            object existingValue,
-            JsonSerializer serializer) => throw new NotImplementedException();
-
-        public override void WriteJson(JsonWriter writer,
-            object value,
-            JsonSerializer serializer)
-        {
-            var o = (JObject)JToken.FromObject(value);
-            var wrapper = new JObject { { value.GetType().Name, o } };
-            wrapper.WriteTo(writer);
-        }
-    }
-
     public class FieldAggregation
     {
         /// <summary>
@@ -226,7 +200,7 @@ namespace TonSdk.Modules
         /// List of query operations that must be performed per single fetch.
         /// </summary>
         [JsonProperty("operations", NullValueHandling = NullValueHandling.Ignore,
-            ItemConverterType = typeof(ParamsOfQueryOperationTypeConverter))] // FIXME: this is a manually written line, see https://t.me/ton_sdk/6184
+            ItemConverterType = typeof(PolymorphicConcreteTypeConverter))]
         public ParamsOfQueryOperation[] Operations { get; set; }
     }
 
