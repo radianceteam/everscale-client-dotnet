@@ -5,18 +5,40 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.6.3, boc module.
+* TON API version 1.7.0, boc module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
 namespace TonSdk.Modules
 {
+    public abstract class BocCacheType
+    {
+        /// <summary>
+        /// Such BOC will not be removed from cache until it is unpinned
+        /// </summary>
+        public class Pinned : BocCacheType
+        {
+            [JsonProperty("pin", NullValueHandling = NullValueHandling.Ignore)]
+            public string Pin { get; set; }
+        }
+
+        /// <summary>
+        ///  
+        /// </summary>
+        public class Unpinned : BocCacheType
+        {
+        }
+    }
+
     public enum BocErrorCode
     {
         InvalidBoc = 201,
         SerializationError = 202,
         InappropriateBlock = 203,
         MissingSourceBoc = 204,
+        InsufficientCacheSize = 205,
+        BocRefNotFound = 206,
+        InvalidBocRef = 207,
     }
 
     public class ParamsOfParse
@@ -112,6 +134,64 @@ namespace TonSdk.Modules
         public string Code { get; set; }
     }
 
+    public class ParamsOfBocCacheGet
+    {
+        /// <summary>
+        /// Reference to the cached BOC
+        /// </summary>
+        [JsonProperty("boc_ref", NullValueHandling = NullValueHandling.Ignore)]
+        public string BocRef { get; set; }
+    }
+
+    public class ResultOfBocCacheGet
+    {
+        /// <summary>
+        /// BOC encoded as base64.
+        /// </summary>
+        [JsonProperty("boc", NullValueHandling = NullValueHandling.Ignore)]
+        public string Boc { get; set; }
+    }
+
+    public class ParamsOfBocCacheSet
+    {
+        /// <summary>
+        /// BOC encoded as base64 or BOC reference
+        /// </summary>
+        [JsonProperty("boc", NullValueHandling = NullValueHandling.Ignore)]
+        public string Boc { get; set; }
+
+        /// <summary>
+        /// Cache type
+        /// </summary>
+        [JsonProperty("cache_type", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+        public BocCacheType CacheType { get; set; }
+    }
+
+    public class ResultOfBocCacheSet
+    {
+        /// <summary>
+        /// Reference to the cached BOC
+        /// </summary>
+        [JsonProperty("boc_ref", NullValueHandling = NullValueHandling.Ignore)]
+        public string BocRef { get; set; }
+    }
+
+    public class ParamsOfBocCacheUnpin
+    {
+        /// <summary>
+        /// Pinned name
+        /// </summary>
+        [JsonProperty("pin", NullValueHandling = NullValueHandling.Ignore)]
+        public string Pin { get; set; }
+
+        /// <summary>
+        /// If it is provided then only referenced BOC is unpinned
+        /// </summary>
+        [JsonProperty("boc_ref", NullValueHandling = NullValueHandling.Ignore)]
+        public string BocRef { get; set; }
+    }
+
     /// <summary>
     /// BOC manipulation module.
     /// </summary>
@@ -153,6 +233,21 @@ namespace TonSdk.Modules
         /// Extracts code from TVC contract image
         /// </summary>
         Task<ResultOfGetCodeFromTvc> GetCodeFromTvcAsync(ParamsOfGetCodeFromTvc @params);
+
+        /// <summary>
+        /// Get BOC from cache
+        /// </summary>
+        Task<ResultOfBocCacheGet> CacheGetAsync(ParamsOfBocCacheGet @params);
+
+        /// <summary>
+        /// Save BOC into cache
+        /// </summary>
+        Task<ResultOfBocCacheSet> CacheSetAsync(ParamsOfBocCacheSet @params);
+
+        /// <summary>
+        /// BOCs which don't have another pins will be removed from cache
+        /// </summary>
+        Task CacheUnpinAsync(ParamsOfBocCacheUnpin @params);
     }
 
     internal class BocModule : IBocModule
@@ -202,6 +297,21 @@ namespace TonSdk.Modules
         public async Task<ResultOfGetCodeFromTvc> GetCodeFromTvcAsync(ParamsOfGetCodeFromTvc @params)
         {
             return await _client.CallFunctionAsync<ResultOfGetCodeFromTvc>("boc.get_code_from_tvc", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfBocCacheGet> CacheGetAsync(ParamsOfBocCacheGet @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfBocCacheGet>("boc.cache_get", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfBocCacheSet> CacheSetAsync(ParamsOfBocCacheSet @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfBocCacheSet>("boc.cache_set", @params).ConfigureAwait(false);
+        }
+
+        public async Task CacheUnpinAsync(ParamsOfBocCacheUnpin @params)
+        {
+            await _client.CallFunctionAsync("boc.cache_unpin", @params).ConfigureAwait(false);
         }
     }
 }

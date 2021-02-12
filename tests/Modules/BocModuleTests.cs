@@ -140,5 +140,155 @@ namespace TonSdk.Tests.Modules
             Assert.Equal("te6ccgECFgEAA/8AAib/APSkICLAAZL0oOGK7VNYMPShAwEBCvSkIPShAgAAAgEgBgQB6P9/IdMAAY4mgQIA1xgg+QEBcO1E0PQFgED0DvKK1wv/Ae1HIm917VcDAfkQ8qje7UTQINdJwgGOFvQE0z/TAO1HAW9xAW92AW9zAW9y7VeOGPQF7UcBb3Jwb3Nwb3bIgCDPQMnQb3HtV+LTPwHtR28TIbkgBQBgnzAg+COBA+iogggbd0Cgud6Z7Uchb1Mg7VcwlIA08vDiMNMfAfgjvPK50x8B8UABAgEgEgcCASALCAEJuotV8/gJAfrtR29hbo477UTQINdJwgGOFvQE0z/TAO1HAW9xAW92AW9zAW9y7VeOGPQF7UcBb3Jwb3Nwb3bIgCDPQMnQb3HtV+Le7UdvFpLyM5ftR3FvVu1X4gD4ANH4I7Uf7UcgbxEwAcjLH8nQb1HtV+1HbxLI9ADtR28Tzws/7UdvFgoAHM8LAO1HbxHPFsntVHBqAgFqDwwBCbQAGtbADQH87UdvYW6OO+1E0CDXScIBjhb0BNM/0wDtRwFvcQFvdgFvcwFvcu1Xjhj0Be1HAW9ycG9zcG92yIAgz0DJ0G9x7Vfi3u1Hb2UgbpIwcN5w7UdvEoBA9A7yitcL/7ry4GT4APpA0SDIyfsEgQPocIEAgMhxzwsBIs8KAHHPQPgoDgCOzxYkzxYj+gJxz0Bw+gJw+gKAQM9A+CPPCx9yz0AgySL7AF8FMO1HbxLI9ADtR28Tzws/7UdvFs8LAO1HbxHPFsntVHBq2zABCbRl9ovAEAH47UdvYW6OO+1E0CDXScIBjhb0BNM/0wDtRwFvcQFvdgFvcwFvcu1Xjhj0Be1HAW9ycG9zcG92yIAgz0DJ0G9x7Vfi3tHtR28R1wsfyIIQUMvtF4IQgAAAALHPCx8hzwsfyHPPCwH4KM8Wcs9A+CXPCz+AIc9AIM81Is8xvBEAeJZxz0AhzxeVcc9BIc3iIMlx+wBbIcD/jh7tR28SyPQA7UdvE88LP+1HbxbPCwDtR28RzxbJ7VTecWrbMAIBIBUTAQm7cxLkWBQA+O1Hb2FujjvtRNAg10nCAY4W9ATTP9MA7UcBb3EBb3YBb3MBb3LtV44Y9AXtRwFvcnBvc3BvdsiAIM9AydBvce1X4t74ANH4I7Uf7UcgbxEwAcjLH8nQb1HtV+1HbxLI9ADtR28Tzws/7UdvFs8LAO1HbxHPFsntVHBq2zAAyt1wIddJIMEgjisgwACOHCPQc9ch1wsAIMABltswXwfbMJbbMF8H2zDjBNmW2zBfBtsw4wTZ4CLTHzQgdLsgjhUwIIIQ/////7ogmTAgghD////+ut/fltswXwfbMOAjIfFAAV8H",
                 result.Code);
         }
+
+        [Fact]
+        public async Task Should_Get_Set_Pinned_Cache()
+        {
+            var boc1 = TestClient.Tvc("Hello");
+            var boc2 = TestClient.Tvc("Events");
+
+            var pin1 = "pin1";
+            var pin2 = "pin2";
+
+            var ref1 = await _client.Boc.CacheSetAsync(new ParamsOfBocCacheSet
+            {
+                Boc = boc1,
+                CacheType = new BocCacheType.Pinned
+                {
+                    Pin = pin1
+                }
+            });
+
+            Assert.StartsWith("*", ref1.BocRef);
+            Assert.Equal(65, ref1.BocRef.Length);
+
+            var boc = await _client.Boc.CacheGetAsync(new ParamsOfBocCacheGet
+            {
+                BocRef = ref1.BocRef
+            });
+            Assert.Equal(boc1, boc.Boc);
+
+            var ref2 = await _client.Boc.CacheSetAsync(new ParamsOfBocCacheSet
+            {
+                Boc = boc2,
+                CacheType = new BocCacheType.Pinned
+                {
+                    Pin = pin1
+                }
+            });
+            Assert.NotEqual(ref1.BocRef, ref2.BocRef);
+
+            var ref3 = await _client.Boc.CacheSetAsync(new ParamsOfBocCacheSet
+            {
+                Boc = boc1,
+                CacheType = new BocCacheType.Pinned
+                {
+                    Pin = pin2
+                }
+            });
+            Assert.Equal(ref1.BocRef, ref3.BocRef);
+
+            await _client.Boc.CacheUnpinAsync(new ParamsOfBocCacheUnpin
+            {
+                Pin = pin1
+            });
+
+            boc = await _client.Boc.CacheGetAsync(new ParamsOfBocCacheGet
+            {
+                BocRef = ref1.BocRef
+            });
+            Assert.Equal(boc.Boc, boc1);
+
+            boc = await _client.Boc.CacheGetAsync(new ParamsOfBocCacheGet
+            {
+                BocRef = ref2.BocRef
+            });
+            Assert.Null(boc.Boc);
+
+            var ref4 = await _client.Boc.CacheSetAsync(new ParamsOfBocCacheSet
+            {
+                Boc = boc2,
+                CacheType = new BocCacheType.Pinned
+                {
+                    Pin = pin2
+                }
+            });
+
+            await _client.Boc.CacheUnpinAsync(new ParamsOfBocCacheUnpin
+            {
+                BocRef = ref4.BocRef,
+                Pin = pin2
+            });
+
+            boc = await _client.Boc.CacheGetAsync(new ParamsOfBocCacheGet
+            {
+                BocRef = ref1.BocRef
+            });
+            Assert.Equal(boc.Boc, boc1);
+
+            boc = await _client.Boc.CacheGetAsync(new ParamsOfBocCacheGet
+            {
+                BocRef = ref4.BocRef
+            });
+            Assert.Null(boc.Boc);
+
+            await _client.Boc.CacheUnpinAsync(new ParamsOfBocCacheUnpin
+            {
+                Pin = pin2
+            });
+
+            boc = await _client.Boc.CacheGetAsync(new ParamsOfBocCacheGet
+            {
+                BocRef = ref1.BocRef
+            });
+            Assert.Null(boc.Boc);
+        }
+
+        [Fact]
+        public async Task Should_Get_Set_Unpinned_Cache()
+        {
+            var boc1 = TestClient.Tvc("testDebot");
+            var boc2 = TestClient.Tvc("Subscription");
+
+            var bocMaxSize = Math.Max(boc1.FromBase64String().Length, boc2.FromBase64String().Length);
+
+            using var client = TonClient.Create(new ClientConfig
+            {
+                Boc = new BocConfig
+                {
+                    CacheMaxSize = (uint)(bocMaxSize / 1024.0) + 1
+                }
+            });
+
+            var ref1 = await client.Boc.CacheSetAsync(new ParamsOfBocCacheSet
+            {
+                Boc = boc1,
+                CacheType = new BocCacheType.Unpinned()
+            });
+
+            var boc = await client.Boc.CacheGetAsync(new ParamsOfBocCacheGet
+            {
+                BocRef = ref1.BocRef
+            });
+            Assert.Equal(boc1, boc.Boc);
+
+            var ref2 = await client.Boc.CacheSetAsync(new ParamsOfBocCacheSet
+            {
+                Boc = boc2,
+                CacheType = new BocCacheType.Unpinned()
+            });
+
+            boc = await client.Boc.CacheGetAsync(new ParamsOfBocCacheGet
+            {
+                BocRef = ref1.BocRef
+            });
+            Assert.Null(boc.Boc);
+
+            boc = await client.Boc.CacheGetAsync(new ParamsOfBocCacheGet
+            {
+                BocRef = ref2.BocRef
+            });
+            Assert.Equal(boc2, boc.Boc);
+        }
     }
 }

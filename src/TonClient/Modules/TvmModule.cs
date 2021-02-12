@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.6.3, tvm module.
+* TON API version 1.7.0, tvm module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -147,6 +147,19 @@ namespace TonSdk.Modules
         /// </summary>
         [JsonProperty("skip_transaction_check", NullValueHandling = NullValueHandling.Ignore)]
         public bool? SkipTransactionCheck { get; set; }
+
+        /// <summary>
+        /// The BOC intself returned if no cache type provided
+        /// </summary>
+        [JsonProperty("boc_cache", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+        public BocCacheType BocCache { get; set; }
+
+        /// <summary>
+        /// Empty string is returned if the flag is `false`
+        /// </summary>
+        [JsonProperty("return_updated_account", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? ReturnUpdatedAccount { get; set; }
     }
 
     public class ResultOfRunExecutor
@@ -210,6 +223,19 @@ namespace TonSdk.Modules
         [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
         [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
         public Abi Abi { get; set; }
+
+        /// <summary>
+        /// The BOC intself returned if no cache type provided
+        /// </summary>
+        [JsonProperty("boc_cache", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+        public BocCacheType BocCache { get; set; }
+
+        /// <summary>
+        /// Empty string is returned if the flag is `false`
+        /// </summary>
+        [JsonProperty("return_updated_account", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? ReturnUpdatedAccount { get; set; }
     }
 
     public class ResultOfRunTvm

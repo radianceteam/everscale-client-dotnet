@@ -1,4 +1,4 @@
-1.6.3
+1.7.0
 TYPES
 client.ClientErrorCode
 client.ClientError
@@ -6,6 +6,7 @@ client.ClientConfig
 client.NetworkConfig
 client.CryptoConfig
 client.AbiConfig
+client.BocConfig
 client.BuildInfoDependency
 client.ParamsOfAppRequest
 client.AppRequestResult
@@ -98,6 +99,8 @@ abi.ParamsOfAttachSignatureToMessageBody
 abi.ResultOfAttachSignatureToMessageBody
 abi.ParamsOfEncodeMessage
 abi.ResultOfEncodeMessage
+abi.ParamsOfEncodeInternalMessage
+abi.ResultOfEncodeInternalMessage
 abi.ParamsOfAttachSignature
 abi.ResultOfAttachSignature
 abi.ParamsOfDecodeMessage
@@ -105,6 +108,7 @@ abi.DecodedMessageBody
 abi.ParamsOfDecodeMessageBody
 abi.ParamsOfEncodeAccount
 abi.ResultOfEncodeAccount
+boc.BocCacheType
 boc.BocErrorCode
 boc.ParamsOfParse
 boc.ResultOfParse
@@ -115,6 +119,11 @@ boc.ParamsOfGetBocHash
 boc.ResultOfGetBocHash
 boc.ParamsOfGetCodeFromTvc
 boc.ResultOfGetCodeFromTvc
+boc.ParamsOfBocCacheGet
+boc.ResultOfBocCacheGet
+boc.ParamsOfBocCacheSet
+boc.ResultOfBocCacheSet
+boc.ParamsOfBocCacheUnpin
 processing.ProcessingErrorCode
 processing.ProcessingEvent
 processing.ResultOfProcessMessage
@@ -213,6 +222,7 @@ crypto.remove_signing_box
 abi.encode_message_body
 abi.attach_signature_to_message_body
 abi.encode_message
+abi.encode_internal_message
 abi.attach_signature
 abi.decode_message
 abi.decode_message_body
@@ -225,6 +235,9 @@ boc.parse_shardstate
 boc.get_blockchain_config
 boc.get_boc_hash
 boc.get_code_from_tvc
+boc.cache_get
+boc.cache_set
+boc.cache_unpin
 processing.send_message
 processing.wait_for_transaction
 processing.process_message

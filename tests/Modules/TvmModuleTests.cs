@@ -78,25 +78,15 @@ namespace TonSdk.Tests.Modules
         {
             await TestRunMessageAsync(async (message, abi, account) =>
             {
-                var parsed = await _client.Boc.ParseAccountAsync(new ParamsOfParse
-                {
-                    Boc = account
-                });
-
-                Assert.NotNull(parsed);
-
-                var originalBalance = parsed.Parsed.Value<string>("balance");
-                Assert.NotEmpty(originalBalance);
-
                 var result = await _client.Tvm.RunExecutorAsync(new ParamsOfRunExecutor
                 {
                     Message = message.Message,
                     Abi = abi,
                     Account = new AccountForExecutor.Account
                     {
-                        Boc = account,
-                        UnlimitedBalance = true
-                    }
+                        Boc = account
+                    },
+                    ReturnUpdatedAccount = true
                 });
 
                 Assert.NotNull(result);
@@ -115,7 +105,8 @@ namespace TonSdk.Tests.Modules
                 {
                     Message = message.Message,
                     Abi = abi,
-                    Account = account
+                    Account = account,
+                    ReturnUpdatedAccount = true
                 });
 
                 Assert.NotNull(result);
@@ -130,7 +121,8 @@ namespace TonSdk.Tests.Modules
             {
                 Message = "te6ccgEBAQEAXAAAs0gAV2lB0HI8/VEO/pBKDJJJeoOcIh+dL9JzpmRzM8PfdicAPGNEGwRWGaJsR6UYmnsFVC2llSo1ZZN5mgUnCiHf7ZaUBKgXyAAGFFhgAAAB69+UmQS/LjmiQA==",
                 Account = new AccountForExecutor.None(),
-                SkipTransactionCheck = true
+                SkipTransactionCheck = true,
+                ReturnUpdatedAccount = true
             });
 
             Assert.NotNull(result);
@@ -173,7 +165,8 @@ namespace TonSdk.Tests.Modules
             var result = await _client.Tvm.RunExecutorAsync(new ParamsOfRunExecutor
             {
                 Message = message.Message,
-                Account = new AccountForExecutor.Uninit()
+                Account = new AccountForExecutor.Uninit(),
+                ReturnUpdatedAccount = true
             });
 
             Assert.NotNull(result);

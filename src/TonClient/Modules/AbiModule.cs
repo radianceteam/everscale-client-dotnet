@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.6.3, abi module.
+* TON API version 1.7.0, abi module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -580,6 +580,76 @@ namespace TonSdk.Modules
         public string MessageId { get; set; }
     }
 
+    public class ParamsOfEncodeInternalMessage
+    {
+        /// <summary>
+        /// Contract ABI.
+        /// </summary>
+        [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+        public Abi Abi { get; set; }
+
+        /// <summary>
+        /// Must be specified in case of non-deploy message.
+        /// </summary>
+        [JsonProperty("address", NullValueHandling = NullValueHandling.Ignore)]
+        public string Address { get; set; }
+
+        /// <summary>
+        /// Must be specified in case of deploy message.
+        /// </summary>
+        [JsonProperty("deploy_set", NullValueHandling = NullValueHandling.Ignore)]
+        public DeploySet DeploySet { get; set; }
+
+        /// <summary>
+        /// Must be specified in case of non-deploy message.
+        /// 
+        /// In case of deploy message it is optional and contains parameters
+        /// of the functions that will to be called upon deploy transaction.
+        /// </summary>
+        [JsonProperty("call_set", NullValueHandling = NullValueHandling.Ignore)]
+        public CallSet CallSet { get; set; }
+
+        /// <summary>
+        /// Value in nanograms to be sent with message.
+        /// </summary>
+        [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
+        public string Value { get; set; }
+
+        /// <summary>
+        /// Default is true.
+        /// </summary>
+        [JsonProperty("bounce", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? Bounce { get; set; }
+
+        /// <summary>
+        /// Default is false.
+        /// </summary>
+        [JsonProperty("enable_ihr", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? EnableIhr { get; set; }
+    }
+
+    public class ResultOfEncodeInternalMessage
+    {
+        /// <summary>
+        /// Message BOC encoded with `base64`.
+        /// </summary>
+        [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
+        public string Message { get; set; }
+
+        /// <summary>
+        /// Destination address.
+        /// </summary>
+        [JsonProperty("address", NullValueHandling = NullValueHandling.Ignore)]
+        public string Address { get; set; }
+
+        /// <summary>
+        /// Message id.
+        /// </summary>
+        [JsonProperty("message_id", NullValueHandling = NullValueHandling.Ignore)]
+        public string MessageId { get; set; }
+    }
+
     public class ParamsOfAttachSignature
     {
         /// <summary>
@@ -715,6 +785,13 @@ namespace TonSdk.Modules
         /// </summary>
         [JsonProperty("last_paid", NullValueHandling = NullValueHandling.Ignore)]
         public uint? LastPaid { get; set; }
+
+        /// <summary>
+        /// The BOC intself returned if no cache type provided
+        /// </summary>
+        [JsonProperty("boc_cache", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+        public BocCacheType BocCache { get; set; }
     }
 
     public class ResultOfEncodeAccount
@@ -780,6 +857,25 @@ namespace TonSdk.Modules
         Task<ResultOfEncodeMessage> EncodeMessageAsync(ParamsOfEncodeMessage @params);
 
         /// <summary>
+        /// Allows to encode deploy and function call messages.
+        /// 
+        /// Use cases include messages of any possible type:
+        /// - deploy with initial function call (i.e. `constructor` or any other function that is used for some
+        /// kind
+        /// of initialization);
+        /// - deploy without initial function call;
+        /// - simple function call
+        /// 
+        /// There is an optional public key can be provided in deploy set in order to substitute one
+        /// in TVM file.
+        /// 
+        /// Public key resolving priority:
+        /// 1. Public key from deploy set.
+        /// 2. Public key, specified in TVM file.
+        /// </summary>
+        Task<ResultOfEncodeInternalMessage> EncodeInternalMessageAsync(ParamsOfEncodeInternalMessage @params);
+
+        /// <summary>
         /// Combines `hex`-encoded `signature` with `base64`-encoded `unsigned_message`. Returns signed message
         /// encoded in `base64`.
         /// </summary>
@@ -825,6 +921,11 @@ namespace TonSdk.Modules
         public async Task<ResultOfEncodeMessage> EncodeMessageAsync(ParamsOfEncodeMessage @params)
         {
             return await _client.CallFunctionAsync<ResultOfEncodeMessage>("abi.encode_message", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfEncodeInternalMessage> EncodeInternalMessageAsync(ParamsOfEncodeInternalMessage @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfEncodeInternalMessage>("abi.encode_internal_message", @params).ConfigureAwait(false);
         }
 
         public async Task<ResultOfAttachSignature> AttachSignatureAsync(ParamsOfAttachSignature @params)

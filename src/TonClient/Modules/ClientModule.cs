@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.6.3, client module.
+* TON API version 1.7.0, client module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -70,6 +70,9 @@ namespace TonSdk.Modules
 
         [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
         public AbiConfig Abi { get; set; }
+
+        [JsonProperty("boc", NullValueHandling = NullValueHandling.Ignore)]
+        public BocConfig Boc { get; set; }
     }
 
     public class NetworkConfig
@@ -191,6 +194,15 @@ namespace TonSdk.Modules
         /// </summary>
         [JsonProperty("message_expiration_timeout_grow_factor", NullValueHandling = NullValueHandling.Ignore)]
         public float? MessageExpirationTimeoutGrowFactor { get; set; }
+    }
+
+    public class BocConfig
+    {
+        /// <summary>
+        /// Default is 10 MB
+        /// </summary>
+        [JsonProperty("cache_max_size", NullValueHandling = NullValueHandling.Ignore)]
+        public uint? CacheMaxSize { get; set; }
     }
 
     public class BuildInfoDependency
