@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.7.0, boc module.
+* TON API version 1.8.0, boc module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 

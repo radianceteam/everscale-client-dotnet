@@ -1,5 +1,7 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.Linq;
+using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using TonSdk.Modules;
 using Xunit;
 
@@ -37,6 +39,63 @@ namespace TonSdk.Tests
 
             Assert.NotNull(result);
             return result.Result;
+        }
+
+        public static async Task<string> DownloadAccountAsync(this ITonClient client, string addr)
+        {
+            var accounts = await client.Net.QueryCollectionAsync(new ParamsOfQueryCollection
+            {
+                Collection = "accounts",
+                Filter = new
+                {
+                    id = new
+                    {
+                        eq = addr
+                    }
+                }.ToJson(),
+                Result = "boc",
+                Limit = 1
+            });
+
+            return accounts.Result.FirstOrDefault()?.Value<string>("boc");
+        }
+
+        public static async Task AssertGetMethodAsync(
+            this ITonClient client,
+            string addr,
+            Abi abi,
+            string func,
+            object @params,
+            object returns)
+        {
+            var accountBoc = await client.DownloadAccountAsync(addr);
+            Assert.NotEmpty(accountBoc);
+
+            var message = await client.Abi.EncodeMessageAsync(new ParamsOfEncodeMessage
+            {
+                Abi = abi,
+                Signer = new Signer.None(),
+                Address = addr,
+                CallSet = new CallSet
+                {
+                    FunctionName = func,
+                    Input = @params.ToJson()
+                }
+            });
+
+            var result = await client.Tvm.RunTvmAsync(new ParamsOfRunTvm
+            {
+                Account = accountBoc,
+                Message = message.Message,
+                Abi = abi,
+                ReturnUpdatedAccount = true
+            });
+
+            var output = result.Decoded.Output;
+            Assert.NotNull(output);
+            Assert.Equal(
+                returns.ToJson().ToString(Formatting.None),
+                output.ToString(Formatting.None));
         }
     }
 }

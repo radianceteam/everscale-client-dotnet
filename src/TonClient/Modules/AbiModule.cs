@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.7.0, abi module.
+* TON API version 1.8.0, abi module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 

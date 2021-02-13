@@ -7,8 +7,6 @@ namespace TonSdk.Tests
     internal static class TestClient
     {
         public const string AbiVersionEnvVar = "ABI_VERSION";
-        public const string TestDebotTarget = "testDebotTarget";
-        public const string TestDebot = "testDebot";
 
         public static ITonClient Create(ILogger logger = null)
         {
