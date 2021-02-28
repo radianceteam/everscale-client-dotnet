@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.8.0, abi module.
+* TON API version 1.9.0, abi module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -25,6 +25,7 @@ namespace TonSdk.Modules
         RequiredPublicKeyMissingForFunctionHeader = 309,
         InvalidSigner = 310,
         InvalidAbi = 311,
+        InvalidFunctionId = 312,
     }
 
     public abstract class Abi
@@ -87,7 +88,7 @@ namespace TonSdk.Modules
     public class CallSet
     {
         /// <summary>
-        /// Function name that is being called.
+        /// Function name that is being called. Or function id encoded as string in hex (starting with 0x).
         /// </summary>
         [JsonProperty("function_name", NullValueHandling = NullValueHandling.Ignore)]
         public string FunctionName { get; set; }
@@ -787,7 +788,7 @@ namespace TonSdk.Modules
         public uint? LastPaid { get; set; }
 
         /// <summary>
-        /// The BOC intself returned if no cache type provided
+        /// The BOC itself returned if no cache type provided
         /// </summary>
         [JsonProperty("boc_cache", NullValueHandling = NullValueHandling.Ignore)]
         [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]

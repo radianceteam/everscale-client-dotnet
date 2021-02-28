@@ -366,7 +366,7 @@ namespace TonSdk.Tests.Modules
             Assert.NotEmpty(block.BlockId);
         }
 
-        [EnvDependentFact]
+        [EnvDependentFact(Skip = "Skipped in the TON SDK sources since 1.9.0")]
         public async Task Should_Fetch_Endpoints()
         {
             var client = TonClient.Create(new ClientConfig
@@ -384,7 +384,7 @@ namespace TonSdk.Tests.Modules
             Assert.Contains("https://cinet2.tonlabs.io/", result.Endpoints);
         }
 
-        [EnvDependentFact]
+        [EnvDependentFact(Skip = "Skipped in the TON SDK sources since 1.9.0")]
         public async Task Should_Set_Endpoints()
         {
             var client = TestClient.Create();

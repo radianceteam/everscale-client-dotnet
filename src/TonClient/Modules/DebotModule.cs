@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.8.0, debot module.
+* TON API version 1.9.0, debot module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -22,7 +22,7 @@ namespace TonSdk.Modules
         DebotInvalidAbi = 807,
         DebotGetMethodFailed = 808,
         DebotInvalidMsg = 809,
-        DebotExternaCallFailed = 810,
+        DebotExternalCallFailed = 810,
     }
 
     /// <summary>

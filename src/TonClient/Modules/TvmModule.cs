@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.8.0, tvm module.
+* TON API version 1.9.0, tvm module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -149,7 +149,7 @@ namespace TonSdk.Modules
         public bool? SkipTransactionCheck { get; set; }
 
         /// <summary>
-        /// The BOC intself returned if no cache type provided
+        /// The BOC itself returned if no cache type provided
         /// </summary>
         [JsonProperty("boc_cache", NullValueHandling = NullValueHandling.Ignore)]
         [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
@@ -218,14 +218,14 @@ namespace TonSdk.Modules
         public ExecutionOptions ExecutionOptions { get; set; }
 
         /// <summary>
-        /// Contract ABI for dedcoding output messages
+        /// Contract ABI for decoding output messages
         /// </summary>
         [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
         [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
         public Abi Abi { get; set; }
 
         /// <summary>
-        /// The BOC intself returned if no cache type provided
+        /// The BOC itself returned if no cache type provided
         /// </summary>
         [JsonProperty("boc_cache", NullValueHandling = NullValueHandling.Ignore)]
         [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
@@ -253,7 +253,7 @@ namespace TonSdk.Modules
         public DecodedOutput Decoded { get; set; }
 
         /// <summary>
-        /// Encoded as `base64`. Attention! Only `account_state.storage.state.data` part of the boc is updated.
+        /// Encoded as `base64`. Attention! Only `account_state.storage.state.data` part of the BOC is updated.
         /// </summary>
         [JsonProperty("account", NullValueHandling = NullValueHandling.Ignore)]
         public string Account { get; set; }
@@ -279,14 +279,26 @@ namespace TonSdk.Modules
         [JsonProperty("input", NullValueHandling = NullValueHandling.Ignore)]
         public Newtonsoft.Json.Linq.JToken Input { get; set; }
 
+        /// <summary>
+        /// Execution options
+        /// </summary>
         [JsonProperty("execution_options", NullValueHandling = NullValueHandling.Ignore)]
         public ExecutionOptions ExecutionOptions { get; set; }
+
+        /// <summary>
+        /// Default is `false`. Input parameters may use any of lists representations
+        /// If you receive this error on Web: "Runtime error. Unreachable code should not be executed...",
+        /// set this flag to true.
+        /// This may happen, for example, when elector contract contains too many participants
+        /// </summary>
+        [JsonProperty("tuple_list_as_array", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? TupleListAsArray { get; set; }
     }
 
     public class ResultOfRunGet
     {
         /// <summary>
-        /// Values returned by getmethod on stack
+        /// Values returned by get-method on stack
         /// </summary>
         [JsonProperty("output", NullValueHandling = NullValueHandling.Ignore)]
         public Newtonsoft.Json.Linq.JToken Output { get; set; }
@@ -298,21 +310,22 @@ namespace TonSdk.Modules
         /// Performs all the phases of contract execution on Transaction Executor -
         /// the same component that is used on Validator Nodes.
         /// 
-        /// Can be used for contract debug, to find out the reason of message unsuccessful
-        /// delivery - as Validators just throw away failed transactions, here you can catch it.
+        /// Can be used for contract debugginh, to find out the reason why message was not delivered
+        /// successfully
+        ///  - because Validators just throw away the failed external inbound messages, here you can catch them.
         /// 
         /// Another use case is to estimate fees for message execution. Set
         /// `AccountForExecutor::Account.unlimited_balance`
         /// to `true` so that emulation will not depend on the actual balance.
         /// 
-        /// One more use case - you can procude the sequence of operations,
+        /// One more use case - you can produce the sequence of operations,
         /// thus emulating the multiple contract calls locally.
         /// And so on.
         /// 
-        /// To get the account boc (bag of cells) - use `net.query` method to download it from graphql api
-        /// (field `boc` of `account`) or generate it with `abi.encode_account method`.
-        /// To get the message boc - use `abi.encode_message` or prepare it any other way, for instance, with
-        /// Fift script.
+        /// To get the account BOC (bag of cells) - use `net.query` method to download it from GraphQL API
+        /// (field `boc` of `account`) or generate it with `abi.encode_account` method.
+        /// To get the message BOC - use `abi.encode_message` or prepare it any other way, for instance, with
+        /// FIFT script.
         /// 
         /// If you need this emulation to be as precise as possible then specify `ParamsOfRunExecutor`
         /// parameter.
@@ -325,22 +338,22 @@ namespace TonSdk.Modules
         /// Performs only a part of compute phase of transaction execution
         /// that is used to run get-methods of ABI-compatible contracts.
         /// 
-        /// If you try to run get methods with `run_executor` you will get an error, because it checks ACCEPT
+        /// If you try to run get-methods with `run_executor` you will get an error, because it checks ACCEPT
         /// and exits
-        /// if there is none, which is actually true for get methods.
+        /// if there is none, which is actually true for get-methods.
         /// 
-        ///  To get the account boc (bag of cells) - use `net.query` method to download it from graphql api
+        ///  To get the account BOC (bag of cells) - use `net.query` method to download it from GraphQL API
         /// (field `boc` of `account`) or generate it with `abi.encode_account method`.
-        /// To get the message boc - use `abi.encode_message` or prepare it any other way, for instance, with
-        /// Fift script.
+        /// To get the message BOC - use `abi.encode_message` or prepare it any other way, for instance, with
+        /// FIFT script.
         /// 
         /// Attention! Updated account state is produces as well, but only
-        /// `account_state.storage.state.data`  part of the boc is updated.
+        /// `account_state.storage.state.data`  part of the BOC is updated.
         /// </summary>
         Task<ResultOfRunTvm> RunTvmAsync(ParamsOfRunTvm @params);
 
         /// <summary>
-        /// Executes a getmethod of FIFT contract that fulfills the smc-guidelines
+        /// Executes a get-method of FIFT contract that fulfills the smc-guidelines
         /// https://test.ton.org/smc-guidelines.txt
         /// and returns the result data from TVM's stack
         /// </summary>

@@ -353,7 +353,7 @@ namespace TonSdk.Tests.Modules
 
         [Theory]
         [MemberData(nameof(GetEncodeMessageInternalDeployData))]
-        public async Task ShouldEncodeMessageInternalDeploy(CallSet callSet, string expectedBoc)
+        public async Task Should_Encode_Message_Internal_Deploy(CallSet callSet, string expectedBoc)
         {
             var (abi, tvc) = TestClient.Package("Hello");
             var result = await _client.Abi.EncodeInternalMessageAsync(new ParamsOfEncodeInternalMessage
@@ -386,7 +386,7 @@ namespace TonSdk.Tests.Modules
 
         [Theory]
         [MemberData(nameof(GetEncodeMessageInternalRunData))]
-        public async Task ShouldEncodeMessageInternalRun(CallSet callSet, string expectedBoc)
+        public async Task Should_Encode_Message_Internal_Run(CallSet callSet, string expectedBoc)
         {
             var (abi, tvc) = TestClient.Package("Hello");
             var address = "0:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef";
@@ -478,6 +478,22 @@ namespace TonSdk.Tests.Modules
                     new CallSet
                     {
                         FunctionName = "sayHello"
+                    },
+                    "te6ccgEBAQEAOgAAcGIACRorPEhV5veJGis8SFXm94kaKzxIVeb3iRorPEhV5veh3NZQAAAAAAAAAAAAAAAAAABQy+0X"
+                },
+                new object[]
+                {
+                    new CallSet
+                    {
+                        FunctionName = "0x50cbed17" // sayHello func hex id
+                    },
+                    "te6ccgEBAQEAOgAAcGIACRorPEhV5veJGis8SFXm94kaKzxIVeb3iRorPEhV5veh3NZQAAAAAAAAAAAAAAAAAABQy+0X"
+                },
+                new object[]
+                {
+                    new CallSet
+                    {
+                        FunctionName = "1355541783" // sayHello func id
                     },
                     "te6ccgEBAQEAOgAAcGIACRorPEhV5veJGis8SFXm94kaKzxIVeb3iRorPEhV5veh3NZQAAAAAAAAAAAAAAAAAABQy+0X"
                 },

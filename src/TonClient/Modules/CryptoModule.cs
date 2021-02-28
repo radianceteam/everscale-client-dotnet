@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.8.0, crypto module.
+* TON API version 1.9.0, crypto module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -978,13 +978,13 @@ namespace TonSdk.Modules
         Task<KeyPair> NaclBoxKeypairFromSecretKeyAsync(ParamsOfNaclBoxKeyPairFromSecret @params);
 
         /// <summary>
-        /// Encrypt and authenticate a message using the senders secret key, the recievers public
+        /// Encrypt and authenticate a message using the senders secret key, the receivers public
         /// key, and a nonce.
         /// </summary>
         Task<ResultOfNaclBox> NaclBoxAsync(ParamsOfNaclBox @params);
 
         /// <summary>
-        /// Decrypt and verify the cipher text using the recievers secret key, the senders public key, and the
+        /// Decrypt and verify the cipher text using the receivers secret key, the senders public key, and the
         /// nonce.
         /// </summary>
         Task<ResultOfNaclBoxOpen> NaclBoxOpenAsync(ParamsOfNaclBoxOpen @params);
