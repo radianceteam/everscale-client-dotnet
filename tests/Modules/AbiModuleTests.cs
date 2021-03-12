@@ -386,20 +386,23 @@ namespace TonSdk.Tests.Modules
 
         [Theory]
         [MemberData(nameof(GetEncodeMessageInternalRunData))]
-        public async Task Should_Encode_Message_Internal_Run(CallSet callSet, string expectedBoc)
+        public async Task Should_Encode_Message_Internal_Run(Abi abi, CallSet callSet, string src, string dst, string expectedBoc)
         {
-            var (abi, tvc) = TestClient.Package("Hello");
-            var address = "0:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef";
             var result = await _client.Abi.EncodeInternalMessageAsync(new ParamsOfEncodeInternalMessage
             {
                 Abi = abi,
-                Address = address,
+                SrcAddress = src,
+                Address = dst,
                 CallSet = callSet,
                 Value = "1000000000",
                 Bounce = true
             });
 
             Assert.Equal(expectedBoc, result.Message);
+            if (dst != null)
+            {
+                Assert.Equal(result.Address, dst);
+            }
 
             var parsed = await _client.Boc.ParseMessageAsync(new ParamsOfParse
             {
@@ -408,8 +411,8 @@ namespace TonSdk.Tests.Modules
 
             Assert.NotNull(parsed);
             Assert.Equal("internal", parsed.Parsed.Value<string>("msg_type_name"));
-            Assert.Equal("", parsed.Parsed.Value<string>("src"));
-            Assert.Equal(address, parsed.Parsed.Value<string>("dst"));
+            Assert.Equal(src ?? "", parsed.Parsed.Value<string>("src"));
+            Assert.Equal(dst ?? result.Address, parsed.Parsed.Value<string>("dst"));
             Assert.Equal("0x3b9aca00", parsed.Parsed.Value<string>("value"));
             Assert.True(parsed.Parsed.Value<bool>("bounce"));
             Assert.True(parsed.Parsed.Value<bool>("ihr_disabled"));
@@ -475,28 +478,54 @@ namespace TonSdk.Tests.Modules
             {
                 new object[]
                 {
+                    TestClient.Abi("Hello"),
                     new CallSet
                     {
                         FunctionName = "sayHello"
                     },
+                    null,
+                    "0:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
                     "te6ccgEBAQEAOgAAcGIACRorPEhV5veJGis8SFXm94kaKzxIVeb3iRorPEhV5veh3NZQAAAAAAAAAAAAAAAAAABQy+0X"
                 },
                 new object[]
                 {
+                    TestClient.Abi("Hello"),
                     new CallSet
                     {
                         FunctionName = "0x50cbed17" // sayHello func hex id
                     },
+                    null,
+                    "0:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
                     "te6ccgEBAQEAOgAAcGIACRorPEhV5veJGis8SFXm94kaKzxIVeb3iRorPEhV5veh3NZQAAAAAAAAAAAAAAAAAABQy+0X"
                 },
                 new object[]
                 {
+                    TestClient.Abi("Hello"),
                     new CallSet
                     {
                         FunctionName = "1355541783" // sayHello func id
                     },
+                    null,
+                    "0:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
                     "te6ccgEBAQEAOgAAcGIACRorPEhV5veJGis8SFXm94kaKzxIVeb3iRorPEhV5veh3NZQAAAAAAAAAAAAAAAAAABQy+0X"
                 },
+                // test_encode_internal_message_empty_body
+                new object[]
+                {
+                    null,
+                    null,
+                    null,
+                    "0:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+                    "te6ccgEBAQEANgAAaGIACRorPEhV5veJGis8SFXm94kaKzxIVeb3iRorPEhV5veh3NZQAAAAAAAAAAAAAAAAAAA="
+                },
+                new object[]
+                {
+                    null,
+                    null,
+                    "0:841288ed3b55d9cdafa806807f02a0ae0c169aa5edfe88a789a6482429756a94",
+                    "0:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+                    "te6ccgEBAQEAWAAAq2gBCCUR2nars5tfUA0A/gVBXBgtNUvb/RFPE0yQSFLq1SkABI0VniQq83vEjRWeJCrze8SNFZ4kKvN7xI0VniQq83vQ7msoAAAAAAAAAAAAAAAAAABA"
+                }
             };
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using TonSdk.Extensions.NodeSe;
 using TonSdk.Modules;
 
@@ -34,5 +35,11 @@ namespace TonSdk.Tests
         }
 
         public static int AbiVersion => int.Parse(Environment.GetEnvironmentVariable(AbiVersionEnvVar) ?? TonClient.DefaultAbiVersion.ToString());
+
+        public static async Task<KeyPair> GenerateSignKeysAsync()
+        {
+            using var client = TestClient.Create();
+            return await client.Crypto.GenerateRandomSignKeysAsync();
+        }
     }
 }

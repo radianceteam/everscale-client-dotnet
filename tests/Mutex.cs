@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace TonSdk.Tests
 {
-    internal class Mutex<T>
+    public class Mutex<T>
     {
         internal T Instance;
         private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
@@ -21,7 +21,7 @@ namespace TonSdk.Tests
         }
     }
 
-    internal class Lock<T> : IDisposable
+    public class Lock<T> : IDisposable
     {
         private readonly SemaphoreSlim _semaphoreSlim;
         private readonly Mutex<T> _mutex;

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.9.0, abi module.
+* TON API version 1.10.0, abi module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -584,7 +584,7 @@ namespace TonSdk.Modules
     public class ParamsOfEncodeInternalMessage
     {
         /// <summary>
-        /// Contract ABI.
+        /// Can be None if both deploy_set and call_set are None.
         /// </summary>
         [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
         [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
@@ -595,6 +595,12 @@ namespace TonSdk.Modules
         /// </summary>
         [JsonProperty("address", NullValueHandling = NullValueHandling.Ignore)]
         public string Address { get; set; }
+
+        /// <summary>
+        /// Source address of the message.
+        /// </summary>
+        [JsonProperty("src_address", NullValueHandling = NullValueHandling.Ignore)]
+        public string SrcAddress { get; set; }
 
         /// <summary>
         /// Must be specified in case of deploy message.
@@ -612,7 +618,7 @@ namespace TonSdk.Modules
         public CallSet CallSet { get; set; }
 
         /// <summary>
-        /// Value in nanograms to be sent with message.
+        /// Value in nanotokens to be sent with message.
         /// </summary>
         [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
         public string Value { get; set; }

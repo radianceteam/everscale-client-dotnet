@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.9.0, boc module.
+* TON API version 1.10.0, boc module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -83,7 +83,7 @@ namespace TonSdk.Modules
     public class ParamsOfGetBlockchainConfig
     {
         /// <summary>
-        /// Key block BOC encoded as base64
+        /// Key block BOC or zerostate BOC encoded as base64
         /// </summary>
         [JsonProperty("block_boc", NullValueHandling = NullValueHandling.Ignore)]
         public string BlockBoc { get; set; }
@@ -193,6 +193,106 @@ namespace TonSdk.Modules
     }
 
     /// <summary>
+    /// Cell builder operation.
+    /// </summary>
+    public abstract class BuilderOp
+    {
+        /// <summary>
+        /// Append integer to cell data.
+        /// </summary>
+        public class Integer : BuilderOp
+        {
+            /// <summary>
+            /// Bit size of the value.
+            /// </summary>
+            [JsonProperty("size", NullValueHandling = NullValueHandling.Ignore)]
+            public byte Size { get; set; }
+
+            /// <summary>
+            /// e.g. `123`, `-123`. - Decimal string. e.g. `"123"`, `"-123"`.
+            /// - `0x` prefixed hexadecimal string.
+            ///   e.g `0x123`, `0X123`, `-0x123`.
+            /// </summary>
+            [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
+            public Newtonsoft.Json.Linq.JToken Value { get; set; }
+        }
+
+        /// <summary>
+        /// Append bit string to cell data.
+        /// </summary>
+        public class BitString : BuilderOp
+        {
+            /// <summary>
+            /// Contains hexadecimal string representation:
+            /// - Can end with `_` tag.
+            /// - Can be prefixed with `x` or `X`.
+            /// - Can be prefixed with `x{` or `X{` and ended with `}`.
+            /// 
+            /// Contains binary string represented as a sequence
+            /// of `0` and `1` prefixed with `n` or `N`.
+            /// 
+            /// Examples:
+            /// `1AB`, `x1ab`, `X1AB`, `x{1abc}`, `X{1ABC}`
+            /// `2D9_`, `x2D9_`, `X2D9_`, `x{2D9_}`, `X{2D9_}`
+            /// `n00101101100`, `N00101101100`
+            /// </summary>
+            [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
+            public string Value { get; set; }
+        }
+
+        /// <summary>
+        /// Append ref to nested cells
+        /// </summary>
+        public class Cell : BuilderOp
+        {
+            /// <summary>
+            /// Nested cell builder
+            /// </summary>
+            [JsonProperty("builder", NullValueHandling = NullValueHandling.Ignore,
+            ItemConverterType = typeof(PolymorphicConcreteTypeConverter))]
+            public BuilderOp[] Builder { get; set; }
+        }
+
+        /// <summary>
+        /// Append ref to nested cell
+        /// </summary>
+        public class CellBoc : BuilderOp
+        {
+            /// <summary>
+            /// Nested cell BOC encoded with `base64` or BOC cache key.
+            /// </summary>
+            [JsonProperty("boc", NullValueHandling = NullValueHandling.Ignore)]
+            public string Boc { get; set; }
+        }
+    }
+
+    public class ParamsOfEncodeBoc
+    {
+        /// <summary>
+        /// Cell builder operations.
+        /// </summary>
+        [JsonProperty("builder", NullValueHandling = NullValueHandling.Ignore,
+            ItemConverterType = typeof(PolymorphicConcreteTypeConverter))]
+        public BuilderOp[] Builder { get; set; }
+
+        /// <summary>
+        /// Cache type to put the result. The BOC itself returned if no cache type provided.
+        /// </summary>
+        [JsonProperty("boc_cache", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+        public BocCacheType BocCache { get; set; }
+    }
+
+    public class ResultOfEncodeBoc
+    {
+        /// <summary>
+        /// Encoded cell BOC or BOC cache key.
+        /// </summary>
+        [JsonProperty("boc", NullValueHandling = NullValueHandling.Ignore)]
+        public string Boc { get; set; }
+    }
+
+    /// <summary>
     /// BOC manipulation module.
     /// </summary>
     public interface IBocModule
@@ -222,6 +322,9 @@ namespace TonSdk.Modules
         /// </summary>
         Task<ResultOfParse> ParseShardstateAsync(ParamsOfParseShardstate @params);
 
+        /// <summary>
+        /// Extract blockchain configuration from key block and also from zerostate.
+        /// </summary>
         Task<ResultOfGetBlockchainConfig> GetBlockchainConfigAsync(ParamsOfGetBlockchainConfig @params);
 
         /// <summary>
@@ -248,6 +351,11 @@ namespace TonSdk.Modules
         /// BOCs which don't have another pins will be removed from cache
         /// </summary>
         Task CacheUnpinAsync(ParamsOfBocCacheUnpin @params);
+
+        /// <summary>
+        /// Encodes BOC from builder operations.
+        /// </summary>
+        Task<ResultOfEncodeBoc> EncodeBocAsync(ParamsOfEncodeBoc @params);
     }
 
     internal class BocModule : IBocModule
@@ -312,6 +420,11 @@ namespace TonSdk.Modules
         public async Task CacheUnpinAsync(ParamsOfBocCacheUnpin @params)
         {
             await _client.CallFunctionAsync("boc.cache_unpin", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfEncodeBoc> EncodeBocAsync(ParamsOfEncodeBoc @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfEncodeBoc>("boc.encode_boc", @params).ConfigureAwait(false);
         }
     }
 }

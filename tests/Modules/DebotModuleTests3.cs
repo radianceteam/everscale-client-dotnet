@@ -18,7 +18,7 @@ namespace TonSdk.Tests.Modules
         }
 
         [EnvDependentFact]
-        public async Task Test_Debot_Sdk_Interface()
+        public async Task Test_Debot_Inner_Interfaces()
         {
             var browser = await _fixture.GetDebotBrowserAsync(_logger);
             await browser.ExecuteAsync(new List<DebotStep>(), new List<string>
@@ -27,9 +27,16 @@ namespace TonSdk.Tests.Modules
                 "test substring2 passed",
                 "test mnemonicDeriveSignKeys passed",
                 "test genRandom passed",
+                "test naclbox passed",
+                "test naclKeypairFromSecret passed",
+                "test hex encode passed",
+                "test base64 encode passed",
                 "test mnemonic passed",
+                "test naclboxopen passed",
                 "test account passed",
-                "test hdkeyXprv passed"
+                "test hdkeyXprv passed",
+                "test hex decode passed",
+                "test base64 decode passed"
             });
         }
     }

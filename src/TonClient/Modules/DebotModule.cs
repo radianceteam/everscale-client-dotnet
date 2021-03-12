@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.9.0, debot module.
+* TON API version 1.10.0, debot module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -90,6 +90,12 @@ namespace TonSdk.Modules
         /// </summary>
         [JsonProperty("debot_handle", NullValueHandling = NullValueHandling.Ignore)]
         public uint DebotHandle { get; set; }
+
+        /// <summary>
+        /// Debot abi as json string.
+        /// </summary>
+        [JsonProperty("debot_abi", NullValueHandling = NullValueHandling.Ignore)]
+        public string DebotAbi { get; set; }
     }
 
     /// <summary>
@@ -270,22 +276,10 @@ namespace TonSdk.Modules
         public uint DebotHandle { get; set; }
 
         /// <summary>
-        /// Std address of interface or debot.
+        /// BOC of internal message to debot encoded in base64 format.
         /// </summary>
-        [JsonProperty("source", NullValueHandling = NullValueHandling.Ignore)]
-        public string Source { get; set; }
-
-        /// <summary>
-        /// Function Id to call
-        /// </summary>
-        [JsonProperty("func_id", NullValueHandling = NullValueHandling.Ignore)]
-        public uint FuncId { get; set; }
-
-        /// <summary>
-        /// Json string with parameters
-        /// </summary>
-        [JsonProperty("params", NullValueHandling = NullValueHandling.Ignore)]
-        public string Params { get; set; }
+        [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
+        public string Message { get; set; }
     }
 
     /// <summary>

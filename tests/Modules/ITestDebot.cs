@@ -223,4 +223,63 @@ namespace TonSdk.Tests.Modules
             }.ToJson(), new Signer.Keys { KeysProperty = Keys });
         }
     }
+
+    public class TestDebotPair : AbstractTestDebot
+    {
+        public override string Name { get; } = "tda";
+
+        private ParamsOfEncodeMessage _targetDeployParams;
+
+        protected override async Task<JToken> GetConstructorParamsAsync()
+        {
+            var (targetAbi, targetTvc) = TestClient.Package("tdb");
+
+            _targetDeployParams = new ParamsOfEncodeMessage
+            {
+                Abi = targetAbi,
+                DeploySet = new DeploySet
+                {
+                    Tvc = targetTvc
+                },
+                Signer = new Signer.Keys
+                {
+                    KeysProperty = Keys
+                },
+                CallSet = new CallSet
+                {
+                    FunctionName = "constructor"
+                }
+            };
+
+            TargetAddr = (await Client.Abi.EncodeMessageAsync(_targetDeployParams)).Address;
+            TargetAbi = targetAbi;
+
+            await Client.GetGramsFromGiverAsync(TargetAddr);
+
+            return new
+            {
+                targetAddr = TargetAddr
+            }.ToJson();
+        }
+
+        protected override async Task SetAbiAsync()
+        {
+            await base.SetAbiAsync();
+
+            await Client.DeployWithGiverAsync(_targetDeployParams, 1_000_000_000);
+
+            await Client.NetProcessFunctionAsync(
+                TargetAddr,
+                TargetAbi,
+                "setAbi",
+                new
+                {
+                    debotAbi = ((Abi.Contract)TargetAbi).Value.ToJson().ToString().ToHexString()
+                }.ToJson(),
+                new Signer.Keys
+                {
+                    KeysProperty = Keys
+                });
+        }
+    }
 }

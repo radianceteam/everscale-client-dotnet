@@ -1,4 +1,4 @@
-1.9.0
+1.10.0
 TYPES
 client.ClientErrorCode
 client.ClientError
@@ -124,6 +124,9 @@ boc.ResultOfBocCacheGet
 boc.ParamsOfBocCacheSet
 boc.ResultOfBocCacheSet
 boc.ParamsOfBocCacheUnpin
+boc.BuilderOp
+boc.ParamsOfEncodeBoc
+boc.ResultOfEncodeBoc
 processing.ProcessingErrorCode
 processing.ProcessingEvent
 processing.ResultOfProcessMessage
@@ -238,6 +241,7 @@ boc.get_code_from_tvc
 boc.cache_get
 boc.cache_set
 boc.cache_unpin
+boc.encode_boc
 processing.send_message
 processing.wait_for_transaction
 processing.process_message

@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -81,12 +80,15 @@ namespace TonSdk.Tests.Modules
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task ExecuteAsync(List<string> terminalOutputs)
+        public async Task ExecuteAsync(List<DebotStep> steps, List<string> terminalOutputs = null)
         {
-            await ExecuteAsync(new List<DebotStep>(), terminalOutputs);
+            await ExecuteWithFuncAsync(steps, data => _debot.Client.Debot.StartAsync(new ParamsOfStart
+            {
+                Address = data.Address
+            }, GetExecuteCallback(data)), terminalOutputs);
         }
 
-        public async Task ExecuteAsync(List<DebotStep> steps, List<string> terminalOutputs = null)
+        public async Task ExecuteWithFuncAsync(List<DebotStep> steps, Func<BrowserData, Task<RegisteredDebot>> startFunc, List<string> terminalOutputs = null)
         {
             // TODO: use terminalOutputs
 
@@ -100,19 +102,31 @@ namespace TonSdk.Tests.Modules
                 Terminal = new Mutex<Terminal>(new Terminal(terminalOutputs ?? new List<string>()))
             };
 
-            await ExecuteFromStateAsync(state, data => _debot.Client.Debot.StartAsync(new ParamsOfStart
+            await ExecuteFromStateAsync(state, startFunc);
+        }
+
+        private static async Task<RegisteredDebot> FetchDebotAsync(BrowserData state, string addr, Func<BrowserData, Task<RegisteredDebot>> startFunc)
+        {
+            var handle = await startFunc(state);
+
+            using var bots = await state.Bots.LockAsync();
+
+            bots.Instance.Add(addr, new RegisteredDebot
             {
-                Address = state.Address
-            }, GetExecuteCallback(state)));
+                DebotAbi = handle.DebotAbi,
+                DebotHandle = handle.DebotHandle
+            });
+
+            return handle;
         }
 
         private async Task ExecuteFromStateAsync(BrowserData state, Func<BrowserData, Task<RegisteredDebot>> startFunc)
         {
-            var handle = await startFunc(state);
+            var handle = await FetchDebotAsync(state, state.Address, startFunc);
 
             while (!state.Finished)
             {
-                await ExecuteInterfaceCallsAsync(handle, state);
+                await HandleMessageQueueAsync(handle, state);
 
                 DebotAction action;
                 using (var step = await state.Current.LockAsync())
@@ -178,7 +192,7 @@ namespace TonSdk.Tests.Modules
             Assert.Empty(terminal.Instance.Messages);
         }
 
-        private async Task ExecuteInterfaceCallsAsync(RegisteredDebot debot, BrowserData data)
+        private async Task HandleMessageQueueAsync(RegisteredDebot debot, BrowserData data)
         {
             var msg = await data.PopMessageAsync();
             while (msg != null)
@@ -191,41 +205,80 @@ namespace TonSdk.Tests.Modules
                 var body = parsed.Parsed["body"]?.ToString();
                 Assert.NotNull(body);
 
-                var ifaceAddr = parsed.Parsed["dst"]?.ToString();
-                Assert.NotNull(ifaceAddr);
+                var destAddr = parsed.Parsed["dst"]?.ToString();
+                Assert.NotNull(destAddr);
 
-                var wcAndAddr = ifaceAddr.Split(":");
+                var srcAddr = parsed.Parsed["src"]?.ToString();
+
+                var wcAndAddr = destAddr.Split(":");
                 Assert.True(wcAndAddr.Length > 1);
 
                 var wc = int.Parse(wcAndAddr[0]);
-                Assert.Equal(DebotWc, wc);
-
                 var interfaceId = wcAndAddr[1];
-                Assert.Contains(interfaceId, _supportedInterfaces);
 
-                var decoded = await _debot.Client.Abi.DecodeMessageBodyAsync(new ParamsOfDecodeMessageBody
+                if (wc == DebotWc)
                 {
-                    Abi = GetInterfaceAbi(interfaceId),
-                    Body = body,
-                    IsInternal = true
-                });
+                    Assert.Contains(interfaceId, _supportedInterfaces);
 
-                _logger.Information($"call for interface id {interfaceId}");
-                _logger.Information($"request: {decoded.Name} ({decoded.Value})");
+                    var decoded = await _debot.Client.Abi.DecodeMessageBodyAsync(new ParamsOfDecodeMessageBody
+                    {
+                        Abi = GetInterfaceAbi(interfaceId),
+                        Body = body,
+                        IsInternal = true
+                    });
 
-                var (funcId, returnArgs) = _supportedInterfaces[0] == interfaceId
-                    ? data.Echo.Call(decoded.Name, decoded.Value)
-                    : await CallTerminalAsync(data, decoded.Name, decoded.Value);
+                    _logger.Information($"call for interface id {interfaceId}");
+                    _logger.Information($"request: {decoded.Name} ({decoded.Value})");
 
-                _logger.Information($"response: {funcId} ({returnArgs})");
+                    var (funcId, returnArgs) = _supportedInterfaces[0] == interfaceId
+                        ? data.Echo.Call(decoded.Name, decoded.Value)
+                        : await CallTerminalAsync(data, decoded.Name, decoded.Value);
 
-                await _debot.Client.Debot.SendAsync(new ParamsOfSend
+                    _logger.Information($"response: {funcId} ({returnArgs})");
+
+                    var srcDebot = await data.GetDebotAsync(srcAddr);
+                    var message = await _debot.Client.Abi.EncodeInternalMessageAsync(new ParamsOfEncodeInternalMessage
+                    {
+                        Abi = new Abi.Json
+                        {
+                            Value = srcDebot.DebotAbi
+                        },
+                        Address = srcAddr,
+                        CallSet = funcId == 0
+                            ? null
+                            : new CallSet
+                            {
+                                FunctionName = $"0x{funcId:X}",
+                                Input = returnArgs
+                            },
+                        Value = "1000000000000000"
+                    });
+
+
+                    await _debot.Client.Debot.SendAsync(new ParamsOfSend
+                    {
+                        DebotHandle = debot.DebotHandle,
+                        Message = message.Message
+                    });
+                }
+                else
                 {
-                    DebotHandle = debot.DebotHandle,
-                    Source = ifaceAddr,
-                    FuncId = funcId,
-                    Params = returnArgs.ToString()
-                });
+                    if (!await data.DebotFetchedAsync(destAddr))
+                    {
+                        await FetchDebotAsync(data, destAddr, state =>
+                            _debot.Client.Debot.FetchAsync(new ParamsOfFetch
+                            {
+                                Address = destAddr
+                            }, GetExecuteCallback(data)));
+                    }
+
+                    var debotHandle = (await data.GetDebotAsync(destAddr)).DebotHandle;
+                    await _debot.Client.Debot.SendAsync(new ParamsOfSend
+                    {
+                        DebotHandle = debotHandle,
+                        Message = msg
+                    });
+                }
 
                 msg = await data.PopMessageAsync();
             }
@@ -367,14 +420,14 @@ namespace TonSdk.Tests.Modules
         public List<List<DebotStep>> Invokes { get; set; } = new List<List<DebotStep>>();
     }
 
-    internal class CurrentStepData
+    public class CurrentStepData
     {
         public List<DebotAction> AvailableActions { get; set; } = new List<DebotAction>();
         public List<string> Outputs { get; set; } = new List<string>();
         public DebotStep Step { get; set; }
     }
 
-    internal class BrowserData
+    public class BrowserData
     {
         public Mutex<CurrentStepData> Current { get; set; }
         public Mutex<List<DebotStep>> Next { get; set; }
@@ -385,15 +438,32 @@ namespace TonSdk.Tests.Modules
         public Mutex<Queue<string>> MsgQueue = new Mutex<Queue<string>>(new Queue<string>());
         public Mutex<Terminal> Terminal { get; set; } = new Mutex<Terminal>(new Terminal(new List<string>()));
         public Echo Echo { get; } = new Echo();
+        public Mutex<IDictionary<string, RegisteredDebot>> Bots = new Mutex<IDictionary<string, RegisteredDebot>>(new Dictionary<string, RegisteredDebot>());
 
         public async Task<string> PopMessageAsync()
         {
             using var queue = await MsgQueue.LockAsync();
             return queue.Instance.Any() ? queue.Instance.Dequeue() : null;
         }
+
+        public async Task<bool> DebotFetchedAsync(string addr)
+        {
+            using (var bots = await Bots.LockAsync())
+            {
+                return bots.Instance.ContainsKey(addr);
+            }
+        }
+
+        public async Task<RegisteredDebot> GetDebotAsync(string addr)
+        {
+            using var bots = await Bots.LockAsync();
+            return bots.Instance.ContainsKey(addr)
+                ? bots.Instance[addr]
+                : null;
+        }
     }
 
-    internal class Echo
+    public class Echo
     {
         public (uint, JToken) Call(string func, JToken args)
         {
@@ -403,10 +473,10 @@ namespace TonSdk.Tests.Modules
                     var answerId = args.Value<uint>("answerId");
                     var requestVec = args.Value<string>("request").FromHexString();
                     var request = Encoding.UTF8.GetString(requestVec);
-                    return (answerId, JsonConvert.SerializeObject(new
+                    return (answerId, new
                     {
                         response = request.ToHexString()
-                    }));
+                    }.ToJson());
 
                 default:
                     throw new NotSupportedException($"interface function {func} not found");
@@ -414,7 +484,7 @@ namespace TonSdk.Tests.Modules
         }
     }
 
-    internal class Terminal
+    public class Terminal
     {
         public List<string> Messages { get; }
 
@@ -425,10 +495,11 @@ namespace TonSdk.Tests.Modules
 
         public (uint, JToken) Print(uint answerId, string message)
         {
+            Assert.True(Messages.Any(), $"Unexpected terminal message received: \"{message}\"");
             Assert.Contains(message, Messages);
             Assert.Equal(message, Messages[0]);
             Messages.RemoveAt(0);
-            return (answerId, JsonConvert.SerializeObject(new { }));
+            return (answerId, new { }.ToJson());
         }
 
         public (uint, JToken) Call(string func, JToken args)
@@ -445,7 +516,7 @@ namespace TonSdk.Tests.Modules
                     answerId = DecodeAbiNumber(args.Value<string>("answerId"));
                     var prompt = Encoding.UTF8.GetString(args.Value<string>("prompt").FromHexString());
                     Print(answerId, prompt);
-                    return (answerId, JsonConvert.SerializeObject(new { value = 1 }));
+                    return (answerId, new { value = 1 }.ToJson());
 
                 default:
                     throw new NotSupportedException($"interface function {func} not found");

@@ -86,6 +86,17 @@ namespace TonSdk.Tests
         }
 
         [Fact]
+        public void Should_Serialize_Raw_Json()
+        {
+            Assert.Equal("{\"function_name\":\"test\",\"input\":{\"test\":1}}",
+                _serializer.Serialize(new CallSet
+                {
+                    FunctionName = "test",
+                    Input = new { test = 1 }.ToJson()
+                }));
+        }
+
+        [Fact]
         public void Should_Serialize_Polymorphic_Library_Type_With_No_Properties()
         {
             Assert.Equal("{\"type\":\"AccountId\"}",

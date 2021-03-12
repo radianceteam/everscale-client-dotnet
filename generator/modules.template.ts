@@ -296,7 +296,7 @@ function writeTypeMembers(type: TonApiSpec.Type, writer: CSharpWriter) {
         if (field.type === 'Array' &&
             field.array_item.type === 'Ref' &&
             isPolymorphicType(field.array_item.ref_name)) {
-            writer.writeLine(`[JsonProperty("operations", NullValueHandling = NullValueHandling.Ignore,
+            writer.writeLine(`[JsonProperty("${field.name}", NullValueHandling = NullValueHandling.Ignore,
             ItemConverterType = typeof(PolymorphicConcreteTypeConverter))]`);
         } else {
             writer.writeLine(`[JsonProperty("${field.name}", NullValueHandling = NullValueHandling.Ignore)]`);
