@@ -90,8 +90,6 @@ namespace TonSdk.Tests.Modules
 
         public async Task ExecuteWithFuncAsync(List<DebotStep> steps, Func<BrowserData, Task<RegisteredDebot>> startFunc, List<string> terminalOutputs = null)
         {
-            // TODO: use terminalOutputs
-
             var state = new BrowserData
             {
                 Current = new Mutex<CurrentStepData>(new CurrentStepData()),
