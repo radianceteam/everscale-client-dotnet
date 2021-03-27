@@ -1,4 +1,4 @@
-1.10.0
+1.11.0
 TYPES
 client.ClientErrorCode
 client.ClientError
@@ -138,6 +138,8 @@ processing.ParamsOfProcessMessage
 utils.AddressStringFormat
 utils.ParamsOfConvertAddress
 utils.ResultOfConvertAddress
+utils.ParamsOfCalcStorageFee
+utils.ResultOfCalcStorageFee
 tvm.TvmErrorCode
 tvm.ExecutionOptions
 tvm.AccountForExecutor
@@ -246,6 +248,7 @@ processing.send_message
 processing.wait_for_transaction
 processing.process_message
 utils.convert_address
+utils.calc_storage_fee
 tvm.run_executor
 tvm.run_tvm
 tvm.run_get

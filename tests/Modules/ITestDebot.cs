@@ -224,6 +224,69 @@ namespace TonSdk.Tests.Modules
         }
     }
 
+    public class TestDebot5 : AbstractTestDebot
+    {
+        public override string Name { get; } = "testDebot5";
+
+        public int Count { get; } = 6;
+
+        protected override async Task SetAbiAsync()
+        {
+            await Client.NetProcessFunctionAsync(
+                Address,
+                Abi,
+                "setABI",
+                new
+                {
+                    dabi = ((Abi.Contract)Abi).Value.ToJson().ToString().ToHexString()
+                }.ToJson(),
+                new Signer.Keys
+                {
+                    KeysProperty = Keys
+                });
+
+            var deployDebotParams = new ParamsOfEncodeMessage
+            {
+                Abi = Abi,
+                DeploySet = new DeploySet
+                {
+                    Tvc = Tvc
+                },
+                CallSet = new CallSet
+                {
+                    FunctionName = "constructor",
+                    Input = await GetConstructorParamsAsync()
+                }
+            };
+
+            for (var i = 1; i < Count; ++i)
+            {
+                var keys = await Client.Crypto.GenerateRandomSignKeysAsync();
+                deployDebotParams.Signer = new Signer.Keys
+                {
+                    KeysProperty = keys
+                };
+
+                await Client.DeployWithGiverAsync(deployDebotParams, 1_000_000_000);
+            }
+        }
+
+        protected override async Task<JToken> GetConstructorParamsAsync()
+        {
+            var result = await Client.Boc.GetCodeFromTvcAsync(new ParamsOfGetCodeFromTvc
+            {
+                Tvc = Tvc
+            });
+
+            var hashResult = await Client.Boc.GetBocHashAsync(new ParamsOfGetBocHash
+            {
+                Boc = result.Code
+            });
+
+            return new { codeHash = $"0x{hashResult.Hash}" }.ToJson();
+        }
+    }
+
     public class TestDebotPair : AbstractTestDebot
     {
         public override string Name { get; } = "tda";

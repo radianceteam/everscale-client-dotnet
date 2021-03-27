@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.10.0, utils module.
+* TON API version 1.11.0, utils module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -59,6 +59,21 @@ namespace TonSdk.Modules
         public string Address { get; set; }
     }
 
+    public class ParamsOfCalcStorageFee
+    {
+        [JsonProperty("account", NullValueHandling = NullValueHandling.Ignore)]
+        public string Account { get; set; }
+
+        [JsonProperty("period", NullValueHandling = NullValueHandling.Ignore)]
+        public uint Period { get; set; }
+    }
+
+    public class ResultOfCalcStorageFee
+    {
+        [JsonProperty("fee", NullValueHandling = NullValueHandling.Ignore)]
+        public string Fee { get; set; }
+    }
+
     /// <summary>
     /// Misc utility Functions.
     /// </summary>
@@ -68,6 +83,11 @@ namespace TonSdk.Modules
         /// Converts address from any TON format to any TON format
         /// </summary>
         Task<ResultOfConvertAddress> ConvertAddressAsync(ParamsOfConvertAddress @params);
+
+        /// <summary>
+        /// Calculates storage fee for an account over a specified time period
+        /// </summary>
+        Task<ResultOfCalcStorageFee> CalcStorageFeeAsync(ParamsOfCalcStorageFee @params);
     }
 
     internal class UtilsModule : IUtilsModule
@@ -82,6 +102,11 @@ namespace TonSdk.Modules
         public async Task<ResultOfConvertAddress> ConvertAddressAsync(ParamsOfConvertAddress @params)
         {
             return await _client.CallFunctionAsync<ResultOfConvertAddress>("utils.convert_address", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfCalcStorageFee> CalcStorageFeeAsync(ParamsOfCalcStorageFee @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfCalcStorageFee>("utils.calc_storage_fee", @params).ConfigureAwait(false);
         }
     }
 }

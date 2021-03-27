@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using TonSdk.Modules;
 
 namespace TonSdk.Tests.Modules
 {
