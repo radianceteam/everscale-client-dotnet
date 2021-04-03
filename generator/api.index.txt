@@ -1,4 +1,4 @@
-1.11.0
+1.12.0
 TYPES
 client.ClientErrorCode
 client.ClientError
@@ -140,6 +140,10 @@ utils.ParamsOfConvertAddress
 utils.ResultOfConvertAddress
 utils.ParamsOfCalcStorageFee
 utils.ResultOfCalcStorageFee
+utils.ParamsOfCompressZstd
+utils.ResultOfCompressZstd
+utils.ParamsOfDecompressZstd
+utils.ResultOfDecompressZstd
 tvm.TvmErrorCode
 tvm.ExecutionOptions
 tvm.AccountForExecutor
@@ -174,13 +178,19 @@ net.EndpointsSet
 debot.DebotErrorCode
 debot.DebotHandle
 debot.DebotAction
-debot.ParamsOfStart
+debot.DebotInfo
+debot.DebotActivity
+debot.Spending
+debot.ParamsOfInit
 debot.RegisteredDebot
 debot.ParamsOfAppDebotBrowser
 debot.ResultOfAppDebotBrowser
+debot.ParamsOfStart
 debot.ParamsOfFetch
+debot.ResultOfFetch
 debot.ParamsOfExecute
 debot.ParamsOfSend
+debot.ParamsOfRemove
 FUNCTIONS
 client.get_api_reference
 client.version
@@ -249,6 +259,8 @@ processing.wait_for_transaction
 processing.process_message
 utils.convert_address
 utils.calc_storage_fee
+utils.compress_zstd
+utils.decompress_zstd
 tvm.run_executor
 tvm.run_tvm
 tvm.run_get
@@ -264,6 +276,7 @@ net.resume
 net.find_last_shard_block
 net.fetch_endpoints
 net.set_endpoints
+debot.init
 debot.start
 debot.fetch
 debot.execute

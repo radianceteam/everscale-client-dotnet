@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.11.0, client module.
+* TON API version 1.12.0, client module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -304,7 +304,7 @@ namespace TonSdk.Modules
         /// Result of request processing
         /// </summary>
         [JsonProperty("result", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
         public AppRequestResult Result { get; set; }
     }
 

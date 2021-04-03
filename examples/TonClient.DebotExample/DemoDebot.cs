@@ -15,6 +15,7 @@ namespace TonClient.DebotExample
         private readonly KeyPair _keys;
         private bool _finished;
         private List<DebotAction> _actions = new List<DebotAction>();
+        private uint _handle;
 
         public DemoDebot(ITonClient client, string address, KeyPair keys)
         {
@@ -25,12 +26,19 @@ namespace TonClient.DebotExample
 
         public async Task StartAsync()
         {
-            var debot = await _client.Debot.StartAsync(new ParamsOfStart
+            var handle = await _client.Debot.InitAsync(new ParamsOfInit
             {
                 Address = _address
             }, GetCallback());
 
-            await LoopAsync(debot, () =>
+            await _client.Debot.StartAsync(new ParamsOfStart
+            {
+                DebotHandle = handle.DebotHandle
+            });
+
+            _handle = handle.DebotHandle;
+
+            await LoopAsync(() =>
             {
                 // let user enter the action number
                 string userInput;
@@ -44,7 +52,10 @@ namespace TonClient.DebotExample
                 return _actions[actionIndex - 1];
             });
 
-            await _client.Debot.RemoveAsync(debot);
+            await _client.Debot.RemoveAsync(new ParamsOfRemove
+            {
+                DebotHandle = _handle
+            });
         }
 
         public async Task FetchAsync(DebotAction action)
@@ -52,11 +63,14 @@ namespace TonClient.DebotExample
             var debot = await _client.Debot.FetchAsync(new ParamsOfFetch
             {
                 Address = _address
-            }, GetCallback());
+            });
 
-            await LoopAsync(debot, () => action);
+            await LoopAsync(() => action);
 
-            await _client.Debot.RemoveAsync(debot);
+            await _client.Debot.RemoveAsync(new ParamsOfRemove
+            {
+                DebotHandle = _handle
+            });
         }
 
         private Func<ParamsOfAppDebotBrowser, Task<ResultOfAppDebotBrowser>> GetCallback()
@@ -106,7 +120,7 @@ namespace TonClient.DebotExample
             };
         }
 
-        private async Task LoopAsync(RegisteredDebot debot, Func<DebotAction> selectActionFunc)
+        private async Task LoopAsync(Func<DebotAction> selectActionFunc)
         {
             while (!_finished && _actions.Any())
             {
@@ -115,7 +129,7 @@ namespace TonClient.DebotExample
                 await _client.Debot.ExecuteAsync(new ParamsOfExecute
                 {
                     Action = action,
-                    DebotHandle = debot.DebotHandle
+                    DebotHandle = _handle
                 });
             }
         }

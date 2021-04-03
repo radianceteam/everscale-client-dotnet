@@ -91,5 +91,32 @@ namespace TonSdk.Tests.Modules
 
             Assert.Equal("330", result.Fee);
         }
+
+        [Fact]
+        public async Task Should_Compress_Zstd()
+        {
+            var uncompressed = @"Lorem ipsum dolor sit amet";
+
+            var compressed = await _client.Utils.CompressZstdAsync(new ParamsOfCompressZstd
+            {
+                Uncompressed = uncompressed.ToBase64String(), 
+                Level = 21
+            });
+
+            Assert.Equal(@"KLUv/QCA0QAATG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQ=", compressed.Compressed);
+        }
+
+        [Fact]
+        public async Task Should_Decompress_Zstd()
+        {
+            var compressed = @"KLUv/QCA0QAATG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQ=";
+
+            var decompressed = await _client.Utils.DecompressZstdAsync(new ParamsOfDecompressZstd
+            {
+                Compressed = compressed
+            });
+
+            Assert.Equal(@"Lorem ipsum dolor sit amet", decompressed.Decompressed.FromBase64String());
+        }
     }
 }

@@ -14,6 +14,8 @@ namespace TonSdk.Tests.Modules
 
         Abi Abi { get; }
 
+        string Tvc { get; }
+
         string Address { get; }
 
         KeyPair Keys { get; }
@@ -35,7 +37,7 @@ namespace TonSdk.Tests.Modules
 
         public Abi Abi { get; private set; }
 
-        protected string Tvc { get; private set; }
+        public string Tvc { get; private set; }
 
         public string Address { get; private set; }
 
@@ -273,17 +275,8 @@ namespace TonSdk.Tests.Modules
 
         protected override async Task<JToken> GetConstructorParamsAsync()
         {
-            var result = await Client.Boc.GetCodeFromTvcAsync(new ParamsOfGetCodeFromTvc
-            {
-                Tvc = Tvc
-            });
-
-            var hashResult = await Client.Boc.GetBocHashAsync(new ParamsOfGetBocHash
-            {
-                Boc = result.Code
-            });
-
-            return new { codeHash = $"0x{hashResult.Hash}" }.ToJson();
+            var hash = await Client.GetCodeHashFromTvcAsync(Tvc);
+            return new { codeHash = $"0x{hash}" }.ToJson();
         }
     }
 

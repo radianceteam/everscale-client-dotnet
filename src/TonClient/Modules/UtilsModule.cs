@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.11.0, utils module.
+* TON API version 1.12.0, utils module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -46,7 +46,7 @@ namespace TonSdk.Modules
         /// Specify the format to convert to.
         /// </summary>
         [JsonProperty("output_format", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
         public AddressStringFormat OutputFormat { get; set; }
     }
 
@@ -74,6 +74,50 @@ namespace TonSdk.Modules
         public string Fee { get; set; }
     }
 
+    public class ParamsOfCompressZstd
+    {
+        /// <summary>
+        /// Must be encoded as base64.
+        /// </summary>
+        [JsonProperty("uncompressed", NullValueHandling = NullValueHandling.Ignore)]
+        public string Uncompressed { get; set; }
+
+        /// <summary>
+        /// Compression level, from 1 to 21. Where: 1 - lowest compression level (fastest compression); 21 -
+        /// highest compression level (slowest compression). If level is omitted, the default compression level
+        /// is used (currently `3`).
+        /// </summary>
+        [JsonProperty("level", NullValueHandling = NullValueHandling.Ignore)]
+        public int? Level { get; set; }
+    }
+
+    public class ResultOfCompressZstd
+    {
+        /// <summary>
+        /// Must be encoded as base64.
+        /// </summary>
+        [JsonProperty("compressed", NullValueHandling = NullValueHandling.Ignore)]
+        public string Compressed { get; set; }
+    }
+
+    public class ParamsOfDecompressZstd
+    {
+        /// <summary>
+        /// Must be encoded as base64.
+        /// </summary>
+        [JsonProperty("compressed", NullValueHandling = NullValueHandling.Ignore)]
+        public string Compressed { get; set; }
+    }
+
+    public class ResultOfDecompressZstd
+    {
+        /// <summary>
+        /// Must be encoded as base64.
+        /// </summary>
+        [JsonProperty("decompressed", NullValueHandling = NullValueHandling.Ignore)]
+        public string Decompressed { get; set; }
+    }
+
     /// <summary>
     /// Misc utility Functions.
     /// </summary>
@@ -88,6 +132,16 @@ namespace TonSdk.Modules
         /// Calculates storage fee for an account over a specified time period
         /// </summary>
         Task<ResultOfCalcStorageFee> CalcStorageFeeAsync(ParamsOfCalcStorageFee @params);
+
+        /// <summary>
+        /// Compresses data using Zstandard algorithm
+        /// </summary>
+        Task<ResultOfCompressZstd> CompressZstdAsync(ParamsOfCompressZstd @params);
+
+        /// <summary>
+        /// Decompresses data using Zstandard algorithm
+        /// </summary>
+        Task<ResultOfDecompressZstd> DecompressZstdAsync(ParamsOfDecompressZstd @params);
     }
 
     internal class UtilsModule : IUtilsModule
@@ -107,6 +161,16 @@ namespace TonSdk.Modules
         public async Task<ResultOfCalcStorageFee> CalcStorageFeeAsync(ParamsOfCalcStorageFee @params)
         {
             return await _client.CallFunctionAsync<ResultOfCalcStorageFee>("utils.calc_storage_fee", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfCompressZstd> CompressZstdAsync(ParamsOfCompressZstd @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfCompressZstd>("utils.compress_zstd", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfDecompressZstd> DecompressZstdAsync(ParamsOfDecompressZstd @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfDecompressZstd>("utils.decompress_zstd", @params).ConfigureAwait(false);
         }
     }
 }

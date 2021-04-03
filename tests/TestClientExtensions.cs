@@ -97,5 +97,40 @@ namespace TonSdk.Tests
                 returns.ToJson().ToString(Formatting.None),
                 output.ToString(Formatting.None));
         }
+
+        public static async Task<string> GetCodeHashFromTvcAsync(this ITonClient client, string tvc)
+        {
+            var result = await client.Boc.GetCodeFromTvcAsync(new ParamsOfGetCodeFromTvc
+            {
+                Tvc = tvc
+            });
+
+            var hash = await client.Boc.GetBocHashAsync(new ParamsOfGetBocHash
+            {
+                Boc = result.Code
+            });
+
+            return hash.Hash;
+        }
+
+        public static async Task<int> CountAccountsByCodeHashAsync(this ITonClient client, string tvc)
+        {
+            var hash = await client.GetCodeHashFromTvcAsync(tvc);
+
+            var result = await client.Net.QueryCollectionAsync(new ParamsOfQueryCollection
+            {
+                Collection = "accounts",
+                Filter = new
+                {
+                    code_hash = new
+                    {
+                        eq = hash
+                    }
+                }.ToJson(),
+                Result = "id"
+            });
+
+            return result.Result.Length;
+        }
     }
 }

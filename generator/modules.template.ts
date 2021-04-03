@@ -297,7 +297,7 @@ function writeTypeMembers(type: TonApiSpec.Type, writer: CSharpWriter) {
             field.array_item.type === 'Ref' &&
             isPolymorphicType(field.array_item.ref_name)) {
             writer.writeLine(`[JsonProperty("${field.name}", NullValueHandling = NullValueHandling.Ignore,
-            ItemConverterType = typeof(PolymorphicConcreteTypeConverter))]`);
+            ItemConverterType = typeof(PolymorphicTypeConverter))]`);
         } else {
             writer.writeLine(`[JsonProperty("${field.name}", NullValueHandling = NullValueHandling.Ignore)]`);
         }
@@ -310,7 +310,7 @@ function writeTypeMembers(type: TonApiSpec.Type, writer: CSharpWriter) {
 
         if (ref_name) {
             if (isPolymorphicType(ref_name)) {
-                writer.writeLine(`[JsonConverter(typeof(PolymorphicConcreteTypeConverter))]`);
+                writer.writeLine(`[JsonConverter(typeof(PolymorphicTypeConverter))]`);
             } else if (isStringEnumType(ref_name)) {
                 writer.writeLine(`[JsonConverter(typeof(StringEnumConverter))]`);
             }

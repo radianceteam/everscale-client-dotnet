@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.11.0, net module.
+* TON API version 1.12.0, net module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -200,7 +200,7 @@ namespace TonSdk.Modules
         /// List of query operations that must be performed per single fetch.
         /// </summary>
         [JsonProperty("operations", NullValueHandling = NullValueHandling.Ignore,
-            ItemConverterType = typeof(PolymorphicConcreteTypeConverter))]
+            ItemConverterType = typeof(PolymorphicTypeConverter))]
         public ParamsOfQueryOperation[] Operations { get; set; }
     }
 

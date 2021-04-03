@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.11.0, abi module.
+* TON API version 1.12.0, abi module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -206,7 +206,7 @@ namespace TonSdk.Modules
         public class Message : StateInitSource
         {
             [JsonProperty("source", NullValueHandling = NullValueHandling.Ignore)]
-            [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+            [JsonConverter(typeof(PolymorphicTypeConverter))]
             public MessageSource Source { get; set; }
         }
 
@@ -253,7 +253,7 @@ namespace TonSdk.Modules
     public class StateInitParams
     {
         [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
         public Abi Abi { get; set; }
 
         [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
@@ -268,7 +268,7 @@ namespace TonSdk.Modules
             public string Message { get; set; }
 
             [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
-            [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+            [JsonConverter(typeof(PolymorphicTypeConverter))]
             public Abi Abi { get; set; }
         }
 
@@ -278,7 +278,7 @@ namespace TonSdk.Modules
             /// Contract ABI.
             /// </summary>
             [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
-            [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+            [JsonConverter(typeof(PolymorphicTypeConverter))]
             public Abi Abi { get; set; }
 
             /// <summary>
@@ -306,7 +306,7 @@ namespace TonSdk.Modules
             /// Signing parameters.
             /// </summary>
             [JsonProperty("signer", NullValueHandling = NullValueHandling.Ignore)]
-            [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+            [JsonConverter(typeof(PolymorphicTypeConverter))]
             public Signer Signer { get; set; }
 
             /// <summary>
@@ -408,7 +408,7 @@ namespace TonSdk.Modules
         /// Contract ABI.
         /// </summary>
         [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
         public Abi Abi { get; set; }
 
         /// <summary>
@@ -429,7 +429,7 @@ namespace TonSdk.Modules
         /// Signing parameters.
         /// </summary>
         [JsonProperty("signer", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
         public Signer Signer { get; set; }
 
         /// <summary>
@@ -470,7 +470,7 @@ namespace TonSdk.Modules
         /// Contract ABI
         /// </summary>
         [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
         public Abi Abi { get; set; }
 
         /// <summary>
@@ -504,7 +504,7 @@ namespace TonSdk.Modules
         /// Contract ABI.
         /// </summary>
         [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
         public Abi Abi { get; set; }
 
         /// <summary>
@@ -532,7 +532,7 @@ namespace TonSdk.Modules
         /// Signing parameters.
         /// </summary>
         [JsonProperty("signer", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
         public Signer Signer { get; set; }
 
         /// <summary>
@@ -587,7 +587,7 @@ namespace TonSdk.Modules
         /// Can be None if both deploy_set and call_set are None.
         /// </summary>
         [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
         public Abi Abi { get; set; }
 
         /// <summary>
@@ -663,7 +663,7 @@ namespace TonSdk.Modules
         /// Contract ABI
         /// </summary>
         [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
         public Abi Abi { get; set; }
 
         /// <summary>
@@ -706,7 +706,7 @@ namespace TonSdk.Modules
         /// contract ABI
         /// </summary>
         [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
         public Abi Abi { get; set; }
 
         /// <summary>
@@ -750,7 +750,7 @@ namespace TonSdk.Modules
         /// Contract ABI used to decode.
         /// </summary>
         [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
         public Abi Abi { get; set; }
 
         /// <summary>
@@ -772,7 +772,7 @@ namespace TonSdk.Modules
         /// Source of the account state init.
         /// </summary>
         [JsonProperty("state_init", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
         public StateInitSource StateInit { get; set; }
 
         /// <summary>
@@ -797,7 +797,7 @@ namespace TonSdk.Modules
         /// The BOC itself returned if no cache type provided
         /// </summary>
         [JsonProperty("boc_cache", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
         public BocCacheType BocCache { get; set; }
     }
 

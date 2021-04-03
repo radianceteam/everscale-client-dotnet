@@ -21,9 +21,10 @@ namespace TonSdk.Tests.Modules
         public async Task Test_Debot_Sdk_Get_Accounts_By_Hash()
         {
             var browser = await _fixture.GetDebotBrowserAsync(_logger);
+            var count = await _fixture.Debot.Client.CountAccountsByCodeHashAsync(_fixture.Debot.Tvc);
             await browser.ExecuteAsync(new List<DebotStep>(), new List<string>
             {
-                $"{_fixture.Debot.Count} contracts."
+                $"{count} contracts."
             });
         }
     }

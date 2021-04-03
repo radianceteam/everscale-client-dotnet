@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.11.0, processing module.
+* TON API version 1.12.0, processing module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -215,7 +215,7 @@ namespace TonSdk.Modules
         /// chosen.
         /// </summary>
         [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
         public Abi Abi { get; set; }
 
         /// <summary>
@@ -244,7 +244,7 @@ namespace TonSdk.Modules
         /// The `abi_decoded` result field will be filled out.
         /// </summary>
         [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
         public Abi Abi { get; set; }
 
         /// <summary>

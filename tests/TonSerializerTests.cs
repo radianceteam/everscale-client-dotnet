@@ -3,6 +3,7 @@ using System.Numerics;
 using TonSdk.Modules;
 using Xunit;
 using Xunit.Abstractions;
+using Xunit.Sdk;
 
 namespace TonSdk.Tests
 {
@@ -322,6 +323,32 @@ namespace TonSdk.Tests
             Assert.Single(result);
             Assert.IsType<ParamsOfQueryOperation.QueryCollection>(result[0]);
             Assert.Equal("test", ((ParamsOfQueryOperation.QueryCollection)result[0]).Collection);
+        }
+
+        [Fact]
+        public void Should_Deserialize_Inner_Polymorphic_Type()
+        {
+            var json = @"{
+   ""type"": ""Approve"",
+   ""activity"": {
+     ""type"": ""Transaction"",
+     ""msg"": ""te6ccgECEwEAAuAAAueIATBjpe22QNmTNOFJrHgmzax1yWpc+bNru/3uYo99a8iUEZbhD9P0B3vR92w+DZd4XqMSO4XpmGS5wycJUpjnaRq8DnNATP29o9tMb+evpFqc6assx36UGh/Ah9P5kUVqDBDQAAAXiW5qAQYGjG52i1Xz+AMBAQHAAgBD0Bw+0EZhU7i5hOJb77e26D94vRuoKxMiMDVGIWQrvXwBYAIm/wD0pCAiwAGS9KDhiu1TWDD0oQgEAQr0pCD0oQUCA87ABwYALddqJoaf/pn+mAegL8NT/8MPwzfDH8MUAC/3whZGX//CHnhZ/8I2eFgHwlAPoAZPaqQCASAMCQEC/woB/n8h7UTQINdJwgGOE9P/0z/TAPQF+Gp/+GH4Zvhj+GKOG/QFbfhqcAGAQPQO8r3XC//4YnD4Y3D4Zn/4YeLTAAGOEoECANcYIPkBWPhCIPhl+RDyqN7TPwGOHvhDIbkgnzAg+COBA+iogggbd0Cgud6S+GPggDTyNNjTHwH4I7wLADTyudMfIcEDIoIQ/////byx8nwB8AH4R27yfAIBIA4NAOe9Rar5/8ILdHHfaiaBBrpOEAxwnp/+mf6YB6Avw1P/ww/DN8MfwxRw36Arb8NTgAwCB6B3le64X//DE4fDG4fDM//DDxb3wjeTm4/DNo/AA4/CVAgEBkZf+swBB6IZB8NTkAwCBkZf+swBB6Ifw1eAG//DPAIBIBIPAgFYERAAabZAgzo+EFukvAE3tMf0//R+EUgbpIwcN74Qrry4GT4ACH4SiLIy/9ZgCD0Q/hqW/ADf/hngAK22vKmffhBbpLwBN7TH9FwIfhKgCD0DpPXC/+RcOIxATAhwP+OKiPQ0wH6QDAxyM+HIM6NBAAAAAAAAAAAAAAAAAsvKmfYzxYhzwv/yXH7AN4w8AN/+GeAAVN1wItDXCwOpOADcIccA3CHTHyHdIcEDIoIQ/////byx8nwB8AH4R27yfA=="",
+     ""dst"": ""0:9831d2f6db206cc99a70a4d63c1366d63ae4b52e7cd9b5ddfef73147beb5e44a"",
+     ""out"": [],
+     ""fee"": 14884001,
+     ""setcode"": false,
+     ""signkey"": ""70fb4119854ee2e613896fbededba0fde2f46ea0ac4c88c0d5188590aef5f005""
+   }
+ }";
+
+            var browserParams = _serializer.Deserialize<ParamsOfAppDebotBrowser>(json);
+            var approve = browserParams as ParamsOfAppDebotBrowser.Approve;
+            Assert.NotNull(approve);
+
+            var transaction = approve.Activity as DebotActivity.Transaction;
+            Assert.NotNull(transaction);
+            Assert.IsType<DebotActivity.Transaction>(approve.Activity);
+            Assert.Equal("70fb4119854ee2e613896fbededba0fde2f46ea0ac4c88c0d5188590aef5f005", transaction.Signkey);
         }
     }
 }

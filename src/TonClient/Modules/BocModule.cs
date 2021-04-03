@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.11.0, boc module.
+* TON API version 1.12.0, boc module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -164,7 +164,7 @@ namespace TonSdk.Modules
         /// Cache type
         /// </summary>
         [JsonProperty("cache_type", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
         public BocCacheType CacheType { get; set; }
     }
 
@@ -249,7 +249,7 @@ namespace TonSdk.Modules
             /// Nested cell builder
             /// </summary>
             [JsonProperty("builder", NullValueHandling = NullValueHandling.Ignore,
-            ItemConverterType = typeof(PolymorphicConcreteTypeConverter))]
+            ItemConverterType = typeof(PolymorphicTypeConverter))]
             public BuilderOp[] Builder { get; set; }
         }
 
@@ -272,14 +272,14 @@ namespace TonSdk.Modules
         /// Cell builder operations.
         /// </summary>
         [JsonProperty("builder", NullValueHandling = NullValueHandling.Ignore,
-            ItemConverterType = typeof(PolymorphicConcreteTypeConverter))]
+            ItemConverterType = typeof(PolymorphicTypeConverter))]
         public BuilderOp[] Builder { get; set; }
 
         /// <summary>
         /// Cache type to put the result. The BOC itself returned if no cache type provided.
         /// </summary>
         [JsonProperty("boc_cache", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
         public BocCacheType BocCache { get; set; }
     }
 

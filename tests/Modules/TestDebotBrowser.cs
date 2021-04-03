@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using TonSdk.Modules;
@@ -67,6 +69,17 @@ namespace TonSdk.Tests.Modules
 			""outputs"": [
 				{""name"":""value"",""type"":""int256""}
 			]
+		},
+        {
+			""name"": ""input"",
+			""inputs"": [
+				{""name"":""answerId"",""type"":""uint32""},
+				{""name"":""prompt"",""type"":""bytes""},
+				{""name"":""multiline"",""type"":""bool""}
+			],
+			""outputs"": [
+				{""name"":""value"",""type"":""bytes""}
+			]
 		}
 	],
 	""data"": [],
@@ -82,13 +95,28 @@ namespace TonSdk.Tests.Modules
 
         public async Task ExecuteAsync(List<DebotStep> steps, List<string> terminalOutputs = null)
         {
-            await ExecuteWithFuncAsync(steps, data => _debot.Client.Debot.StartAsync(new ParamsOfStart
+            var state = new BrowserData
             {
-                Address = data.Address
-            }, GetExecuteCallback(data)), terminalOutputs);
+                Current = new Mutex<CurrentStepData>(new CurrentStepData()),
+                Next = new Mutex<List<DebotStep>>(steps),
+                Keys = _debot.Keys,
+                Address = _debot.Address,
+                Finished = false,
+                Info = new DebotInfo
+                {
+                    Dabi = ((Abi.Contract)_debot.Abi).Value.ToJson().ToString()
+                },
+                Terminal = new Mutex<Terminal>(new Terminal(terminalOutputs ?? new List<string>()))
+            };
+
+            await ExecuteFromStateAsync(state, true);
         }
 
-        public async Task ExecuteWithFuncAsync(List<DebotStep> steps, Func<BrowserData, Task<RegisteredDebot>> startFunc, List<string> terminalOutputs = null)
+        public async Task ExecuteWithDetailsAsync(
+            List<DebotStep> steps, 
+            DebotInfo debotInfo,
+            List<ExpectedTransaction> activity,
+            List<string> terminalOutputs = null)
         {
             var state = new BrowserData
             {
@@ -97,30 +125,56 @@ namespace TonSdk.Tests.Modules
                 Keys = _debot.Keys,
                 Address = _debot.Address,
                 Finished = false,
+                Info = debotInfo,
+                Activity = new Mutex<List<ExpectedTransaction>>(activity),
                 Terminal = new Mutex<Terminal>(new Terminal(terminalOutputs ?? new List<string>()))
             };
 
-            await ExecuteFromStateAsync(state, startFunc);
+            await ExecuteFromStateAsync(state, true);
         }
 
-        private static async Task<RegisteredDebot> FetchDebotAsync(BrowserData state, string addr, Func<BrowserData, Task<RegisteredDebot>> startFunc)
+        private async Task<RegisteredDebot> FetchDebotAsync(BrowserData state, string addr)
         {
-            var handle = await startFunc(state);
+            var handle = await _debot.Client.Debot.InitAsync(new ParamsOfInit
+            {
+                Address = addr
+            }, GetExecuteCallback(state));
 
             using var bots = await state.Bots.LockAsync();
 
             bots.Instance.Add(addr, new RegisteredDebot
             {
                 DebotAbi = handle.DebotAbi,
-                DebotHandle = handle.DebotHandle
+                DebotHandle = handle.DebotHandle,
+                Info = handle.Info
             });
 
             return handle;
         }
 
-        private async Task ExecuteFromStateAsync(BrowserData state, Func<BrowserData, Task<RegisteredDebot>> startFunc)
+        private async Task ExecuteFromStateAsync(BrowserData state, bool callStart)
         {
-            var handle = await FetchDebotAsync(state, state.Address, startFunc);
+            if (callStart)
+            {
+                var res = await _debot.Client.Debot.FetchAsync(new ParamsOfFetch
+                {
+                    Address = state.Address
+                });
+                var serializer = new TonSerializer();
+                var expectedAbi = serializer.Deserialize<JToken>(state.Info.Dabi);
+                var actualAbi = serializer.Deserialize<JToken>(res.Info.Dabi);
+                Assert.Equal(expectedAbi, actualAbi);
+            }
+
+            var handle = await FetchDebotAsync(state, state.Address);
+
+            if (callStart)
+            {
+                await _debot.Client.Debot.StartAsync(new ParamsOfStart
+                {
+                    DebotHandle = handle.DebotHandle
+                });
+            }
 
             while (!state.Finished)
             {
@@ -263,11 +317,7 @@ namespace TonSdk.Tests.Modules
                 {
                     if (!await data.DebotFetchedAsync(destAddr))
                     {
-                        await FetchDebotAsync(data, destAddr, state =>
-                            _debot.Client.Debot.FetchAsync(new ParamsOfFetch
-                            {
-                                Address = destAddr
-                            }, GetExecuteCallback(data)));
+                        await FetchDebotAsync(data, destAddr);
                     }
 
                     var debotHandle = (await data.GetDebotAsync(destAddr)).DebotHandle;
@@ -396,12 +446,32 @@ namespace TonSdk.Tests.Modules
                             Finished = false
                         };
 
-                        await ExecuteFromStateAsync(newState, data => _debot.Client.Debot.FetchAsync(new ParamsOfFetch
-                        {
-                            Address = data.Address
-                        }, GetExecuteCallback(newState)));
+                        await ExecuteFromStateAsync(newState, false);
 
                         return new ResultOfAppDebotBrowser.InvokeDebot();
+
+                    case ParamsOfAppDebotBrowser.Approve approve:
+                        var approved = false;
+                        using (var activityLock = await state.Activity.LockAsync())
+                        {
+                            var expected = activityLock.Instance.RemoveFirst();
+                            if (expected != null)
+                            {
+                                approved = expected.Approved;
+                                var activity = approve.Activity as DebotActivity.Transaction;
+                                Assert.NotNull(activity);
+                                Assert.Equal(expected.Dst, activity.Dst);
+                                Assert.Equal(expected.Out, activity.Out);
+                                Assert.Equal(expected.Setcode, activity.Setcode);
+                                Assert.Equal(expected.Signkey, activity.Signkey);
+                                Assert.True(activity.Fee > BigInteger.Zero);
+                            }
+                        }
+
+                        return new ResultOfAppDebotBrowser.Approve
+                        {
+                            Approved = approved
+                        };
 
                     default:
                         throw new NotSupportedException($"Callback parameter type not supported: {@params.GetType()}");
@@ -425,6 +495,15 @@ namespace TonSdk.Tests.Modules
         public DebotStep Step { get; set; }
     }
 
+    public class ExpectedTransaction
+    {
+        public string Dst { get; set; }
+        public List<Spending> Out { get; set; }
+        public bool Setcode { get; set; }
+        public string Signkey { get; set; }
+        public bool Approved { get; set; }
+    }
+
     public class BrowserData
     {
         public Mutex<CurrentStepData> Current { get; set; }
@@ -437,6 +516,8 @@ namespace TonSdk.Tests.Modules
         public Mutex<Terminal> Terminal { get; set; } = new Mutex<Terminal>(new Terminal(new List<string>()));
         public Echo Echo { get; } = new Echo();
         public Mutex<IDictionary<string, RegisteredDebot>> Bots = new Mutex<IDictionary<string, RegisteredDebot>>(new Dictionary<string, RegisteredDebot>());
+        public DebotInfo Info { get; set; } = new DebotInfo();
+        public Mutex<List<ExpectedTransaction>> Activity { get; set; } = new Mutex<List<ExpectedTransaction>>(new List<ExpectedTransaction>());
 
         public async Task<string> PopMessageAsync()
         {
@@ -503,6 +584,7 @@ namespace TonSdk.Tests.Modules
         public (uint, JToken) Call(string func, JToken args)
         {
             uint answerId;
+            string prompt;
             switch (func)
             {
                 case "print":
@@ -512,9 +594,16 @@ namespace TonSdk.Tests.Modules
 
                 case "inputInt":
                     answerId = DecodeAbiNumber(args.Value<string>("answerId"));
-                    var prompt = Encoding.UTF8.GetString(args.Value<string>("prompt").FromHexString());
+                    prompt = Encoding.UTF8.GetString(args.Value<string>("prompt").FromHexString());
                     Print(answerId, prompt);
                     return (answerId, new { value = 1 }.ToJson());
+
+                case "input":
+                    answerId = DecodeAbiNumber(args.Value<string>("answerId"));
+                    prompt = Encoding.UTF8.GetString(args.Value<string>("prompt").FromHexString());
+                    Print(answerId, prompt);
+                    return (answerId, new { value = "testinput".ToHexString() }.ToJson());
+
 
                 default:
                     throw new NotSupportedException($"interface function {func} not found");

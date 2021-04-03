@@ -13,7 +13,6 @@ namespace TonSdk
 
         private readonly JsonSerializerSettings _defaultSerializerSettings;
         private readonly JsonSerializerSettings _polymorphicTypeSerializerSettings;
-        private readonly JsonSerializerSettings _polymorphicTypeDeserializerSettings;
 
         public TonSerializer(ILogger logger = null)
         {
@@ -27,13 +26,7 @@ namespace TonSdk
                 NullValueHandling = NullValueHandling.Ignore,
                 TypeNameHandling = TypeNameHandling.Objects
             };
-            _polymorphicTypeDeserializerSettings = new JsonSerializerSettings
-            {
-                NullValueHandling = NullValueHandling.Ignore,
-                TypeNameHandling = TypeNameHandling.Objects
-            };
-            _polymorphicTypeSerializerSettings.Converters.Add(PolymorphicConcreteTypeConverter.Instance);
-            _polymorphicTypeDeserializerSettings.Converters.Add(PolymorphicAbstractTypeConverter.Instance);
+            _polymorphicTypeSerializerSettings.Converters.Add(PolymorphicTypeConverter.Instance);
         }
 
         public T Deserialize<T>(string json)
@@ -53,7 +46,7 @@ namespace TonSdk
             return JsonConvert.DeserializeObject<T>(json,
                 type.IsTonPolymorphicAbstractType() ||
                 type.IsTonPolymorphicAbstractTypeArray()
-                    ? _polymorphicTypeDeserializerSettings
+                    ? _polymorphicTypeSerializerSettings
                     : _defaultSerializerSettings);
         }
 
@@ -72,7 +65,7 @@ namespace TonSdk
             }
             return t.ToObject<T>(JsonSerializer.Create(
                 typeof(T).IsTonPolymorphicAbstractType()
-                ? _polymorphicTypeDeserializerSettings
+                ? _polymorphicTypeSerializerSettings
                 : _defaultSerializerSettings));
         }
 
@@ -127,20 +120,16 @@ namespace TonSdk
         }
     }
 
-    internal class PolymorphicConcreteTypeConverter : JsonConverter
+    internal class PolymorphicTypeConverter : JsonConverter
     {
         public override bool CanWrite => true;
-        public override bool CanRead => false;
+        public override bool CanRead => true;
 
         public override bool CanConvert(Type objectType)
         {
-            return objectType.IsTonPolymorphicConcreteType();
+            return objectType.IsTonPolymorphicConcreteType() ||
+                   objectType.IsTonPolymorphicAbstractType();
         }
-
-        public override object ReadJson(JsonReader reader,
-            Type objectType,
-            object existingValue,
-            JsonSerializer serializer) => throw new NotImplementedException();
 
         public override void WriteJson(JsonWriter writer,
             object value,
@@ -149,19 +138,6 @@ namespace TonSdk
             var o = (JObject)JToken.FromObject(value);
             o.Add(new JProperty("type", value.GetType().Name));
             o.WriteTo(writer);
-        }
-
-        public static PolymorphicConcreteTypeConverter Instance = new PolymorphicConcreteTypeConverter();
-    }
-
-    internal class PolymorphicAbstractTypeConverter : JsonConverter
-    {
-        public override bool CanWrite => false;
-        public override bool CanRead => true;
-
-        public override bool CanConvert(Type objectType)
-        {
-            return objectType.IsTonPolymorphicAbstractType();
         }
 
         public override object ReadJson(JsonReader reader,
@@ -210,10 +186,6 @@ namespace TonSdk
                 .ResolveContract(type) as JsonObjectContract;
         }
 
-        public override void WriteJson(JsonWriter writer,
-            object value,
-            JsonSerializer serializer) => throw new NotImplementedException();
-
-        public static PolymorphicAbstractTypeConverter Instance = new PolymorphicAbstractTypeConverter();
+        public static PolymorphicTypeConverter Instance = new PolymorphicTypeConverter();
     }
 }

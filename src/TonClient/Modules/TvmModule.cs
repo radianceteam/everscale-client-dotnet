@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.11.0, tvm module.
+* TON API version 1.12.0, tvm module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -126,7 +126,7 @@ namespace TonSdk.Modules
         /// Account to run on executor
         /// </summary>
         [JsonProperty("account", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
         public AccountForExecutor Account { get; set; }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace TonSdk.Modules
         /// Contract ABI for decoding output messages
         /// </summary>
         [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
         public Abi Abi { get; set; }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace TonSdk.Modules
         /// The BOC itself returned if no cache type provided
         /// </summary>
         [JsonProperty("boc_cache", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
         public BocCacheType BocCache { get; set; }
 
         /// <summary>
@@ -221,14 +221,14 @@ namespace TonSdk.Modules
         /// Contract ABI for decoding output messages
         /// </summary>
         [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
         public Abi Abi { get; set; }
 
         /// <summary>
         /// The BOC itself returned if no cache type provided
         /// </summary>
         [JsonProperty("boc_cache", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(PolymorphicConcreteTypeConverter))]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
         public BocCacheType BocCache { get; set; }
 
         /// <summary>
