@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.12.0, processing module.
+* TON API version 1.13.0, processing module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -233,6 +233,13 @@ namespace TonSdk.Modules
         /// </summary>
         [JsonProperty("shard_block_id", NullValueHandling = NullValueHandling.Ignore)]
         public string ShardBlockId { get; set; }
+
+        /// <summary>
+        /// This list id must be used as a parameter of the
+        /// `wait_for_transaction`.
+        /// </summary>
+        [JsonProperty("sending_endpoints", NullValueHandling = NullValueHandling.Ignore)]
+        public string[] SendingEndpoints { get; set; }
     }
 
     public class ParamsOfWaitForTransaction
@@ -264,6 +271,12 @@ namespace TonSdk.Modules
         /// </summary>
         [JsonProperty("send_events", NullValueHandling = NullValueHandling.Ignore)]
         public bool SendEvents { get; set; }
+
+        /// <summary>
+        /// You must provide the same value as the `send_message` has returned.
+        /// </summary>
+        [JsonProperty("sending_endpoints", NullValueHandling = NullValueHandling.Ignore)]
+        public string[] SendingEndpoints { get; set; }
     }
 
     public class ParamsOfProcessMessage

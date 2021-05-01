@@ -164,6 +164,15 @@ namespace TonSdk.Tests.Modules
                 var expectedAbi = serializer.Deserialize<JToken>(state.Info.Dabi);
                 var actualAbi = serializer.Deserialize<JToken>(res.Info.Dabi);
                 Assert.Equal(expectedAbi, actualAbi);
+                Assert.Equal(state.Info?.Author, res.Info?.Author);
+                Assert.Equal(state.Info?.Dabi, res.Info?.Dabi);
+                Assert.Equal(state.Info?.Hello, res.Info?.Hello);
+                Assert.Equal(state.Info?.Icon, res.Info?.Icon);
+                Assert.Equal(state.Info?.Interfaces ?? new string[0], res.Info?.Interfaces);
+                Assert.Equal(state.Info?.Key, res.Info?.Key);
+                Assert.Equal(state.Info?.Language, res.Info?.Language);
+                Assert.Equal(state.Info?.Name, res.Info?.Name);
+                Assert.Equal(state.Info?.Publisher, res.Info?.Publisher);
             }
 
             var handle = await FetchDebotAsync(state, state.Address);

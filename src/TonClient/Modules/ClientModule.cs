@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.12.0, client module.
+* TON API version 1.13.0, client module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -140,6 +140,13 @@ namespace TonSdk.Modules
         /// </summary>
         [JsonProperty("out_of_sync_threshold", NullValueHandling = NullValueHandling.Ignore)]
         public uint? OutOfSyncThreshold { get; set; }
+
+        /// <summary>
+        /// Maximum number of randomly chosen endpoints the library uses to send message. The default value is 2
+        /// endpoints.
+        /// </summary>
+        [JsonProperty("sending_endpoint_count", NullValueHandling = NullValueHandling.Ignore)]
+        public byte? SendingEndpointCount { get; set; }
 
         /// <summary>
         /// At the moment is not used in production

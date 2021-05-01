@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.12.0, boc module.
+* TON API version 1.13.0, boc module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -206,7 +206,7 @@ namespace TonSdk.Modules
             /// Bit size of the value.
             /// </summary>
             [JsonProperty("size", NullValueHandling = NullValueHandling.Ignore)]
-            public byte Size { get; set; }
+            public uint Size { get; set; }
 
             /// <summary>
             /// e.g. `123`, `-123`. - Decimal string. e.g. `"123"`, `"-123"`.

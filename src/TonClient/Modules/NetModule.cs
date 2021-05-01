@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.12.0, net module.
+* TON API version 1.13.0, net module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -117,7 +117,7 @@ namespace TonSdk.Modules
             public string Collection { get; set; }
 
             /// <summary>
-            /// Collection filter.
+            /// Collection filter
             /// </summary>
             [JsonProperty("filter", NullValueHandling = NullValueHandling.Ignore)]
             public Newtonsoft.Json.Linq.JToken Filter { get; set; }
@@ -127,6 +127,33 @@ namespace TonSdk.Modules
             /// </summary>
             [JsonProperty("fields", NullValueHandling = NullValueHandling.Ignore)]
             public FieldAggregation[] Fields { get; set; }
+        }
+
+        public class QueryCounterparties : ParamsOfQueryOperation
+        {
+            /// <summary>
+            /// Account address
+            /// </summary>
+            [JsonProperty("account", NullValueHandling = NullValueHandling.Ignore)]
+            public string Account { get; set; }
+
+            /// <summary>
+            /// Projection (result) string
+            /// </summary>
+            [JsonProperty("result", NullValueHandling = NullValueHandling.Ignore)]
+            public string Result { get; set; }
+
+            /// <summary>
+            /// Number of counterparties to return
+            /// </summary>
+            [JsonProperty("first", NullValueHandling = NullValueHandling.Ignore)]
+            public uint? First { get; set; }
+
+            /// <summary>
+            /// `cursor` field of the last received result
+            /// </summary>
+            [JsonProperty("after", NullValueHandling = NullValueHandling.Ignore)]
+            public string After { get; set; }
         }
     }
 
@@ -264,7 +291,7 @@ namespace TonSdk.Modules
         public string Collection { get; set; }
 
         /// <summary>
-        /// Collection filter.
+        /// Collection filter
         /// </summary>
         [JsonProperty("filter", NullValueHandling = NullValueHandling.Ignore)]
         public Newtonsoft.Json.Linq.JToken Filter { get; set; }
@@ -379,6 +406,33 @@ namespace TonSdk.Modules
         public string[] Endpoints { get; set; }
     }
 
+    public class ParamsOfQueryCounterparties
+    {
+        /// <summary>
+        /// Account address
+        /// </summary>
+        [JsonProperty("account", NullValueHandling = NullValueHandling.Ignore)]
+        public string Account { get; set; }
+
+        /// <summary>
+        /// Projection (result) string
+        /// </summary>
+        [JsonProperty("result", NullValueHandling = NullValueHandling.Ignore)]
+        public string Result { get; set; }
+
+        /// <summary>
+        /// Number of counterparties to return
+        /// </summary>
+        [JsonProperty("first", NullValueHandling = NullValueHandling.Ignore)]
+        public uint? First { get; set; }
+
+        /// <summary>
+        /// `cursor` field of the last received result
+        /// </summary>
+        [JsonProperty("after", NullValueHandling = NullValueHandling.Ignore)]
+        public string After { get; set; }
+    }
+
     /// <summary>
     /// Network access.
     /// </summary>
@@ -490,6 +544,15 @@ namespace TonSdk.Modules
         /// Sets the list of endpoints to use on reinit
         /// </summary>
         Task SetEndpointsAsync(EndpointsSet @params);
+
+        /// <summary>
+        /// *Attention* this query retrieves data from 'Counterparties' service which is not supported in
+        /// the opensource version of DApp Server (and will not be supported) as well as in TON OS SE (will be
+        /// supported in SE in future),
+        /// but is always accessible via [TON OS Devnet/Mainnet
+        /// Clouds](https://docs.ton.dev/86757ecb2/p/85c869-networks)
+        /// </summary>
+        Task<ResultOfQueryCollection> QueryCounterpartiesAsync(ParamsOfQueryCounterparties @params);
     }
 
     internal class NetModule : INetModule
@@ -559,6 +622,11 @@ namespace TonSdk.Modules
         public async Task SetEndpointsAsync(EndpointsSet @params)
         {
             await _client.CallFunctionAsync("net.set_endpoints", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfQueryCollection> QueryCounterpartiesAsync(ParamsOfQueryCounterparties @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfQueryCollection>("net.query_counterparties", @params).ConfigureAwait(false);
         }
     }
 }
