@@ -359,4 +359,24 @@ namespace TonSdk.Tests.Modules
                 });
         }
     }
+    public class TestDebot8 : AbstractTestDebot
+    {
+        public override string Name { get; } = "testDebot8";
+
+        protected override async Task SetAbiAsync()
+        {
+            await Client.NetProcessFunctionAsync(
+                Address,
+                Abi,
+                "setABI",
+                new
+                {
+                    dabi = ((Abi.Contract)Abi).Value.ToJson().ToString().ToHexString()
+                }.ToJson(),
+                new Signer.Keys
+                {
+                    KeysProperty = Keys
+                });
+        }
+    }
 }

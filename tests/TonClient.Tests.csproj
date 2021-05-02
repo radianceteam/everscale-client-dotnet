@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Resources\contracts\**" CopyToOutputDirectory="PreserveNewest" Link="contracts\%(RecursiveDir)\%(Filename)%(Extension)" />
+    <None Include="Resources\contracts\**" CopyToOutputDirectory="Always" Link="contracts\%(RecursiveDir)\%(Filename)%(Extension)" />
   </ItemGroup>
 
 </Project>

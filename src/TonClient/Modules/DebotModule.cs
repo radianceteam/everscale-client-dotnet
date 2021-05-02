@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.13.0, debot module.
+* TON API version 1.14.0, debot module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -95,8 +95,8 @@ namespace TonSdk.Modules
         /// <summary>
         /// Short info about DeBot.
         /// </summary>
-        [JsonProperty("key", NullValueHandling = NullValueHandling.Ignore)]
-        public string Key { get; set; }
+        [JsonProperty("caption", NullValueHandling = NullValueHandling.Ignore)]
+        public string Caption { get; set; }
 
         /// <summary>
         /// The name of DeBot developer.

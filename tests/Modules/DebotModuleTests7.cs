@@ -28,7 +28,7 @@ namespace TonSdk.Tests.Modules
                     Name = "Test DeBot 7",
                     Version = "0.1.0",
                     Publisher = "TON Labs",
-                    Key = "Test for Json interface",
+                    Caption = "Test for Json interface",
                     Author = "TON Labs",
                     Support = "0:0000000000000000000000000000000000000000000000000000000000000000",
                     Hello = "Test DeBot 7",

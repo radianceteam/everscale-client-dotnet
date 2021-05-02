@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +22,7 @@ namespace TonSdk.Tests.Modules
         {
             "f6927c0d4bdb69e1b52d27f018d156ff04152f00558042ff674f0fec32e4369d", // echo
             "8796536366ee21852db56dccb60bc564598b618c865fc50c8b1ab740bba128e3", // terminal
+            "c13024e101c95e71afb1f5fa6d72f633d51e721de0320d73dfd6121a54e4d40a" // signing box input
         };
 
         private readonly string EchoAbi = @"
@@ -87,6 +87,28 @@ namespace TonSdk.Tests.Modules
 }
 ";
 
+        private readonly string SigningBoxAbi = @"{
+	""ABI version"": 2,
+	""header"": [""time""],
+	""functions"": [
+		{
+			""name"": ""get"",
+			""inputs"": [
+				{""name"":""answerId"",""type"":""uint32""},
+				{""name"":""prompt"",""type"":""bytes""},
+				{""name"":""possiblePublicKeys"",""type"":""uint256[]""}
+			],
+			""outputs"": [
+				{""name"":""handle"",""type"":""uint32""}
+			]
+		}
+	],
+	""data"": [
+	],
+	""events"": [
+	]
+}";
+
         public TestDebotBrowser(ITestDebot debot, ILogger logger)
         {
             _debot = debot ?? throw new ArgumentNullException(nameof(debot));
@@ -102,6 +124,7 @@ namespace TonSdk.Tests.Modules
                 Keys = _debot.Keys,
                 Address = _debot.Address,
                 Finished = false,
+                SigningBoxInput = new SigningBoxInput(await _debot.Client.Crypto.GetSigningBoxAsync(_debot.Keys)),
                 Info = new DebotInfo
                 {
                     Dabi = ((Abi.Contract)_debot.Abi).Value.ToJson().ToString()
@@ -113,7 +136,7 @@ namespace TonSdk.Tests.Modules
         }
 
         public async Task ExecuteWithDetailsAsync(
-            List<DebotStep> steps, 
+            List<DebotStep> steps,
             DebotInfo debotInfo,
             List<ExpectedTransaction> activity,
             List<string> terminalOutputs = null)
@@ -126,6 +149,7 @@ namespace TonSdk.Tests.Modules
                 Address = _debot.Address,
                 Finished = false,
                 Info = debotInfo,
+                SigningBoxInput = new SigningBoxInput(await _debot.Client.Crypto.GetSigningBoxAsync(_debot.Keys)),
                 Activity = new Mutex<List<ExpectedTransaction>>(activity),
                 Terminal = new Mutex<Terminal>(new Terminal(terminalOutputs ?? new List<string>()))
             };
@@ -164,15 +188,23 @@ namespace TonSdk.Tests.Modules
                 var expectedAbi = serializer.Deserialize<JToken>(state.Info.Dabi);
                 var actualAbi = serializer.Deserialize<JToken>(res.Info.Dabi);
                 Assert.Equal(expectedAbi, actualAbi);
-                Assert.Equal(state.Info?.Author, res.Info?.Author);
-                Assert.Equal(state.Info?.Dabi, res.Info?.Dabi);
-                Assert.Equal(state.Info?.Hello, res.Info?.Hello);
-                Assert.Equal(state.Info?.Icon, res.Info?.Icon);
-                Assert.Equal(state.Info?.Interfaces ?? new string[0], res.Info?.Interfaces);
-                Assert.Equal(state.Info?.Key, res.Info?.Key);
-                Assert.Equal(state.Info?.Language, res.Info?.Language);
-                Assert.Equal(state.Info?.Name, res.Info?.Name);
-                Assert.Equal(state.Info?.Publisher, res.Info?.Publisher);
+                if (state.Info != null)
+                {
+                    Assert.NotNull(res.Info);
+                    Assert.Equal(state.Info.Author, res.Info.Author);
+                    Assert.Equal(state.Info.Dabi, res.Info.Dabi);
+                    Assert.Equal(state.Info.Hello, res.Info.Hello);
+                    Assert.Equal(state.Info.Icon, res.Info.Icon);
+                    Assert.Equal(state.Info.Interfaces ?? new string[0], res.Info.Interfaces);
+                    Assert.Equal(state.Info.Caption, res.Info.Caption);
+                    Assert.Equal(state.Info.Language, res.Info.Language);
+                    Assert.Equal(state.Info.Name, res.Info.Name);
+                    Assert.Equal(state.Info.Publisher, res.Info.Publisher);
+                }
+                else
+                {
+                    Assert.Null(res.Info);
+                }
             }
 
             var handle = await FetchDebotAsync(state, state.Address);
@@ -293,7 +325,9 @@ namespace TonSdk.Tests.Modules
 
                     var (funcId, returnArgs) = _supportedInterfaces[0] == interfaceId
                         ? data.Echo.Call(decoded.Name, decoded.Value)
-                        : await CallTerminalAsync(data, decoded.Name, decoded.Value);
+                        : _supportedInterfaces[1] == interfaceId
+                        ? await CallTerminalAsync(data, decoded.Name, decoded.Value)
+                        : data.SigningBoxInput.Call(decoded.Name, decoded.Value);
 
                     _logger.Information($"response: {funcId} ({returnArgs})");
 
@@ -347,6 +381,8 @@ namespace TonSdk.Tests.Modules
                 ? EchoAbi
                 : _supportedInterfaces[1] == interfaceId
                     ? TerminalAbi
+                    : _supportedInterfaces[2] == interfaceId
+                    ? SigningBoxAbi
                     : throw new NotSupportedException($"Interface not supported: {interfaceId}");
 
             return new Abi.Json
@@ -452,7 +488,8 @@ namespace TonSdk.Tests.Modules
                             Next = new Mutex<List<DebotStep>>(steps),
                             Keys = state.Keys,
                             Address = invoke.DebotAddr,
-                            Finished = false
+                            Finished = false,
+                            SigningBoxInput = new SigningBoxInput(await _debot.Client.Crypto.GetSigningBoxAsync(_debot.Keys))
                         };
 
                         await ExecuteFromStateAsync(newState, false);
@@ -524,6 +561,7 @@ namespace TonSdk.Tests.Modules
         public Mutex<Queue<string>> MsgQueue = new Mutex<Queue<string>>(new Queue<string>());
         public Mutex<Terminal> Terminal { get; set; } = new Mutex<Terminal>(new Terminal(new List<string>()));
         public Echo Echo { get; } = new Echo();
+        public SigningBoxInput SigningBoxInput { get; set; }
         public Mutex<IDictionary<string, RegisteredDebot>> Bots = new Mutex<IDictionary<string, RegisteredDebot>>(new Dictionary<string, RegisteredDebot>());
         public DebotInfo Info { get; set; } = new DebotInfo();
         public Mutex<List<ExpectedTransaction>> Activity { get; set; } = new Mutex<List<ExpectedTransaction>>(new List<ExpectedTransaction>());
@@ -548,6 +586,32 @@ namespace TonSdk.Tests.Modules
             return bots.Instance.ContainsKey(addr)
                 ? bots.Instance[addr]
                 : null;
+        }
+    }
+
+    public class SigningBoxInput
+    {
+        private readonly uint _boxHandle;
+
+        public SigningBoxInput(RegisteredSigningBox signingBox)
+        {
+            _boxHandle = signingBox.Handle;
+        }
+
+        public (uint, JToken) Call(string func, JToken args)
+        {
+            switch (func)
+            {
+                case "get":
+                    var answerId = args.Value<uint>("answerId");
+                    return (answerId, new
+                    {
+                        handle = _boxHandle
+                    }.ToJson());
+
+                default:
+                    throw new NotSupportedException($"interface function {func} not found");
+            }
         }
     }
 
