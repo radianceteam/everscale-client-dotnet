@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.14.1, net module.
+* TON API version 1.15.0, net module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -406,6 +406,21 @@ namespace TonSdk.Modules
         public string[] Endpoints { get; set; }
     }
 
+    public class ResultOfGetEndpoints
+    {
+        /// <summary>
+        /// Current query endpoint
+        /// </summary>
+        [JsonProperty("query", NullValueHandling = NullValueHandling.Ignore)]
+        public string Query { get; set; }
+
+        /// <summary>
+        /// List of all endpoints used by client
+        /// </summary>
+        [JsonProperty("endpoints", NullValueHandling = NullValueHandling.Ignore)]
+        public string[] Endpoints { get; set; }
+    }
+
     public class ParamsOfQueryCounterparties
     {
         /// <summary>
@@ -546,6 +561,11 @@ namespace TonSdk.Modules
         Task SetEndpointsAsync(EndpointsSet @params);
 
         /// <summary>
+        /// Requests the list of alternative endpoints from server
+        /// </summary>
+        Task<ResultOfGetEndpoints> GetEndpointsAsync();
+
+        /// <summary>
         /// *Attention* this query retrieves data from 'Counterparties' service which is not supported in
         /// the opensource version of DApp Server (and will not be supported) as well as in TON OS SE (will be
         /// supported in SE in future),
@@ -622,6 +642,11 @@ namespace TonSdk.Modules
         public async Task SetEndpointsAsync(EndpointsSet @params)
         {
             await _client.CallFunctionAsync("net.set_endpoints", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfGetEndpoints> GetEndpointsAsync()
+        {
+            return await _client.CallFunctionAsync<ResultOfGetEndpoints>("net.get_endpoints").ConfigureAwait(false);
         }
 
         public async Task<ResultOfQueryCollection> QueryCounterpartiesAsync(ParamsOfQueryCounterparties @params)

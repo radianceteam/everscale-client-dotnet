@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.14.1, debot module.
+* TON API version 1.15.0, debot module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -186,6 +186,12 @@ namespace TonSdk.Modules
             /// </summary>
             [JsonProperty("signkey", NullValueHandling = NullValueHandling.Ignore)]
             public string Signkey { get; set; }
+
+            /// <summary>
+            /// Signing box handle used to sign external message.
+            /// </summary>
+            [JsonProperty("signing_box_handle", NullValueHandling = NullValueHandling.Ignore)]
+            public uint SigningBoxHandle { get; set; }
         }
     }
 

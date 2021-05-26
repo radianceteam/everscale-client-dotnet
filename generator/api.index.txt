@@ -1,4 +1,4 @@
-1.14.1
+1.15.0
 TYPES
 client.ClientErrorCode
 client.ClientError
@@ -175,6 +175,7 @@ net.ParamsOfSubscribeCollection
 net.ParamsOfFindLastShardBlock
 net.ResultOfFindLastShardBlock
 net.EndpointsSet
+net.ResultOfGetEndpoints
 net.ParamsOfQueryCounterparties
 debot.DebotErrorCode
 debot.DebotHandle
@@ -277,6 +278,7 @@ net.resume
 net.find_last_shard_block
 net.fetch_endpoints
 net.set_endpoints
+net.get_endpoints
 net.query_counterparties
 debot.init
 debot.start

@@ -127,7 +127,7 @@ namespace TonSdk.Tests.Modules
                 SigningBoxInput = new SigningBoxInput(await _debot.Client.Crypto.GetSigningBoxAsync(_debot.Keys)),
                 Info = new DebotInfo
                 {
-                    Dabi = ((Abi.Contract)_debot.Abi).Value.ToJson().ToString()
+                    Dabi = ((Abi.Contract) _debot.Abi).Value.ToJson().ToString()
                 },
                 Terminal = new Mutex<Terminal>(new Terminal(terminalOutputs ?? new List<string>()))
             };
@@ -228,10 +228,12 @@ namespace TonSdk.Tests.Modules
                     {
                         break;
                     }
+
                     using (var next = await state.Next.LockAsync())
                     {
                         step.Instance.Step = next.Instance.RemoveFirst();
                     }
+
                     step.Instance.Outputs.Clear();
                     action = step.Instance.AvailableActions[step.Instance.Step.Choice - 1];
                 }
@@ -326,8 +328,8 @@ namespace TonSdk.Tests.Modules
                     var (funcId, returnArgs) = _supportedInterfaces[0] == interfaceId
                         ? data.Echo.Call(decoded.Name, decoded.Value)
                         : _supportedInterfaces[1] == interfaceId
-                        ? await CallTerminalAsync(data, decoded.Name, decoded.Value)
-                        : data.SigningBoxInput.Call(decoded.Name, decoded.Value);
+                            ? await CallTerminalAsync(data, decoded.Name, decoded.Value)
+                            : data.SigningBoxInput.Call(decoded.Name, decoded.Value);
 
                     _logger.Information($"response: {funcId} ({returnArgs})");
 
@@ -382,8 +384,8 @@ namespace TonSdk.Tests.Modules
                 : _supportedInterfaces[1] == interfaceId
                     ? TerminalAbi
                     : _supportedInterfaces[2] == interfaceId
-                    ? SigningBoxAbi
-                    : throw new NotSupportedException($"Interface not supported: {interfaceId}");
+                        ? SigningBoxAbi
+                        : throw new NotSupportedException($"Interface not supported: {interfaceId}");
 
             return new Abi.Json
             {
@@ -413,6 +415,7 @@ namespace TonSdk.Tests.Modules
                         {
                             step.Instance.Outputs.Add(log.Msg);
                         }
+
                         return null;
 
                     case ParamsOfAppDebotBrowser.Switch @switch:
@@ -420,14 +423,17 @@ namespace TonSdk.Tests.Modules
                         {
                             Assert.False(switchStarted.Swap(true));
                         }
+
                         if (@switch.ContextId == 255) // STATE_EXIT
                         {
                             state.Finished = true;
                         }
+
                         using (var step = await state.Current.LockAsync())
                         {
                             step.Instance.AvailableActions.Clear();
                         }
+
                         return null;
 
                     case ParamsOfAppDebotBrowser.ShowAction action:
@@ -435,6 +441,7 @@ namespace TonSdk.Tests.Modules
                         {
                             step.Instance.AvailableActions.Add(action.Action);
                         }
+
                         return null;
 
                     case ParamsOfAppDebotBrowser.Send message:
@@ -442,6 +449,7 @@ namespace TonSdk.Tests.Modules
                         {
                             queue.Instance.Enqueue(message.Message);
                         }
+
                         return null;
 
                     case ParamsOfAppDebotBrowser.SwitchCompleted:
@@ -449,6 +457,7 @@ namespace TonSdk.Tests.Modules
                         {
                             Assert.True(switchStarted.Swap(false));
                         }
+
                         return null;
 
                     case ParamsOfAppDebotBrowser.Input:
@@ -479,7 +488,7 @@ namespace TonSdk.Tests.Modules
 
                         var current = new CurrentStepData
                         {
-                            AvailableActions = new List<DebotAction> { invoke.Action }
+                            AvailableActions = new List<DebotAction> {invoke.Action}
                         };
 
                         var newState = new BrowserData
@@ -489,7 +498,8 @@ namespace TonSdk.Tests.Modules
                             Keys = state.Keys,
                             Address = invoke.DebotAddr,
                             Finished = false,
-                            SigningBoxInput = new SigningBoxInput(await _debot.Client.Crypto.GetSigningBoxAsync(_debot.Keys))
+                            SigningBoxInput =
+                                new SigningBoxInput(await _debot.Client.Crypto.GetSigningBoxAsync(_debot.Keys))
                         };
 
                         await ExecuteFromStateAsync(newState, false);
@@ -510,6 +520,7 @@ namespace TonSdk.Tests.Modules
                                 Assert.Equal(expected.Out, activity.Out);
                                 Assert.Equal(expected.Setcode, activity.Setcode);
                                 Assert.Equal(expected.Signkey, activity.Signkey);
+                                Assert.NotEqual(0u, activity.SigningBoxHandle);
                                 Assert.True(activity.Fee > BigInteger.Zero);
                             }
                         }
@@ -562,9 +573,14 @@ namespace TonSdk.Tests.Modules
         public Mutex<Terminal> Terminal { get; set; } = new Mutex<Terminal>(new Terminal(new List<string>()));
         public Echo Echo { get; } = new Echo();
         public SigningBoxInput SigningBoxInput { get; set; }
-        public Mutex<IDictionary<string, RegisteredDebot>> Bots = new Mutex<IDictionary<string, RegisteredDebot>>(new Dictionary<string, RegisteredDebot>());
+
+        public Mutex<IDictionary<string, RegisteredDebot>> Bots =
+            new Mutex<IDictionary<string, RegisteredDebot>>(new Dictionary<string, RegisteredDebot>());
+
         public DebotInfo Info { get; set; } = new DebotInfo();
-        public Mutex<List<ExpectedTransaction>> Activity { get; set; } = new Mutex<List<ExpectedTransaction>>(new List<ExpectedTransaction>());
+
+        public Mutex<List<ExpectedTransaction>> Activity { get; set; } =
+            new Mutex<List<ExpectedTransaction>>(new List<ExpectedTransaction>());
 
         public async Task<string> PopMessageAsync()
         {
@@ -669,13 +685,13 @@ namespace TonSdk.Tests.Modules
                     answerId = DecodeAbiNumber(args.Value<string>("answerId"));
                     prompt = Encoding.UTF8.GetString(args.Value<string>("prompt").FromHexString());
                     Print(answerId, prompt);
-                    return (answerId, new { value = 1 }.ToJson());
+                    return (answerId, new {value = 1}.ToJson());
 
                 case "input":
                     answerId = DecodeAbiNumber(args.Value<string>("answerId"));
                     prompt = Encoding.UTF8.GetString(args.Value<string>("prompt").FromHexString());
                     Print(answerId, prompt);
-                    return (answerId, new { value = "testinput".ToHexString() }.ToJson());
+                    return (answerId, new {value = "testinput".ToHexString()}.ToJson());
 
 
                 default:
@@ -687,7 +703,7 @@ namespace TonSdk.Tests.Modules
         {
             if (str.StartsWith("-0x") || str.StartsWith("-0X"))
             {
-                return (uint)-Convert.ToUInt32(str.Substring(3));
+                return (uint) -Convert.ToUInt32(str.Substring(3));
             }
 
             if (str.StartsWith("0x") || str.StartsWith("0X"))

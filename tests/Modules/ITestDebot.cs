@@ -85,7 +85,7 @@ namespace TonSdk.Tests.Modules
                 "setAbi",
                 new
                 {
-                    debotAbi = ((Abi.Contract)Abi).Value.ToJson().ToString().ToHexString()
+                    debotAbi = ((Abi.Contract) Abi).Value.ToJson().ToString().ToHexString()
                 }.ToJson(),
                 new Signer.Keys
                 {
@@ -130,6 +130,32 @@ namespace TonSdk.Tests.Modules
             Client.Dispose();
         }
     }
+    
+    public abstract class SimpleDebot : AbstractTestDebot
+    {
+        public override string Name { get; }
+
+        protected SimpleDebot(string name)
+        {
+            Name = name;
+        }
+
+        protected override async Task SetAbiAsync()
+        {
+            await Client.NetProcessFunctionAsync(
+                Address,
+                Abi,
+                "setABI",
+                new
+                {
+                    dabi = ((Abi.Contract) Abi).Value.ToJson().ToString().ToHexString()
+                }.ToJson(),
+                new Signer.Keys
+                {
+                    KeysProperty = Keys
+                });
+        }
+    }
 
     public class TestDebot : AbstractTestDebot
     {
@@ -155,24 +181,10 @@ namespace TonSdk.Tests.Modules
         }
     }
 
-    public class TestDebot3 : AbstractTestDebot
+    public class TestDebot3 : SimpleDebot
     {
-        public override string Name { get; } = "testDebot3";
-
-        protected override async Task SetAbiAsync()
+        public TestDebot3() : base("testDebot3")
         {
-            await Client.NetProcessFunctionAsync(
-                Address,
-                Abi,
-                "setABI",
-                new
-                {
-                    dabi = ((Abi.Contract)Abi).Value.ToJson().ToString().ToHexString()
-                }.ToJson(),
-                new Signer.Keys
-                {
-                    KeysProperty = Keys
-                });
         }
     }
 
@@ -222,30 +234,21 @@ namespace TonSdk.Tests.Modules
             {
                 image = TestClient.Tvc(Target),
                 pubkey = $"0x{Keys.Public}"
-            }.ToJson(), new Signer.Keys { KeysProperty = Keys });
+            }.ToJson(), new Signer.Keys {KeysProperty = Keys});
         }
     }
 
-    public class TestDebot5 : AbstractTestDebot
+    public class TestDebot5 : SimpleDebot
     {
-        public override string Name { get; } = "testDebot5";
+        public TestDebot5() : base("testDebot5")
+        {
+        }
 
-        public int Count { get; } = 6;
+        private static int Count => 6;
 
         protected override async Task SetAbiAsync()
         {
-            await Client.NetProcessFunctionAsync(
-                Address,
-                Abi,
-                "setABI",
-                new
-                {
-                    dabi = ((Abi.Contract)Abi).Value.ToJson().ToString().ToHexString()
-                }.ToJson(),
-                new Signer.Keys
-                {
-                    KeysProperty = Keys
-                });
+            await base.SetAbiAsync();
 
             var deployDebotParams = new ParamsOfEncodeMessage
             {
@@ -276,7 +279,7 @@ namespace TonSdk.Tests.Modules
         protected override async Task<JToken> GetConstructorParamsAsync()
         {
             var hash = await Client.GetCodeHashFromTvcAsync(Tvc);
-            return new { codeHash = $"0x{hash}" }.ToJson();
+            return new {codeHash = $"0x{hash}"}.ToJson();
         }
     }
 
@@ -330,7 +333,7 @@ namespace TonSdk.Tests.Modules
                 "setAbi",
                 new
                 {
-                    debotAbi = ((Abi.Contract)TargetAbi).Value.ToJson().ToString().ToHexString()
+                    debotAbi = ((Abi.Contract) TargetAbi).Value.ToJson().ToString().ToHexString()
                 }.ToJson(),
                 new Signer.Keys
                 {
@@ -339,44 +342,24 @@ namespace TonSdk.Tests.Modules
         }
     }
 
-    public class TestDebot7 : AbstractTestDebot
+    public class TestDebot6 : SimpleDebot
     {
-        public override string Name { get; } = "testDebot7";
-
-        protected override async Task SetAbiAsync()
+        public TestDebot6() : base("testDebot6")
         {
-            await Client.NetProcessFunctionAsync(
-                Address,
-                Abi,
-                "setABI",
-                new
-                {
-                    dabi = ((Abi.Contract)Abi).Value.ToJson().ToString().ToHexString()
-                }.ToJson(),
-                new Signer.Keys
-                {
-                    KeysProperty = Keys
-                });
         }
     }
-    public class TestDebot8 : AbstractTestDebot
-    {
-        public override string Name { get; } = "testDebot8";
 
-        protected override async Task SetAbiAsync()
+    public class TestDebot7 : SimpleDebot
+    {
+        public TestDebot7() : base("testDebot7")
         {
-            await Client.NetProcessFunctionAsync(
-                Address,
-                Abi,
-                "setABI",
-                new
-                {
-                    dabi = ((Abi.Contract)Abi).Value.ToJson().ToString().ToHexString()
-                }.ToJson(),
-                new Signer.Keys
-                {
-                    KeysProperty = Keys
-                });
+        }
+    }
+
+    public class TestDebot8 : SimpleDebot
+    {
+        public TestDebot8() : base("testDebot8")
+        {
         }
     }
 }

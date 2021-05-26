@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.14.1, client module.
+* TON API version 1.15.0, client module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -99,7 +99,7 @@ namespace TonSdk.Modules
         public sbyte? NetworkRetriesCount { get; set; }
 
         /// <summary>
-        /// Default value is 120000 (2 min)
+        /// Must be specified in milliseconds. Default is 120000 (2 min).
         /// </summary>
         [JsonProperty("max_reconnect_timeout", NullValueHandling = NullValueHandling.Ignore)]
         public uint? MaxReconnectTimeout { get; set; }
@@ -111,23 +111,19 @@ namespace TonSdk.Modules
         public uint? ReconnectTimeout { get; set; }
 
         /// <summary>
-        /// The number of automatic message processing retries that SDK performs in case of `Message Expired
-        /// (507)` error - but only for those messages which local emulation was successful or failed with
-        /// replay protection error. The default value is 5.
+        /// Default is 5.
         /// </summary>
         [JsonProperty("message_retries_count", NullValueHandling = NullValueHandling.Ignore)]
         public sbyte? MessageRetriesCount { get; set; }
 
         /// <summary>
-        /// Timeout that is used to process message delivery for the contracts which ABI does not include
-        /// "expire" header. If the message is not delivered within the specified timeout the appropriate error
-        /// occurs.
+        /// Must be specified in milliseconds. Default is 40000 (40 sec).
         /// </summary>
         [JsonProperty("message_processing_timeout", NullValueHandling = NullValueHandling.Ignore)]
         public uint? MessageProcessingTimeout { get; set; }
 
         /// <summary>
-        /// Maximum timeout that is used for query response. The default value is 40 sec.
+        /// Must be specified in milliseconds. Default is 40000 (40 sec).
         /// </summary>
         [JsonProperty("wait_for_timeout", NullValueHandling = NullValueHandling.Ignore)]
         public uint? WaitForTimeout { get; set; }
@@ -136,20 +132,36 @@ namespace TonSdk.Modules
         /// If client's device time is out of sync and difference is more than the threshold then error will
         /// occur. Also an error will occur if the specified threshold is more than
         /// `message_processing_timeout/2`.
-        /// The default value is 15 sec.
+        /// 
+        /// Must be specified in milliseconds. Default is 15000 (15 sec).
         /// </summary>
         [JsonProperty("out_of_sync_threshold", NullValueHandling = NullValueHandling.Ignore)]
         public uint? OutOfSyncThreshold { get; set; }
 
         /// <summary>
-        /// Maximum number of randomly chosen endpoints the library uses to send message. The default value is 2
-        /// endpoints.
+        /// Default is 2.
         /// </summary>
         [JsonProperty("sending_endpoint_count", NullValueHandling = NullValueHandling.Ignore)]
         public byte? SendingEndpointCount { get; set; }
 
         /// <summary>
-        /// At the moment is not used in production
+        /// Library periodically checks the current endpoint for blockchain data syncronization latency.
+        /// If the latency (time-lag) is less then `NetworkConfig.max_latency`
+        /// then library selects another endpoint.
+        /// 
+        /// Must be specified in milliseconds. Default is 60000 (1 min).
+        /// </summary>
+        [JsonProperty("latency_detection_interval", NullValueHandling = NullValueHandling.Ignore)]
+        public uint? LatencyDetectionInterval { get; set; }
+
+        /// <summary>
+        /// Must be specified in milliseconds. Default is 60000 (1 min).
+        /// </summary>
+        [JsonProperty("max_latency", NullValueHandling = NullValueHandling.Ignore)]
+        public uint? MaxLatency { get; set; }
+
+        /// <summary>
+        /// At the moment is not used in production.
         /// </summary>
         [JsonProperty("access_key", NullValueHandling = NullValueHandling.Ignore)]
         public string AccessKey { get; set; }

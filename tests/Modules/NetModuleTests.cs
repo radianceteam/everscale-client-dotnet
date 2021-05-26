@@ -86,7 +86,7 @@ namespace TonSdk.Tests.Modules
                     Collection = "transactions",
                     Filter = new
                     {
-                        now = new { gt = now }
+                        now = new {gt = now}
                     }.ToJson(),
                     Result = "id now"
                 });
@@ -130,8 +130,8 @@ namespace TonSdk.Tests.Modules
                 Collection = "transactions",
                 Filter = new
                 {
-                    account_addr = new { eq = address },
-                    status = new { eq = 3 } // Finalized
+                    account_addr = new {eq = address},
+                    status = new {eq = 3} // Finalized
                 }.ToJson(),
                 Result = "id account_addr"
             }, (json, result) =>
@@ -140,7 +140,7 @@ namespace TonSdk.Tests.Modules
                 Assert.NotNull(json);
                 Assert.NotNull(json["result"]);
                 Assert.Equal(address, json.SelectToken("result.account_addr"));
-                transactionIds.Add((string)json.SelectToken("result.id"));
+                transactionIds.Add((string) json.SelectToken("result.id"));
                 return Task.CompletedTask;
             });
 
@@ -163,7 +163,7 @@ namespace TonSdk.Tests.Modules
                 Collection = "messages",
                 Filter = new
                 {
-                    dst = new { eq = "1" }
+                    dst = new {eq = "1"}
                 }.ToJson(),
                 Result = "id"
             }, (json, result) =>
@@ -234,8 +234,8 @@ namespace TonSdk.Tests.Modules
                 Collection = "transactions",
                 Filter = new
                 {
-                    account_addr = new { eq = address },
-                    status = new { eq = 3 } // Finalized
+                    account_addr = new {eq = address},
+                    status = new {eq = 3} // Finalized
                 }.ToJson(),
                 Result = "id account_addr"
             }, (json, result) =>
@@ -243,7 +243,7 @@ namespace TonSdk.Tests.Modules
                 switch (result)
                 {
                     case 100: // OK
-                        transactionIds.Add((string)json.SelectToken("result.id"));
+                        transactionIds.Add((string) json.SelectToken("result.id"));
                         break;
 
                     case 101: // Error
@@ -284,8 +284,8 @@ namespace TonSdk.Tests.Modules
                 Collection = "transactions",
                 Filter = new
                 {
-                    account_addr = new { eq = msg.Address },
-                    status = new { eq = 3 } // Finalized
+                    account_addr = new {eq = msg.Address},
+                    status = new {eq = 3} // Finalized
                 }.ToJson(),
                 Result = "id account_addr"
             }, (json, result) =>
@@ -293,7 +293,7 @@ namespace TonSdk.Tests.Modules
                 switch (result)
                 {
                     case 100: // OK
-                        transactionIds.Add((string)json.SelectToken("result.id"));
+                        transactionIds.Add((string) json.SelectToken("result.id"));
                         break;
 
                     case 101: // Error
@@ -314,7 +314,7 @@ namespace TonSdk.Tests.Modules
             Assert.Single(transactionIds);
             Assert.Equal(2, notifications.Count);
             Assert.All(notifications, n =>
-                Assert.Equal((uint)NetErrorCode.NetworkModuleSuspended, n.Code));
+                Assert.Equal((uint) NetErrorCode.NetworkModuleSuspended, n.Code));
 
             // resume subscription
             await subscriptionClient.Net.ResumeAsync();
@@ -347,8 +347,8 @@ namespace TonSdk.Tests.Modules
 
             // and both subscriptions received notification about resume
             Assert.Equal(4, notifications.Count);
-            Assert.Equal(2, notifications.Count(n => n.Code == (uint)NetErrorCode.NetworkModuleSuspended));
-            Assert.Equal(2, notifications.Count(n => n.Code == (uint)NetErrorCode.NetworkModuleResumed));
+            Assert.Equal(2, notifications.Count(n => n.Code == (uint) NetErrorCode.NetworkModuleSuspended));
+            Assert.Equal(2, notifications.Count(n => n.Code == (uint) NetErrorCode.NetworkModuleResumed));
 
             await subscriptionClient.Net.UnsubscribeAsync(handle);
             await subscriptionClient.Net.UnsubscribeAsync(handle2);
@@ -373,7 +373,7 @@ namespace TonSdk.Tests.Modules
             {
                 Network = new NetworkConfig
                 {
-                    Endpoints = new[] { "cinet.tonlabs.io", "cinet2.tonlabs.io/" }
+                    Endpoints = new[] {"cinet.tonlabs.io", "cinet2.tonlabs.io/"}
                 }
             });
 
@@ -391,7 +391,7 @@ namespace TonSdk.Tests.Modules
 
             await client.Net.SetEndpointsAsync(new EndpointsSet
             {
-                Endpoints = new[] { "cinet.tonlabs.io", "cinet2.tonlabs.io/" }
+                Endpoints = new[] {"cinet.tonlabs.io", "cinet2.tonlabs.io/"}
             });
 
             var result = await client.Net.FetchEndpointsAsync();
@@ -467,6 +467,14 @@ namespace TonSdk.Tests.Modules
 
             var count = result.Values[0].Value<int>();
             Assert.True(count > 0);
+        }
+
+        [EnvDependentFact]
+        public async Task Should_Get_Endpoints()
+        {
+            var result = await _client.Net.GetEndpointsAsync();
+            Assert.NotNull(result);
+            Assert.NotEmpty(result.Endpoints);
         }
     }
 }
