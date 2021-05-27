@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.15.0, abi module.
+* TON API version 1.16.0, abi module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -354,7 +354,7 @@ namespace TonSdk.Modules
     public class AbiData
     {
         [JsonProperty("key", NullValueHandling = NullValueHandling.Ignore)]
-        public BigInteger Key { get; set; }
+        public uint Key { get; set; }
 
         [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
         public string Name { get; set; }

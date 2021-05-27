@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.15.0, net module.
+* TON API version 1.16.0, net module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -195,6 +195,103 @@ namespace TonSdk.Modules
         /// Returns an average value for a field in filtered records
         /// </summary>
         AVERAGE,
+    }
+
+    public class TransactionNode
+    {
+        /// <summary>
+        /// Transaction id.
+        /// </summary>
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public string Id { get; set; }
+
+        /// <summary>
+        /// In message id.
+        /// </summary>
+        [JsonProperty("in_msg", NullValueHandling = NullValueHandling.Ignore)]
+        public string InMsg { get; set; }
+
+        /// <summary>
+        /// Out message ids.
+        /// </summary>
+        [JsonProperty("out_msgs", NullValueHandling = NullValueHandling.Ignore)]
+        public string[] OutMsgs { get; set; }
+
+        /// <summary>
+        /// Account address.
+        /// </summary>
+        [JsonProperty("account_addr", NullValueHandling = NullValueHandling.Ignore)]
+        public string AccountAddr { get; set; }
+
+        /// <summary>
+        /// Transactions total fees.
+        /// </summary>
+        [JsonProperty("total_fees", NullValueHandling = NullValueHandling.Ignore)]
+        public string TotalFees { get; set; }
+
+        /// <summary>
+        /// Aborted flag.
+        /// </summary>
+        [JsonProperty("aborted", NullValueHandling = NullValueHandling.Ignore)]
+        public bool Aborted { get; set; }
+
+        /// <summary>
+        /// Compute phase exit code.
+        /// </summary>
+        [JsonProperty("exit_code", NullValueHandling = NullValueHandling.Ignore)]
+        public uint? ExitCode { get; set; }
+    }
+
+    public class MessageNode
+    {
+        /// <summary>
+        /// Message id.
+        /// </summary>
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public string Id { get; set; }
+
+        /// <summary>
+        /// This field is missing for an external inbound messages.
+        /// </summary>
+        [JsonProperty("src_transaction_id", NullValueHandling = NullValueHandling.Ignore)]
+        public string SrcTransactionId { get; set; }
+
+        /// <summary>
+        /// This field is missing for an external outbound messages.
+        /// </summary>
+        [JsonProperty("dst_transaction_id", NullValueHandling = NullValueHandling.Ignore)]
+        public string DstTransactionId { get; set; }
+
+        /// <summary>
+        /// Source address.
+        /// </summary>
+        [JsonProperty("src", NullValueHandling = NullValueHandling.Ignore)]
+        public string Src { get; set; }
+
+        /// <summary>
+        /// Destination address.
+        /// </summary>
+        [JsonProperty("dst", NullValueHandling = NullValueHandling.Ignore)]
+        public string Dst { get; set; }
+
+        /// <summary>
+        /// Transferred tokens value.
+        /// </summary>
+        [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
+        public string Value { get; set; }
+
+        /// <summary>
+        /// Bounce flag.
+        /// </summary>
+        [JsonProperty("bounce", NullValueHandling = NullValueHandling.Ignore)]
+        public bool Bounce { get; set; }
+
+        /// <summary>
+        /// Library tries to decode message body using provided `params.abi_registry`.
+        /// This field will be missing if none of the provided abi can be used to decode.
+        /// </summary>
+        [JsonProperty("decoded_body", NullValueHandling = NullValueHandling.Ignore)]
+        public DecodedMessageBody DecodedBody { get; set; }
     }
 
     public class ParamsOfQuery
@@ -448,6 +545,38 @@ namespace TonSdk.Modules
         public string After { get; set; }
     }
 
+    public class ParamsOfQueryTransactionTree
+    {
+        /// <summary>
+        /// Input message id.
+        /// </summary>
+        [JsonProperty("in_msg", NullValueHandling = NullValueHandling.Ignore)]
+        public string InMsg { get; set; }
+
+        /// <summary>
+        /// List of contract ABIs that will be used to decode message bodies. Library will try to decode each
+        /// returned message body using any ABI from the registry.
+        /// </summary>
+        [JsonProperty("abi_registry", NullValueHandling = NullValueHandling.Ignore,
+            ItemConverterType = typeof(PolymorphicTypeConverter))]
+        public Abi[] AbiRegistry { get; set; }
+    }
+
+    public class ResultOfQueryTransactionTree
+    {
+        /// <summary>
+        /// Messages.
+        /// </summary>
+        [JsonProperty("messages", NullValueHandling = NullValueHandling.Ignore)]
+        public MessageNode[] Messages { get; set; }
+
+        /// <summary>
+        /// Transactions.
+        /// </summary>
+        [JsonProperty("transactions", NullValueHandling = NullValueHandling.Ignore)]
+        public TransactionNode[] Transactions { get; set; }
+    }
+
     /// <summary>
     /// Network access.
     /// </summary>
@@ -573,6 +702,24 @@ namespace TonSdk.Modules
         /// Clouds](https://docs.ton.dev/86757ecb2/p/85c869-networks)
         /// </summary>
         Task<ResultOfQueryCollection> QueryCounterpartiesAsync(ParamsOfQueryCounterparties @params);
+
+        /// <summary>
+        /// Performs recursive retrieval of the transactions tree produced by the specific message:
+        /// in_msg -> dst_transaction -> out_messages -> dst_transaction -> ...
+        /// 
+        /// All retrieved messages and transactions will be included
+        /// into `result.messages` and `result.transactions` respectively.
+        /// 
+        /// The retrieval process will stop when the retrieved transaction count is more than 50.
+        /// 
+        /// It is guaranteed that each message in `result.messages` has the corresponding transaction
+        /// in the `result.transactions`.
+        /// 
+        /// But there are no guaranties that all messages from transactions `out_msgs` are
+        /// presented in `result.messages`.
+        /// So the application have to continue retrieval for missing messages if it requires.
+        /// </summary>
+        Task<ResultOfQueryTransactionTree> QueryTransactionTreeAsync(ParamsOfQueryTransactionTree @params);
     }
 
     internal class NetModule : INetModule
@@ -652,6 +799,11 @@ namespace TonSdk.Modules
         public async Task<ResultOfQueryCollection> QueryCounterpartiesAsync(ParamsOfQueryCounterparties @params)
         {
             return await _client.CallFunctionAsync<ResultOfQueryCollection>("net.query_counterparties", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfQueryTransactionTree> QueryTransactionTreeAsync(ParamsOfQueryTransactionTree @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfQueryTransactionTree>("net.query_transaction_tree", @params).ConfigureAwait(false);
         }
     }
 }

@@ -1,4 +1,4 @@
-1.15.0
+1.16.0
 TYPES
 client.ClientErrorCode
 client.ClientError
@@ -160,6 +160,8 @@ net.SortDirection
 net.ParamsOfQueryOperation
 net.FieldAggregation
 net.AggregationFn
+net.TransactionNode
+net.MessageNode
 net.ParamsOfQuery
 net.ResultOfQuery
 net.ParamsOfBatchQuery
@@ -177,6 +179,8 @@ net.ResultOfFindLastShardBlock
 net.EndpointsSet
 net.ResultOfGetEndpoints
 net.ParamsOfQueryCounterparties
+net.ParamsOfQueryTransactionTree
+net.ResultOfQueryTransactionTree
 debot.DebotErrorCode
 debot.DebotHandle
 debot.DebotAction
@@ -280,6 +284,7 @@ net.fetch_endpoints
 net.set_endpoints
 net.get_endpoints
 net.query_counterparties
+net.query_transaction_tree
 debot.init
 debot.start
 debot.fetch

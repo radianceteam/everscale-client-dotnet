@@ -91,6 +91,8 @@ namespace TonSdk.Tests.Modules
                     Result = "id now"
                 });
 
+            await Task.Delay(TimeSpan.FromSeconds(1));
+
             var task = _client.GetGramsFromGiverAsync(TonClientNodeSe.GiverAddress);
 
             var result = await request;
@@ -475,6 +477,109 @@ namespace TonSdk.Tests.Modules
             var result = await _client.Net.GetEndpointsAsync();
             Assert.NotNull(result);
             Assert.NotEmpty(result.Endpoints);
+        }
+
+        [EnvDependentFact]
+        public async Task Should_Get_Transaction_Tree()
+        {
+            var messages = await _client.Net.QueryCollectionAsync(new ParamsOfQueryCollection
+            {
+                Collection = "messages",
+                Filter = new
+                {
+                    msg_type = new {eq = 1}
+                }.ToJson(),
+                Result = @"
+            id dst
+            dst_transaction { id aborted
+              out_messages { id dst msg_type_name
+                dst_transaction { id aborted
+                  out_messages { id dst msg_type_name
+                    dst_transaction { id aborted
+                    }
+                  }
+                }
+              }
+            }
+        "
+            });
+
+            var abiRegistry = new[]
+            {
+                TestClient.Abi("GiverV2"),
+                TestClient.Abi("Subscription"),
+                TestClient.Abi("Hello"),
+                TestClient.Abi("testDebot"),
+                TestClient.Abi("testDebotTarget")
+            };
+
+            var hasDecodedBodies = false;
+
+            foreach (var message in messages.Result)
+            {
+                var result = await _client.Net.QueryTransactionTreeAsync(new ParamsOfQueryTransactionTree
+                {
+                    InMsg = message["id"]?.ToString(),
+                    AbiRegistry = abiRegistry
+                });
+
+                var refMessages = new List<JToken>();
+                var refTransactions = new List<JToken>();
+                Collect(new[] {message}, refMessages, refTransactions);
+
+                var refMessageIds = refMessages
+                    .Select(m => m["id"].ToString())
+                    .ToHashSet();
+
+                var refTransactionIds = refTransactions
+                    .Select(t => t["id"].ToString())
+                    .ToHashSet();
+
+                var actualMessageIds = result.Messages
+                    .Select(m => m.Id)
+                    .ToHashSet();
+
+                var actualTransactionIds = result.Transactions
+                    .Select(t => t.Id)
+                    .ToHashSet();
+
+                Assert.Equal(refMessageIds, actualMessageIds);
+                Assert.Equal(refTransactionIds, actualTransactionIds);
+
+                foreach (var msg in result.Messages)
+                {
+                    if (msg.DecodedBody != null)
+                    {
+                        hasDecodedBodies = true;
+                    }
+                }
+            }
+
+            Assert.True(hasDecodedBodies);
+        }
+
+        private static void Collect(
+            IEnumerable<JToken> loadedMessages,
+            ICollection<JToken> messages,
+            ICollection<JToken> transactions)
+        {
+            foreach (var message in loadedMessages)
+            {
+                messages.Add(message);
+                var tr = message["dst_transaction"];
+                if (tr?.Any() == true)
+                {
+                    transactions.Add(tr);
+                    var outMessages = tr["out_messages"];
+                    if (outMessages?.Any() == true)
+                    {
+                        Collect(
+                            outMessages,
+                            messages,
+                            transactions);
+                    }
+                }
+            }
         }
     }
 }

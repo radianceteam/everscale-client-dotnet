@@ -289,13 +289,18 @@ function isAbiVersionField(field: TonApiSpec.Field): boolean {
     return field.name === 'abi_version' || field.name === 'ABI version';
 }
 
+function isPolymorphicField(field: TonApiSpec.HasValue): boolean {
+    return (field.type === 'Array' &&
+        field.array_item.type === 'Ref' &&
+        isPolymorphicType(field.array_item.ref_name)) ||
+        (field.type === 'Optional' && isPolymorphicField(field.optional_inner));
+}
+
 function writeTypeMembers(type: TonApiSpec.Type, writer: CSharpWriter) {
     for (let i = 0, n = type.struct_fields.length; i < n; ++i) {
         const field = type.struct_fields[i];
         writer.writeXmlDocSummary(getXmlDocSummary(field.summary, field.description));
-        if (field.type === 'Array' &&
-            field.array_item.type === 'Ref' &&
-            isPolymorphicType(field.array_item.ref_name)) {
+        if (isPolymorphicField(field)) {
             writer.writeLine(`[JsonProperty("${field.name}", NullValueHandling = NullValueHandling.Ignore,
             ItemConverterType = typeof(PolymorphicTypeConverter))]`);
         } else {
@@ -671,6 +676,7 @@ function buildTypeMappings(module: TonApiSpec.Module, type: TonApiSpec.Type) {
         if (!polymorphicTypes[module.name]) {
             polymorphicTypes[module.name] = {};
         }
+        console.debug(`Found polymorphic type: ${module.name}.${type.name}`);
         polymorphicTypes[module.name][type.name] = type;
         type.enum_types.forEach(t => {
             buildTypeMappings(module, t);
