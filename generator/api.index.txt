@@ -1,4 +1,4 @@
-1.16.1
+1.17.0
 TYPES
 client.ClientErrorCode
 client.ClientError
@@ -16,6 +16,8 @@ client.ResultOfBuildInfo
 client.ParamsOfResolveAppRequest
 crypto.CryptoErrorCode
 crypto.SigningBoxHandle
+crypto.EncryptionBoxHandle
+crypto.EncryptionBoxInfo
 crypto.ParamsOfFactorize
 crypto.ResultOfFactorize
 crypto.ParamsOfModularPower
@@ -77,6 +79,15 @@ crypto.ResultOfAppSigningBox
 crypto.ResultOfSigningBoxGetPublicKey
 crypto.ParamsOfSigningBoxSign
 crypto.ResultOfSigningBoxSign
+crypto.RegisteredEncryptionBox
+crypto.ParamsOfAppEncryptionBox
+crypto.ResultOfAppEncryptionBox
+crypto.ParamsOfEncryptionBoxGetInfo
+crypto.ResultOfEncryptionBoxGetInfo
+crypto.ParamsOfEncryptionBoxEncrypt
+crypto.ResultOfEncryptionBoxEncrypt
+crypto.ParamsOfEncryptionBoxDecrypt
+crypto.ResultOfEncryptionBoxDecrypt
 abi.AbiErrorCode
 abi.Abi
 abi.AbiHandle
@@ -240,6 +251,11 @@ crypto.get_signing_box
 crypto.signing_box_get_public_key
 crypto.signing_box_sign
 crypto.remove_signing_box
+crypto.register_encryption_box
+crypto.remove_encryption_box
+crypto.encryption_box_get_info
+crypto.encryption_box_encrypt
+crypto.encryption_box_decrypt
 abi.encode_message_body
 abi.attach_signature_to_message_body
 abi.encode_message

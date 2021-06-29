@@ -130,7 +130,7 @@ namespace TonSdk.Tests.Modules
             Client.Dispose();
         }
     }
-    
+
     public abstract class SimpleDebot : AbstractTestDebot
     {
         public override string Name { get; }
@@ -359,6 +359,13 @@ namespace TonSdk.Tests.Modules
     public class TestDebot8 : SimpleDebot
     {
         public TestDebot8() : base("testDebot8")
+        {
+        }
+    }
+
+    public class TestDebot9 : SimpleDebot
+    {
+        public TestDebot9() : base("testDebot9")
         {
         }
     }

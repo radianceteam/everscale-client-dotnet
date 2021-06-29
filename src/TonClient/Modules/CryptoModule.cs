@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.16.1, crypto module.
+* TON API version 1.17.0, crypto module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -33,6 +33,37 @@ namespace TonSdk.Modules
         MnemonicFromEntropyFailed = 120,
         SigningBoxNotRegistered = 121,
         InvalidSignature = 122,
+        EncryptionBoxNotRegistered = 123,
+    }
+
+    /// <summary>
+    /// Encryption box information
+    /// </summary>
+    public class EncryptionBoxInfo
+    {
+        /// <summary>
+        /// Derivation path, for instance "m/44'/396'/0'/0/0"
+        /// </summary>
+        [JsonProperty("hdpath", NullValueHandling = NullValueHandling.Ignore)]
+        public string Hdpath { get; set; }
+
+        /// <summary>
+        /// Cryptographic algorithm, used by this encryption box
+        /// </summary>
+        [JsonProperty("algorithm", NullValueHandling = NullValueHandling.Ignore)]
+        public string Algorithm { get; set; }
+
+        /// <summary>
+        /// Options, depends on algorithm and specific encryption box implementation
+        /// </summary>
+        [JsonProperty("options", NullValueHandling = NullValueHandling.Ignore)]
+        public Newtonsoft.Json.Linq.JToken Options { get; set; }
+
+        /// <summary>
+        /// Public information, depends on algorithm
+        /// </summary>
+        [JsonProperty("public", NullValueHandling = NullValueHandling.Ignore)]
+        public Newtonsoft.Json.Linq.JToken Public { get; set; }
     }
 
     public class ParamsOfFactorize
@@ -865,6 +896,157 @@ namespace TonSdk.Modules
         public string Signature { get; set; }
     }
 
+    public class RegisteredEncryptionBox
+    {
+        /// <summary>
+        /// Handle of the encryption box
+        /// </summary>
+        [JsonProperty("handle", NullValueHandling = NullValueHandling.Ignore)]
+        public uint Handle { get; set; }
+    }
+
+    /// <summary>
+    /// Encryption box callbacks.
+    /// </summary>
+    public abstract class ParamsOfAppEncryptionBox
+    {
+        /// <summary>
+        /// Get encryption box info
+        /// </summary>
+        public class GetInfo : ParamsOfAppEncryptionBox
+        {
+        }
+
+        /// <summary>
+        /// Encrypt data
+        /// </summary>
+        public class Encrypt : ParamsOfAppEncryptionBox
+        {
+            /// <summary>
+            /// Data, encoded in Base64
+            /// </summary>
+            [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
+            public string Data { get; set; }
+        }
+
+        /// <summary>
+        /// Decrypt data
+        /// </summary>
+        public class Decrypt : ParamsOfAppEncryptionBox
+        {
+            /// <summary>
+            /// Data, encoded in Base64
+            /// </summary>
+            [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
+            public string Data { get; set; }
+        }
+    }
+
+    /// <summary>
+    /// Returning values from signing box callbacks.
+    /// </summary>
+    public abstract class ResultOfAppEncryptionBox
+    {
+        /// <summary>
+        /// Result of getting encryption box info
+        /// </summary>
+        public class GetInfo : ResultOfAppEncryptionBox
+        {
+            [JsonProperty("info", NullValueHandling = NullValueHandling.Ignore)]
+            public EncryptionBoxInfo Info { get; set; }
+        }
+
+        /// <summary>
+        /// Result of encrypting data
+        /// </summary>
+        public class Encrypt : ResultOfAppEncryptionBox
+        {
+            /// <summary>
+            /// Encrypted data, encoded in Base64
+            /// </summary>
+            [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
+            public string Data { get; set; }
+        }
+
+        /// <summary>
+        /// Result of decrypting data
+        /// </summary>
+        public class Decrypt : ResultOfAppEncryptionBox
+        {
+            /// <summary>
+            /// Decrypted data, encoded in Base64
+            /// </summary>
+            [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
+            public string Data { get; set; }
+        }
+    }
+
+    public class ParamsOfEncryptionBoxGetInfo
+    {
+        /// <summary>
+        /// Encryption box handle
+        /// </summary>
+        [JsonProperty("encryption_box", NullValueHandling = NullValueHandling.Ignore)]
+        public uint EncryptionBox { get; set; }
+    }
+
+    public class ResultOfEncryptionBoxGetInfo
+    {
+        /// <summary>
+        /// Encryption box information
+        /// </summary>
+        [JsonProperty("info", NullValueHandling = NullValueHandling.Ignore)]
+        public EncryptionBoxInfo Info { get; set; }
+    }
+
+    public class ParamsOfEncryptionBoxEncrypt
+    {
+        /// <summary>
+        /// Encryption box handle
+        /// </summary>
+        [JsonProperty("encryption_box", NullValueHandling = NullValueHandling.Ignore)]
+        public uint EncryptionBox { get; set; }
+
+        /// <summary>
+        /// Data to be encrypted, encoded in Base64
+        /// </summary>
+        [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
+        public string Data { get; set; }
+    }
+
+    public class ResultOfEncryptionBoxEncrypt
+    {
+        /// <summary>
+        /// Encrypted data, encoded in Base64
+        /// </summary>
+        [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
+        public string Data { get; set; }
+    }
+
+    public class ParamsOfEncryptionBoxDecrypt
+    {
+        /// <summary>
+        /// Encryption box handle
+        /// </summary>
+        [JsonProperty("encryption_box", NullValueHandling = NullValueHandling.Ignore)]
+        public uint EncryptionBox { get; set; }
+
+        /// <summary>
+        /// Data to be decrypted, encoded in Base64
+        /// </summary>
+        [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
+        public string Data { get; set; }
+    }
+
+    public class ResultOfEncryptionBoxDecrypt
+    {
+        /// <summary>
+        /// Decrypted data, encoded in Base64
+        /// </summary>
+        [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
+        public string Data { get; set; }
+    }
+
     /// <summary>
     /// Crypto functions.
     /// </summary>
@@ -1084,6 +1266,31 @@ namespace TonSdk.Modules
         /// Removes signing box from SDK.
         /// </summary>
         Task RemoveSigningBoxAsync(RegisteredSigningBox @params);
+
+        /// <summary>
+        /// Register an application implemented encryption box.
+        /// </summary>
+        Task<RegisteredEncryptionBox> RegisterEncryptionBoxAsync(Func<ParamsOfAppEncryptionBox, Task<ResultOfAppEncryptionBox>> app_object);
+
+        /// <summary>
+        /// Removes encryption box from SDK
+        /// </summary>
+        Task RemoveEncryptionBoxAsync(RegisteredEncryptionBox @params);
+
+        /// <summary>
+        /// Queries info from the given encryption box
+        /// </summary>
+        Task<ResultOfEncryptionBoxGetInfo> EncryptionBoxGetInfoAsync(ParamsOfEncryptionBoxGetInfo @params);
+
+        /// <summary>
+        /// Encrypts data using given encryption box
+        /// </summary>
+        Task<ResultOfEncryptionBoxEncrypt> EncryptionBoxEncryptAsync(ParamsOfEncryptionBoxEncrypt @params);
+
+        /// <summary>
+        /// Decrypts data using given encryption box
+        /// </summary>
+        Task<ResultOfEncryptionBoxDecrypt> EncryptionBoxDecryptAsync(ParamsOfEncryptionBoxDecrypt @params);
     }
 
     internal class CryptoModule : ICryptoModule
@@ -1283,6 +1490,31 @@ namespace TonSdk.Modules
         public async Task RemoveSigningBoxAsync(RegisteredSigningBox @params)
         {
             await _client.CallFunctionAsync("crypto.remove_signing_box", @params).ConfigureAwait(false);
+        }
+
+        public async Task<RegisteredEncryptionBox> RegisterEncryptionBoxAsync(Func<ParamsOfAppEncryptionBox, Task<ResultOfAppEncryptionBox>> app_object)
+        {
+            return await _client.CallFunctionAsync<RegisteredEncryptionBox, ParamsOfAppEncryptionBox, ResultOfAppEncryptionBox>("crypto.register_encryption_box", app_object).ConfigureAwait(false);
+        }
+
+        public async Task RemoveEncryptionBoxAsync(RegisteredEncryptionBox @params)
+        {
+            await _client.CallFunctionAsync("crypto.remove_encryption_box", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfEncryptionBoxGetInfo> EncryptionBoxGetInfoAsync(ParamsOfEncryptionBoxGetInfo @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfEncryptionBoxGetInfo>("crypto.encryption_box_get_info", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfEncryptionBoxEncrypt> EncryptionBoxEncryptAsync(ParamsOfEncryptionBoxEncrypt @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfEncryptionBoxEncrypt>("crypto.encryption_box_encrypt", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfEncryptionBoxDecrypt> EncryptionBoxDecryptAsync(ParamsOfEncryptionBoxDecrypt @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfEncryptionBoxDecrypt>("crypto.encryption_box_decrypt", @params).ConfigureAwait(false);
         }
     }
 }
