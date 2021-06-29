@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Threading.Tasks;
 using TonSdk.Extensions.NodeSe;
 using TonSdk.Modules;
@@ -101,6 +102,80 @@ namespace TonSdk.Tests.Modules
             {
                 Assert.IsType<ProcessingEvent.WillFetchNextBlock>(enumerator.Current);
             } while (enumerator.MoveNext());
+        }
+
+        [EnvDependentFact]
+        public async Task Test_Fees()
+        {
+            var (abi, tvc) = TestClient.Package("GiverV2", 2);
+            var keys = await _client.Crypto.GenerateRandomSignKeysAsync();
+
+            var address = await _client.DeployWithGiverAsync(new ParamsOfEncodeMessage
+            {
+                Abi = abi,
+                DeploySet = new DeploySet
+                {
+                    Tvc = tvc
+                },
+                CallSet = new CallSet
+                {
+                    FunctionName = "constructor"
+                },
+                Signer = new Signer.Keys
+                {
+                    KeysProperty = keys
+                }
+            });
+
+            var @params = new ParamsOfEncodeMessage
+            {
+                Abi = abi,
+                Address = address,
+                CallSet = new CallSet
+                {
+                    FunctionName = "sendTransaction",
+                    Input = new
+                    {
+                        dest = address,
+                        value = 100000000u,
+                        bounce = false
+                    }.ToJson()
+                },
+                Signer = new Signer.Keys
+                {
+                    KeysProperty = keys
+                }
+            };
+
+            var account = (await _client.FetchAccountAsync(address))["boc"]?.ToString();
+            var message = await _client.Abi.EncodeMessageAsync(@params);
+
+            var localResult = await _client.Tvm.RunExecutorAsync(new ParamsOfRunExecutor
+            {
+                Account = new AccountForExecutor.Account
+                {
+                    Boc = account
+                },
+                Message = message.Message
+            });
+
+            var runResult = await _client.Processing.ProcessMessageAsync(new ParamsOfProcessMessage
+            {
+                MessageEncodeParams = @params,
+                SendEvents = false
+            });
+
+            Assert.Equal(localResult.Fees.GasFee, runResult.Fees.GasFee);
+            Assert.Equal(localResult.Fees.OutMsgsFwdFee, runResult.Fees.OutMsgsFwdFee);
+            Assert.Equal(localResult.Fees.InMsgFwdFee, runResult.Fees.InMsgFwdFee);
+            Assert.Equal(localResult.Fees.TotalOutput, runResult.Fees.TotalOutput);
+            Assert.Equal(localResult.Fees.TotalOutput, new BigInteger(100000000u));
+            Assert.Equal(localResult.Fees.TotalAccountFees - localResult.Fees.StorageFee,
+                localResult.Fees.TotalAccountFees - localResult.Fees.StorageFee);
+            Assert.True(runResult.Fees.StorageFee >= localResult.Fees.StorageFee);
+            Assert.True(runResult.Fees.OutMsgsFwdFee > 0);
+            Assert.True(runResult.Fees.InMsgFwdFee > 0);
+            Assert.True(runResult.Fees.TotalAccountFees > 0);
         }
     }
 }

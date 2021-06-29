@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.16.0, net module.
+* TON API version 1.16.1, net module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -560,6 +560,15 @@ namespace TonSdk.Modules
         [JsonProperty("abi_registry", NullValueHandling = NullValueHandling.Ignore,
             ItemConverterType = typeof(PolymorphicTypeConverter))]
         public Abi[] AbiRegistry { get; set; }
+
+        /// <summary>
+        /// If some of the following messages and transactions are missing yet
+        /// The maximum waiting time is regulated by this option.
+        /// 
+        /// Default value is 60000 (1 min).
+        /// </summary>
+        [JsonProperty("timeout", NullValueHandling = NullValueHandling.Ignore)]
+        public uint? Timeout { get; set; }
     }
 
     public class ResultOfQueryTransactionTree

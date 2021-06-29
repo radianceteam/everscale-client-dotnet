@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.16.0, crypto module.
+* TON API version 1.16.1, crypto module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -871,14 +871,15 @@ namespace TonSdk.Modules
     public interface ICryptoModule
     {
         /// <summary>
-        /// Performs prime factorization – decomposition of a composite number into a product of smaller prime
-        /// integers (factors). See [https://en.wikipedia.org/wiki/Integer_factorization]
+        /// Performs prime factorization – decomposition of a composite number
+        /// into a product of smaller prime integers (factors).
+        /// See [https://en.wikipedia.org/wiki/Integer_factorization]
         /// </summary>
         Task<ResultOfFactorize> FactorizeAsync(ParamsOfFactorize @params);
 
         /// <summary>
-        /// Performs modular exponentiation for big integers (`base`^`exponent` mod `modulus`). See
-        /// [https://en.wikipedia.org/wiki/Modular_exponentiation]
+        /// Performs modular exponentiation for big integers (`base`^`exponent` mod `modulus`).
+        /// See [https://en.wikipedia.org/wiki/Modular_exponentiation]
         /// </summary>
         Task<ResultOfModularPower> ModularPowerAsync(ParamsOfModularPower @params);
 
@@ -923,6 +924,9 @@ namespace TonSdk.Modules
         Task<ResultOfHash> Sha512Async(ParamsOfHash @params);
 
         /// <summary>
+        /// Derives key from `password` and `key` using `scrypt` algorithm.
+        /// See [https://en.wikipedia.org/wiki/Scrypt].
+        /// 
         /// # Arguments
         /// - `log_n` - The log2 of the Scrypt parameter `N`
         /// - `r` - The Scrypt parameter `r`
@@ -1021,8 +1025,8 @@ namespace TonSdk.Modules
         Task<ResultOfMnemonicVerify> MnemonicVerifyAsync(ParamsOfMnemonicVerify @params);
 
         /// <summary>
-        /// Validates the seed phrase, generates master key and then derives the key pair from the master key
-        /// and the specified path
+        /// Validates the seed phrase, generates master key and then derives
+        /// the key pair from the master key and the specified path
         /// </summary>
         Task<KeyPair> MnemonicDeriveSignKeysAsync(ParamsOfMnemonicDeriveSignKeys @params);
 

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.16.0, processing module.
+* TON API version 1.16.1, processing module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -273,7 +273,9 @@ namespace TonSdk.Modules
         public bool SendEvents { get; set; }
 
         /// <summary>
-        /// You must provide the same value as the `send_message` has returned.
+        /// Use this field to get more informative errors.
+        /// Provide the same value as the `send_message` has returned.
+        /// If the message was not delivered (expired), SDK will log the endpoint URLs, used for its sending.
         /// </summary>
         [JsonProperty("sending_endpoints", NullValueHandling = NullValueHandling.Ignore)]
         public string[] SendingEndpoints { get; set; }
