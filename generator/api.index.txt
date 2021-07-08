@@ -1,4 +1,4 @@
-1.17.0
+1.18.0
 TYPES
 client.ClientErrorCode
 client.ClientError
@@ -192,6 +192,13 @@ net.ResultOfGetEndpoints
 net.ParamsOfQueryCounterparties
 net.ParamsOfQueryTransactionTree
 net.ResultOfQueryTransactionTree
+net.ParamsOfCreateBlockIterator
+net.RegisteredIterator
+net.ParamsOfResumeBlockIterator
+net.ParamsOfCreateTransactionIterator
+net.ParamsOfResumeTransactionIterator
+net.ParamsOfIteratorNext
+net.ResultOfIteratorNext
 debot.DebotErrorCode
 debot.DebotHandle
 debot.DebotAction
@@ -301,6 +308,12 @@ net.set_endpoints
 net.get_endpoints
 net.query_counterparties
 net.query_transaction_tree
+net.create_block_iterator
+net.resume_block_iterator
+net.create_transaction_iterator
+net.resume_transaction_iterator
+net.iterator_next
+net.remove_iterator
 debot.init
 debot.start
 debot.fetch

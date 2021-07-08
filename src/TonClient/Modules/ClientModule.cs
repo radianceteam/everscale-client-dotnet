@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.17.0, client module.
+* TON API version 1.18.0, client module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -46,6 +46,7 @@ namespace TonSdk.Modules
         UnexpectedCallbackResponse = 31,
         CanNotParseNumber = 32,
         InternalError = 33,
+        InvalidHandle = 34,
     }
 
     public class ClientError
