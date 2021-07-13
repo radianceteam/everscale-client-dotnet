@@ -25,7 +25,7 @@ namespace TonSdk.Tests.Modules
             var result = await _client.Client.VersionAsync();
             Assert.NotEmpty(result.Version);
             Assert.Matches(@"\d+\.\d+\.\d+", result.Version);
-            Assert.Equal("1.18.0", result.Version);
+            Assert.Equal("1.19.0", result.Version);
         }
 
         [Fact]

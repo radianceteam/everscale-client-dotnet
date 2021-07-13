@@ -1,4 +1,4 @@
-1.18.0
+1.19.0
 TYPES
 client.ClientErrorCode
 client.ClientError
@@ -119,6 +119,8 @@ abi.DecodedMessageBody
 abi.ParamsOfDecodeMessageBody
 abi.ParamsOfEncodeAccount
 abi.ResultOfEncodeAccount
+abi.ParamsOfDecodeAccountData
+abi.ResultOfDecodeData
 boc.BocCacheType
 boc.BocErrorCode
 boc.ParamsOfParse
@@ -147,8 +149,11 @@ processing.ResultOfSendMessage
 processing.ParamsOfWaitForTransaction
 processing.ParamsOfProcessMessage
 utils.AddressStringFormat
+utils.AccountAddressType
 utils.ParamsOfConvertAddress
 utils.ResultOfConvertAddress
+utils.ParamsOfGetAddressType
+utils.ResultOfGetAddressType
 utils.ParamsOfCalcStorageFee
 utils.ResultOfCalcStorageFee
 utils.ParamsOfCompressZstd
@@ -271,6 +276,7 @@ abi.attach_signature
 abi.decode_message
 abi.decode_message_body
 abi.encode_account
+abi.decode_account_data
 boc.parse_message
 boc.parse_transaction
 boc.parse_account
@@ -287,6 +293,7 @@ processing.send_message
 processing.wait_for_transaction
 processing.process_message
 utils.convert_address
+utils.get_address_type
 utils.calc_storage_fee
 utils.compress_zstd
 utils.decompress_zstd

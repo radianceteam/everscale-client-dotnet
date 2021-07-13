@@ -1,11 +1,12 @@
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Numerics;
 using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.18.0, utils module.
+* TON API version 1.19.0, utils module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -34,6 +35,13 @@ namespace TonSdk.Modules
         }
     }
 
+    public enum AccountAddressType
+    {
+        AccountId,
+        Hex,
+        Base64,
+    }
+
     public class ParamsOfConvertAddress
     {
         /// <summary>
@@ -57,6 +65,25 @@ namespace TonSdk.Modules
         /// </summary>
         [JsonProperty("address", NullValueHandling = NullValueHandling.Ignore)]
         public string Address { get; set; }
+    }
+
+    public class ParamsOfGetAddressType
+    {
+        /// <summary>
+        /// Account address in any TON format.
+        /// </summary>
+        [JsonProperty("address", NullValueHandling = NullValueHandling.Ignore)]
+        public string Address { get; set; }
+    }
+
+    public class ResultOfGetAddressType
+    {
+        /// <summary>
+        /// Account address type.
+        /// </summary>
+        [JsonProperty("address_type", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public AccountAddressType AddressType { get; set; }
     }
 
     public class ParamsOfCalcStorageFee
@@ -129,6 +156,18 @@ namespace TonSdk.Modules
         Task<ResultOfConvertAddress> ConvertAddressAsync(ParamsOfConvertAddress @params);
 
         /// <summary>
+        /// Address types are the following
+        /// 
+        /// `0:919db8e740d50bf349df2eea03fa30c385d846b991ff5542e67098ee833fc7f7` - standart TON address most
+        /// commonly used in all cases. Also called as hex addres
+        /// `919db8e740d50bf349df2eea03fa30c385d846b991ff5542e67098ee833fc7f7` - account ID. A part of full
+        /// address. Identifies account inside particular workchain
+        /// `EQCRnbjnQNUL80nfLuoD+jDDhdhGuZH/VULmcJjugz/H9wam` - base64 address. Also called "user-friendly".
+        /// Was used at the beginning of TON. Now it is supported for compatibility
+        /// </summary>
+        Task<ResultOfGetAddressType> GetAddressTypeAsync(ParamsOfGetAddressType @params);
+
+        /// <summary>
         /// Calculates storage fee for an account over a specified time period
         /// </summary>
         Task<ResultOfCalcStorageFee> CalcStorageFeeAsync(ParamsOfCalcStorageFee @params);
@@ -156,6 +195,11 @@ namespace TonSdk.Modules
         public async Task<ResultOfConvertAddress> ConvertAddressAsync(ParamsOfConvertAddress @params)
         {
             return await _client.CallFunctionAsync<ResultOfConvertAddress>("utils.convert_address", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfGetAddressType> GetAddressTypeAsync(ParamsOfGetAddressType @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfGetAddressType>("utils.get_address_type", @params).ConfigureAwait(false);
         }
 
         public async Task<ResultOfCalcStorageFee> CalcStorageFeeAsync(ParamsOfCalcStorageFee @params)

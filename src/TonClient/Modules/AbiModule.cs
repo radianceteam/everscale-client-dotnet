@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.18.0, abi module.
+* TON API version 1.19.0, abi module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -26,6 +26,7 @@ namespace TonSdk.Modules
         InvalidSigner = 310,
         InvalidAbi = 311,
         InvalidFunctionId = 312,
+        InvalidData = 313,
     }
 
     public abstract class Abi
@@ -400,6 +401,9 @@ namespace TonSdk.Modules
 
         [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
         public AbiData[] Data { get; set; }
+
+        [JsonProperty("fields", NullValueHandling = NullValueHandling.Ignore)]
+        public AbiParam[] Fields { get; set; }
     }
 
     public class ParamsOfEncodeMessageBody
@@ -816,6 +820,31 @@ namespace TonSdk.Modules
         public string Id { get; set; }
     }
 
+    public class ParamsOfDecodeAccountData
+    {
+        /// <summary>
+        /// Contract ABI
+        /// </summary>
+        [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
+        public Abi Abi { get; set; }
+
+        /// <summary>
+        /// Must be encoded with base64
+        /// </summary>
+        [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
+        public string Data { get; set; }
+    }
+
+    public class ResultOfDecodeData
+    {
+        /// <summary>
+        /// Decoded data as a JSON structure.
+        /// </summary>
+        [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
+        public Newtonsoft.Json.Linq.JToken Data { get; set; }
+    }
+
     /// <summary>
     /// Provides message encoding and decoding according to the ABI specification.
     /// </summary>
@@ -904,6 +933,11 @@ namespace TonSdk.Modules
         /// 2. TVC (string in `base64`), keys, init params
         /// </summary>
         Task<ResultOfEncodeAccount> EncodeAccountAsync(ParamsOfEncodeAccount @params);
+
+        /// <summary>
+        /// Note: this feature requires ABI 2.1 or higher.
+        /// </summary>
+        Task<ResultOfDecodeData> DecodeAccountDataAsync(ParamsOfDecodeAccountData @params);
     }
 
     internal class AbiModule : IAbiModule
@@ -953,6 +987,11 @@ namespace TonSdk.Modules
         public async Task<ResultOfEncodeAccount> EncodeAccountAsync(ParamsOfEncodeAccount @params)
         {
             return await _client.CallFunctionAsync<ResultOfEncodeAccount>("abi.encode_account", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfDecodeData> DecodeAccountDataAsync(ParamsOfDecodeAccountData @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfDecodeData>("abi.decode_account_data", @params).ConfigureAwait(false);
         }
     }
 }
