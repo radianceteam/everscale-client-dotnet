@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.19.0, client module.
+* TON API version 1.20.0, client module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -160,6 +160,16 @@ namespace TonSdk.Modules
         /// </summary>
         [JsonProperty("max_latency", NullValueHandling = NullValueHandling.Ignore)]
         public uint? MaxLatency { get; set; }
+
+        /// <summary>
+        /// Is is used when no timeout specified for the request to limit the answer waiting time. If no answer
+        /// received during the timeout requests ends with
+        /// error.
+        /// 
+        /// Must be specified in milliseconds. Default is 60000 (1 min).
+        /// </summary>
+        [JsonProperty("query_timeout", NullValueHandling = NullValueHandling.Ignore)]
+        public uint? QueryTimeout { get; set; }
 
         /// <summary>
         /// At the moment is not used in production.

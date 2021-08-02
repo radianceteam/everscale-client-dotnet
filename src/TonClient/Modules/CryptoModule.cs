@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.19.0, crypto module.
+* TON API version 1.20.0, crypto module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -322,7 +322,8 @@ namespace TonSdk.Modules
         public string Unsigned { get; set; }
 
         /// <summary>
-        /// Signer's secret key - unprefixed 0-padded to 64 symbols hex string
+        /// Signer's secret key - unprefixed 0-padded to 128 symbols hex string (concatenation of 64 symbols
+        /// secret and 64 symbols public keys). See `nacl_sign_keypair_from_secret_key`.
         /// </summary>
         [JsonProperty("secret", NullValueHandling = NullValueHandling.Ignore)]
         public string Secret { get; set; }
@@ -1125,7 +1126,10 @@ namespace TonSdk.Modules
         Task<ResultOfScrypt> ScryptAsync(ParamsOfScrypt @params);
 
         /// <summary>
-        /// Generates a key pair for signing from the secret key
+        /// **NOTE:** In the result the secret key is actually the concatenation
+        /// of secret and public keys (128 symbols hex string) by design of
+        /// [NaCL](http://nacl.cr.yp.to/sign.html).
+        /// See also [the stackexchange question](https://crypto.stackexchange.com/questions/54353/).
         /// </summary>
         Task<KeyPair> NaclSignKeypairFromSecretKeyAsync(ParamsOfNaclSignKeyPairFromSecret @params);
 

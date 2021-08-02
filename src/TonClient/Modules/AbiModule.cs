@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.19.0, abi module.
+* TON API version 1.20.0, abi module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -389,6 +389,9 @@ namespace TonSdk.Modules
 
         [JsonProperty("abi_version", NullValueHandling = NullValueHandling.Ignore)]
         public uint? AbiVersion { get; set; } = TonClient.DefaultAbiVersion;
+
+        [JsonProperty("version", NullValueHandling = NullValueHandling.Ignore)]
+        public string Version { get; set; }
 
         [JsonProperty("header", NullValueHandling = NullValueHandling.Ignore)]
         public string[] Header { get; set; }
@@ -830,7 +833,7 @@ namespace TonSdk.Modules
         public Abi Abi { get; set; }
 
         /// <summary>
-        /// Must be encoded with base64
+        /// Data BOC or BOC handle
         /// </summary>
         [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
         public string Data { get; set; }

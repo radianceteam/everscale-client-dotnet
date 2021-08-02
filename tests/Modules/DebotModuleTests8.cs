@@ -25,13 +25,13 @@ namespace TonSdk.Tests.Modules
             await browser.ExecuteWithDetailsAsync(new List<DebotStep>(),
                 new DebotInfo
                 {
-                    Name = "Test DeBot 8",
+                    Name = "TestDeBot8",
                     Version = "0.1.0",
                     Publisher = "TON Labs",
-                    Caption = "Test for Network interface",
+                    Caption = "TestDeBot8",
                     Author = "TON Labs",
                     Support = "0:0000000000000000000000000000000000000000000000000000000000000000",
-                    Hello = "Test DeBot 8",
+                    Hello = "TestDeBot8",
                     Language = "en",
                     Dabi = ((Abi.Contract)_fixture.Debot.Abi).Value.ToJson().ToString(),
                     Icon = "",
