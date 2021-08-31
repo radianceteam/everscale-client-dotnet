@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.21.0, processing module.
+* TON API version 1.21.1, processing module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -38,7 +38,10 @@ namespace TonSdk.Modules
         }
 
         /// <summary>
-        /// Message processing has finished.
+        /// This may happen due to the network issues. Receiving this event means that message processing will
+        /// not proceed -
+        /// message was not sent, and Developer can try to run `process_message` again,
+        /// in the hope that the connection is restored.
         /// </summary>
         public class FetchFirstBlockFailed : ProcessingEvent
         {
@@ -47,7 +50,9 @@ namespace TonSdk.Modules
         }
 
         /// <summary>
-        /// Notifies the app that the message will be sent to the network.
+        /// Notifies the app that the message will be sent to the network. This event means that the account's
+        /// current shard block was successfully fetched and the message was successfully created
+        /// (`abi.encode_message` function was executed successfully).
         /// </summary>
         public class WillSend : ProcessingEvent
         {
@@ -62,7 +67,8 @@ namespace TonSdk.Modules
         }
 
         /// <summary>
-        /// Notifies the app that the message was sent to the network.
+        /// Do not forget to specify abi of your contract as well, it is crucial for proccessing. See
+        /// `processing.wait_for_transaction` documentation.
         /// </summary>
         public class DidSend : ProcessingEvent
         {
@@ -80,6 +86,10 @@ namespace TonSdk.Modules
         /// Nevertheless the processing will be continued at the waiting
         /// phase because the message possibly has been delivered to the
         /// node.
+        /// If Application exits at this phase, Developer needs to proceed with processing
+        /// after the application is restored with `wait_for_transaction` function, passing
+        /// shard_block_id and message from this event. Do not forget to specify abi of your contract
+        /// as well, it is crucial for proccessing. See `processing.wait_for_transaction` documentation.
         /// </summary>
         public class SendFailed : ProcessingEvent
         {
@@ -99,6 +109,10 @@ namespace TonSdk.Modules
         /// <summary>
         /// Event can occurs more than one time due to block walking
         /// procedure.
+        /// If Application exits at this phase, Developer needs to proceed with processing
+        /// after the application is restored with `wait_for_transaction` function, passing
+        /// shard_block_id and message from this event. Do not forget to specify abi of your contract
+        /// as well, it is crucial for proccessing. See `processing.wait_for_transaction` documentation.
         /// </summary>
         public class WillFetchNextBlock : ProcessingEvent
         {
@@ -113,7 +127,14 @@ namespace TonSdk.Modules
         }
 
         /// <summary>
-        /// Processing will be continued after `network_resume_timeout`.
+        /// If no block was fetched within `NetworkConfig.wait_for_timeout` then processing stops.
+        /// This may happen when the shard stops, or there are other network issues.
+        /// In this case Developer should resume message processing with `wait_for_transaction`, passing
+        /// shard_block_id,
+        /// message and contract abi to it. Note that passing ABI is crucial, because it will influence the
+        /// processing strategy.
+        /// 
+        /// Another way to tune this is to specify long timeout in `NetworkConfig.wait_for_timeout`
         /// </summary>
         public class FetchNextBlockFailed : ProcessingEvent
         {
@@ -131,10 +152,12 @@ namespace TonSdk.Modules
         }
 
         /// <summary>
-        /// Event occurs for contracts which ABI includes header "expire"
+        /// This event occurs only for the contracts which ABI includes "expire" header.
         /// 
-        /// Processing will be continued from encoding phase after
-        /// `expiration_retries_timeout`.
+        /// If Application specifies `NetworkConfig.message_retries_count` > 0, then `process_message`
+        /// will perform retries: will create a new message and send it again and repeat it untill it reaches
+        /// the maximum retries count or receives a successful result.  All the processing
+        /// events will be repeated.
         /// </summary>
         public class MessageExpired : ProcessingEvent
         {
