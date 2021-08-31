@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.20.1, tvm module.
+* TON API version 1.21.0, tvm module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -338,8 +338,7 @@ namespace TonSdk.Modules
         /// 
         /// If you need this emulation to be as precise as possible (for instance - emulate transaction
         /// with particular lt in particular block or use particular blockchain config,
-        /// in case you want to download it from a particular key block - then specify `ParamsOfRunExecutor`
-        /// parameter.
+        /// downloaded from a particular key block - then specify `execution_options` parameter.
         /// 
         /// If you need to see the aborted transaction as a result, not as an error, set
         /// `skip_transaction_check` to `true`.

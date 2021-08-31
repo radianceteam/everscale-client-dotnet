@@ -1,4 +1,4 @@
-1.20.1
+1.21.0
 TYPES
 client.ClientErrorCode
 client.ClientError
@@ -18,6 +18,10 @@ crypto.CryptoErrorCode
 crypto.SigningBoxHandle
 crypto.EncryptionBoxHandle
 crypto.EncryptionBoxInfo
+crypto.EncryptionAlgorithm
+crypto.CipherMode
+crypto.AesParams
+crypto.AesInfo
 crypto.ParamsOfFactorize
 crypto.ResultOfFactorize
 crypto.ParamsOfModularPower
@@ -88,6 +92,7 @@ crypto.ParamsOfEncryptionBoxEncrypt
 crypto.ResultOfEncryptionBoxEncrypt
 crypto.ParamsOfEncryptionBoxDecrypt
 crypto.ResultOfEncryptionBoxDecrypt
+crypto.ParamsOfCreateEncryptionBox
 abi.AbiErrorCode
 abi.Abi
 abi.AbiHandle
@@ -268,6 +273,7 @@ crypto.remove_encryption_box
 crypto.encryption_box_get_info
 crypto.encryption_box_encrypt
 crypto.encryption_box_decrypt
+crypto.create_encryption_box
 abi.encode_message_body
 abi.attach_signature_to_message_body
 abi.encode_message

@@ -1,11 +1,12 @@
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Numerics;
 using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.20.1, crypto module.
+* TON API version 1.21.0, crypto module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -34,6 +35,12 @@ namespace TonSdk.Modules
         SigningBoxNotRegistered = 121,
         InvalidSignature = 122,
         EncryptionBoxNotRegistered = 123,
+        InvalidIvSize = 124,
+        UnsupportedCipherMode = 125,
+        CannotCreateCipher = 126,
+        EncryptDataError = 127,
+        DecryptDataError = 128,
+        IvRequired = 129,
     }
 
     /// <summary>
@@ -64,6 +71,54 @@ namespace TonSdk.Modules
         /// </summary>
         [JsonProperty("public", NullValueHandling = NullValueHandling.Ignore)]
         public Newtonsoft.Json.Linq.JToken Public { get; set; }
+    }
+
+    public abstract class EncryptionAlgorithm
+    {
+        public class AES : EncryptionAlgorithm
+        {
+            [JsonProperty("mode", NullValueHandling = NullValueHandling.Ignore)]
+            [JsonConverter(typeof(StringEnumConverter))]
+            public CipherMode Mode { get; set; }
+
+            [JsonProperty("key", NullValueHandling = NullValueHandling.Ignore)]
+            public string Key { get; set; }
+
+            [JsonProperty("iv", NullValueHandling = NullValueHandling.Ignore)]
+            public string Iv { get; set; }
+        }
+    }
+
+    public enum CipherMode
+    {
+        CBC,
+        CFB,
+        CTR,
+        ECB,
+        OFB,
+    }
+
+    public class AesParams
+    {
+        [JsonProperty("mode", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public CipherMode Mode { get; set; }
+
+        [JsonProperty("key", NullValueHandling = NullValueHandling.Ignore)]
+        public string Key { get; set; }
+
+        [JsonProperty("iv", NullValueHandling = NullValueHandling.Ignore)]
+        public string Iv { get; set; }
+    }
+
+    public class AesInfo
+    {
+        [JsonProperty("mode", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public CipherMode Mode { get; set; }
+
+        [JsonProperty("iv", NullValueHandling = NullValueHandling.Ignore)]
+        public string Iv { get; set; }
     }
 
     public class ParamsOfFactorize
@@ -1018,7 +1073,7 @@ namespace TonSdk.Modules
     public class ResultOfEncryptionBoxEncrypt
     {
         /// <summary>
-        /// Encrypted data, encoded in Base64
+        /// Padded to cipher block size
         /// </summary>
         [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
         public string Data { get; set; }
@@ -1042,10 +1097,20 @@ namespace TonSdk.Modules
     public class ResultOfEncryptionBoxDecrypt
     {
         /// <summary>
-        /// Decrypted data, encoded in Base64
+        /// Decrypted data, encoded in Base64.
         /// </summary>
         [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
         public string Data { get; set; }
+    }
+
+    public class ParamsOfCreateEncryptionBox
+    {
+        /// <summary>
+        /// Encryption algorithm specifier including cipher parameters (key, IV, etc)
+        /// </summary>
+        [JsonProperty("algorithm", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
+        public EncryptionAlgorithm Algorithm { get; set; }
     }
 
     /// <summary>
@@ -1287,14 +1352,23 @@ namespace TonSdk.Modules
         Task<ResultOfEncryptionBoxGetInfo> EncryptionBoxGetInfoAsync(ParamsOfEncryptionBoxGetInfo @params);
 
         /// <summary>
-        /// Encrypts data using given encryption box
+        /// Block cipher algorithms pad data to cipher block size so encrypted data can be longer then original
+        /// data. Client should store the original data size after encryption and use it after
+        /// decryption to retrieve the original data from decrypted data.
         /// </summary>
         Task<ResultOfEncryptionBoxEncrypt> EncryptionBoxEncryptAsync(ParamsOfEncryptionBoxEncrypt @params);
 
         /// <summary>
-        /// Decrypts data using given encryption box
+        /// Block cipher algorithms pad data to cipher block size so encrypted data can be longer then original
+        /// data. Client should store the original data size after encryption and use it after
+        /// decryption to retrieve the original data from decrypted data.
         /// </summary>
         Task<ResultOfEncryptionBoxDecrypt> EncryptionBoxDecryptAsync(ParamsOfEncryptionBoxDecrypt @params);
+
+        /// <summary>
+        /// Creates encryption box with specified algorithm
+        /// </summary>
+        Task<RegisteredEncryptionBox> CreateEncryptionBoxAsync(ParamsOfCreateEncryptionBox @params);
     }
 
     internal class CryptoModule : ICryptoModule
@@ -1519,6 +1593,11 @@ namespace TonSdk.Modules
         public async Task<ResultOfEncryptionBoxDecrypt> EncryptionBoxDecryptAsync(ParamsOfEncryptionBoxDecrypt @params)
         {
             return await _client.CallFunctionAsync<ResultOfEncryptionBoxDecrypt>("crypto.encryption_box_decrypt", @params).ConfigureAwait(false);
+        }
+
+        public async Task<RegisteredEncryptionBox> CreateEncryptionBoxAsync(ParamsOfCreateEncryptionBox @params)
+        {
+            return await _client.CallFunctionAsync<RegisteredEncryptionBox>("crypto.create_encryption_box", @params).ConfigureAwait(false);
         }
     }
 }
