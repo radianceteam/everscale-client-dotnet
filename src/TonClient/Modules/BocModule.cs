@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.21.5, boc module.
+* TON API version 1.22.0, boc module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -353,7 +353,9 @@ namespace TonSdk.Modules
         Task CacheUnpinAsync(ParamsOfBocCacheUnpin @params);
 
         /// <summary>
-        /// Encodes BOC from builder operations.
+        /// Encodes bag of cells (BOC) with builder operations. This method provides the same functionality as
+        /// Solidity TvmBuilder. Resulting BOC of this method can be passed into Solidity and C++ contracts as
+        /// TvmCell type
         /// </summary>
         Task<ResultOfEncodeBoc> EncodeBocAsync(ParamsOfEncodeBoc @params);
     }
