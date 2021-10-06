@@ -1,4 +1,4 @@
-1.22.0
+1.23.0
 TYPES
 client.ClientErrorCode
 client.ClientError
@@ -126,6 +126,10 @@ abi.ParamsOfEncodeAccount
 abi.ResultOfEncodeAccount
 abi.ParamsOfDecodeAccountData
 abi.ResultOfDecodeData
+abi.ParamsOfUpdateInitialData
+abi.ResultOfUpdateInitialData
+abi.ParamsOfDecodeInitialData
+abi.ResultOfDecodeInitialData
 boc.BocCacheType
 boc.BocErrorCode
 boc.ParamsOfParse
@@ -145,6 +149,16 @@ boc.ParamsOfBocCacheUnpin
 boc.BuilderOp
 boc.ParamsOfEncodeBoc
 boc.ResultOfEncodeBoc
+boc.ParamsOfGetCodeSalt
+boc.ResultOfGetCodeSalt
+boc.ParamsOfSetCodeSalt
+boc.ResultOfSetCodeSalt
+boc.ParamsOfDecodeTvc
+boc.ResultOfDecodeTvc
+boc.ParamsOfEncodeTvc
+boc.ResultOfEncodeTvc
+boc.ParamsOfGetCompilerVersion
+boc.ResultOfGetCompilerVersion
 processing.ProcessingErrorCode
 processing.ProcessingEvent
 processing.ResultOfProcessMessage
@@ -283,6 +297,8 @@ abi.decode_message
 abi.decode_message_body
 abi.encode_account
 abi.decode_account_data
+abi.update_initial_data
+abi.decode_initial_data
 boc.parse_message
 boc.parse_transaction
 boc.parse_account
@@ -295,6 +311,11 @@ boc.cache_get
 boc.cache_set
 boc.cache_unpin
 boc.encode_boc
+boc.get_code_salt
+boc.set_code_salt
+boc.decode_tvc
+boc.encode_tvc
+boc.get_compiler_version
 processing.send_message
 processing.wait_for_transaction
 processing.process_message

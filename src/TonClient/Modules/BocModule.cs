@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.22.0, boc module.
+* TON API version 1.23.0, boc module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -119,7 +119,7 @@ namespace TonSdk.Modules
     public class ParamsOfGetCodeFromTvc
     {
         /// <summary>
-        /// Contract TVC image encoded as base64
+        /// Contract TVC image or image BOC handle
         /// </summary>
         [JsonProperty("tvc", NullValueHandling = NullValueHandling.Ignore)]
         public string Tvc { get; set; }
@@ -292,6 +292,190 @@ namespace TonSdk.Modules
         public string Boc { get; set; }
     }
 
+    public class ParamsOfGetCodeSalt
+    {
+        /// <summary>
+        /// Contract code BOC encoded as base64 or code BOC handle
+        /// </summary>
+        [JsonProperty("code", NullValueHandling = NullValueHandling.Ignore)]
+        public string Code { get; set; }
+
+        /// <summary>
+        /// Cache type to put the result. The BOC itself returned if no cache type provided.
+        /// </summary>
+        [JsonProperty("boc_cache", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
+        public BocCacheType BocCache { get; set; }
+    }
+
+    public class ResultOfGetCodeSalt
+    {
+        /// <summary>
+        /// BOC encoded as base64 or BOC handle
+        /// </summary>
+        [JsonProperty("salt", NullValueHandling = NullValueHandling.Ignore)]
+        public string Salt { get; set; }
+    }
+
+    public class ParamsOfSetCodeSalt
+    {
+        /// <summary>
+        /// Contract code BOC encoded as base64 or code BOC handle
+        /// </summary>
+        [JsonProperty("code", NullValueHandling = NullValueHandling.Ignore)]
+        public string Code { get; set; }
+
+        /// <summary>
+        /// BOC encoded as base64 or BOC handle
+        /// </summary>
+        [JsonProperty("salt", NullValueHandling = NullValueHandling.Ignore)]
+        public string Salt { get; set; }
+
+        /// <summary>
+        /// Cache type to put the result. The BOC itself returned if no cache type provided.
+        /// </summary>
+        [JsonProperty("boc_cache", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
+        public BocCacheType BocCache { get; set; }
+    }
+
+    public class ResultOfSetCodeSalt
+    {
+        /// <summary>
+        /// BOC encoded as base64 or BOC handle
+        /// </summary>
+        [JsonProperty("code", NullValueHandling = NullValueHandling.Ignore)]
+        public string Code { get; set; }
+    }
+
+    public class ParamsOfDecodeTvc
+    {
+        /// <summary>
+        /// Contract TVC image BOC encoded as base64 or BOC handle
+        /// </summary>
+        [JsonProperty("tvc", NullValueHandling = NullValueHandling.Ignore)]
+        public string Tvc { get; set; }
+
+        /// <summary>
+        /// Cache type to put the result. The BOC itself returned if no cache type provided.
+        /// </summary>
+        [JsonProperty("boc_cache", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
+        public BocCacheType BocCache { get; set; }
+    }
+
+    public class ResultOfDecodeTvc
+    {
+        /// <summary>
+        /// Contract code BOC encoded as base64 or BOC handle
+        /// </summary>
+        [JsonProperty("code", NullValueHandling = NullValueHandling.Ignore)]
+        public string Code { get; set; }
+
+        /// <summary>
+        /// Contract data BOC encoded as base64 or BOC handle
+        /// </summary>
+        [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
+        public string Data { get; set; }
+
+        /// <summary>
+        /// Contract library BOC encoded as base64 or BOC handle
+        /// </summary>
+        [JsonProperty("library", NullValueHandling = NullValueHandling.Ignore)]
+        public string Library { get; set; }
+
+        /// <summary>
+        /// Specifies the contract ability to handle tick transactions
+        /// </summary>
+        [JsonProperty("tick", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? Tick { get; set; }
+
+        /// <summary>
+        /// Specifies the contract ability to handle tock transactions
+        /// </summary>
+        [JsonProperty("tock", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? Tock { get; set; }
+
+        /// <summary>
+        /// Is present and non-zero only in instances of large smart contracts
+        /// </summary>
+        [JsonProperty("split_depth", NullValueHandling = NullValueHandling.Ignore)]
+        public uint? SplitDepth { get; set; }
+    }
+
+    public class ParamsOfEncodeTvc
+    {
+        /// <summary>
+        /// Contract code BOC encoded as base64 or BOC handle
+        /// </summary>
+        [JsonProperty("code", NullValueHandling = NullValueHandling.Ignore)]
+        public string Code { get; set; }
+
+        /// <summary>
+        /// Contract data BOC encoded as base64 or BOC handle
+        /// </summary>
+        [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
+        public string Data { get; set; }
+
+        /// <summary>
+        /// Contract library BOC encoded as base64 or BOC handle
+        /// </summary>
+        [JsonProperty("library", NullValueHandling = NullValueHandling.Ignore)]
+        public string Library { get; set; }
+
+        /// <summary>
+        /// Specifies the contract ability to handle tick transactions
+        /// </summary>
+        [JsonProperty("tick", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? Tick { get; set; }
+
+        /// <summary>
+        /// Specifies the contract ability to handle tock transactions
+        /// </summary>
+        [JsonProperty("tock", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? Tock { get; set; }
+
+        /// <summary>
+        /// Is present and non-zero only in instances of large smart contracts
+        /// </summary>
+        [JsonProperty("split_depth", NullValueHandling = NullValueHandling.Ignore)]
+        public uint? SplitDepth { get; set; }
+
+        /// <summary>
+        /// Cache type to put the result. The BOC itself returned if no cache type provided.
+        /// </summary>
+        [JsonProperty("boc_cache", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
+        public BocCacheType BocCache { get; set; }
+    }
+
+    public class ResultOfEncodeTvc
+    {
+        /// <summary>
+        /// Contract TVC image BOC encoded as base64 or BOC handle of boc_cache parameter was specified
+        /// </summary>
+        [JsonProperty("tvc", NullValueHandling = NullValueHandling.Ignore)]
+        public string Tvc { get; set; }
+    }
+
+    public class ParamsOfGetCompilerVersion
+    {
+        /// <summary>
+        /// Contract code BOC encoded as base64 or code BOC handle
+        /// </summary>
+        [JsonProperty("code", NullValueHandling = NullValueHandling.Ignore)]
+        public string Code { get; set; }
+    }
+
+    public class ResultOfGetCompilerVersion
+    {
+        /// <summary>
+        /// Compiler version, for example 'sol 0.49.0'
+        /// </summary>
+        [JsonProperty("version", NullValueHandling = NullValueHandling.Ignore)]
+        public string Version { get; set; }
+    }
+
     /// <summary>
     /// BOC manipulation module.
     /// </summary>
@@ -358,6 +542,31 @@ namespace TonSdk.Modules
         /// TvmCell type
         /// </summary>
         Task<ResultOfEncodeBoc> EncodeBocAsync(ParamsOfEncodeBoc @params);
+
+        /// <summary>
+        /// Returns the contract code's salt if it is present.
+        /// </summary>
+        Task<ResultOfGetCodeSalt> GetCodeSaltAsync(ParamsOfGetCodeSalt @params);
+
+        /// <summary>
+        /// Returns the new contract code with salt.
+        /// </summary>
+        Task<ResultOfSetCodeSalt> SetCodeSaltAsync(ParamsOfSetCodeSalt @params);
+
+        /// <summary>
+        /// Decodes tvc into code, data, libraries and special options.
+        /// </summary>
+        Task<ResultOfDecodeTvc> DecodeTvcAsync(ParamsOfDecodeTvc @params);
+
+        /// <summary>
+        /// Encodes tvc from code, data, libraries ans special options (see input params)
+        /// </summary>
+        Task<ResultOfEncodeTvc> EncodeTvcAsync(ParamsOfEncodeTvc @params);
+
+        /// <summary>
+        /// Returns the compiler version used to compile the code.
+        /// </summary>
+        Task<ResultOfGetCompilerVersion> GetCompilerVersionAsync(ParamsOfGetCompilerVersion @params);
     }
 
     internal class BocModule : IBocModule
@@ -427,6 +636,31 @@ namespace TonSdk.Modules
         public async Task<ResultOfEncodeBoc> EncodeBocAsync(ParamsOfEncodeBoc @params)
         {
             return await _client.CallFunctionAsync<ResultOfEncodeBoc>("boc.encode_boc", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfGetCodeSalt> GetCodeSaltAsync(ParamsOfGetCodeSalt @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfGetCodeSalt>("boc.get_code_salt", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfSetCodeSalt> SetCodeSaltAsync(ParamsOfSetCodeSalt @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfSetCodeSalt>("boc.set_code_salt", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfDecodeTvc> DecodeTvcAsync(ParamsOfDecodeTvc @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfDecodeTvc>("boc.decode_tvc", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfEncodeTvc> EncodeTvcAsync(ParamsOfEncodeTvc @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfEncodeTvc>("boc.encode_tvc", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfGetCompilerVersion> GetCompilerVersionAsync(ParamsOfGetCompilerVersion @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfGetCompilerVersion>("boc.get_compiler_version", @params).ConfigureAwait(false);
         }
     }
 }

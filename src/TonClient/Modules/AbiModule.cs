@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.22.0, abi module.
+* TON API version 1.23.0, abi module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -27,6 +27,7 @@ namespace TonSdk.Modules
         InvalidAbi = 311,
         InvalidFunctionId = 312,
         InvalidData = 313,
+        EncodeInitialDataFailed = 314,
     }
 
     public abstract class Abi
@@ -848,6 +849,81 @@ namespace TonSdk.Modules
         public Newtonsoft.Json.Linq.JToken Data { get; set; }
     }
 
+    public class ParamsOfUpdateInitialData
+    {
+        /// <summary>
+        /// Contract ABI
+        /// </summary>
+        [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
+        public Abi Abi { get; set; }
+
+        /// <summary>
+        /// Data BOC or BOC handle
+        /// </summary>
+        [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
+        public string Data { get; set; }
+
+        /// <summary>
+        /// `abi` parameter should be provided to set initial data
+        /// </summary>
+        [JsonProperty("initial_data", NullValueHandling = NullValueHandling.Ignore)]
+        public Newtonsoft.Json.Linq.JToken InitialData { get; set; }
+
+        /// <summary>
+        /// Initial account owner's public key to set into account data
+        /// </summary>
+        [JsonProperty("initial_pubkey", NullValueHandling = NullValueHandling.Ignore)]
+        public string InitialPubkey { get; set; }
+
+        /// <summary>
+        /// Cache type to put the result. The BOC itself returned if no cache type provided.
+        /// </summary>
+        [JsonProperty("boc_cache", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
+        public BocCacheType BocCache { get; set; }
+    }
+
+    public class ResultOfUpdateInitialData
+    {
+        /// <summary>
+        /// Updated data BOC or BOC handle
+        /// </summary>
+        [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
+        public string Data { get; set; }
+    }
+
+    public class ParamsOfDecodeInitialData
+    {
+        /// <summary>
+        /// Initial data is decoded if this parameter is provided
+        /// </summary>
+        [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
+        public Abi Abi { get; set; }
+
+        /// <summary>
+        /// Data BOC or BOC handle
+        /// </summary>
+        [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
+        public string Data { get; set; }
+    }
+
+    public class ResultOfDecodeInitialData
+    {
+        /// <summary>
+        /// Initial data is decoded if `abi` input parameter is provided
+        /// </summary>
+        [JsonProperty("initial_data", NullValueHandling = NullValueHandling.Ignore)]
+        public Newtonsoft.Json.Linq.JToken InitialData { get; set; }
+
+        /// <summary>
+        /// Initial account owner's public key
+        /// </summary>
+        [JsonProperty("initial_pubkey", NullValueHandling = NullValueHandling.Ignore)]
+        public string InitialPubkey { get; set; }
+    }
+
     /// <summary>
     /// Provides message encoding and decoding according to the ABI specification.
     /// </summary>
@@ -941,6 +1017,20 @@ namespace TonSdk.Modules
         /// Note: this feature requires ABI 2.1 or higher.
         /// </summary>
         Task<ResultOfDecodeData> DecodeAccountDataAsync(ParamsOfDecodeAccountData @params);
+
+        /// <summary>
+        /// Updates initial account data with initial values for the contract's static variables and owner's
+        /// public key. This operation is applicable only for initial account data (before deploy). If the
+        /// contract is already deployed, its data doesn't contain this data section any more.
+        /// </summary>
+        Task<ResultOfUpdateInitialData> UpdateInitialDataAsync(ParamsOfUpdateInitialData @params);
+
+        /// <summary>
+        /// Decodes initial values of a contract's static variables and owner's public key from account initial
+        /// data This operation is applicable only for initial account data (before deploy). If the contract is
+        /// already deployed, its data doesn't contain this data section any more.
+        /// </summary>
+        Task<ResultOfDecodeInitialData> DecodeInitialDataAsync(ParamsOfDecodeInitialData @params);
     }
 
     internal class AbiModule : IAbiModule
@@ -995,6 +1085,16 @@ namespace TonSdk.Modules
         public async Task<ResultOfDecodeData> DecodeAccountDataAsync(ParamsOfDecodeAccountData @params)
         {
             return await _client.CallFunctionAsync<ResultOfDecodeData>("abi.decode_account_data", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfUpdateInitialData> UpdateInitialDataAsync(ParamsOfUpdateInitialData @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfUpdateInitialData>("abi.update_initial_data", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfDecodeInitialData> DecodeInitialDataAsync(ParamsOfDecodeInitialData @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfDecodeInitialData>("abi.decode_initial_data", @params).ConfigureAwait(false);
         }
     }
 }
