@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.23.0, boc module.
+* TON API version 1.24.0, boc module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -101,7 +101,7 @@ namespace TonSdk.Modules
     public class ParamsOfGetBocHash
     {
         /// <summary>
-        /// BOC encoded as base64
+        /// BOC encoded as base64 or BOC handle
         /// </summary>
         [JsonProperty("boc", NullValueHandling = NullValueHandling.Ignore)]
         public string Boc { get; set; }
@@ -114,6 +114,24 @@ namespace TonSdk.Modules
         /// </summary>
         [JsonProperty("hash", NullValueHandling = NullValueHandling.Ignore)]
         public string Hash { get; set; }
+    }
+
+    public class ParamsOfGetBocDepth
+    {
+        /// <summary>
+        /// BOC encoded as base64 or BOC handle
+        /// </summary>
+        [JsonProperty("boc", NullValueHandling = NullValueHandling.Ignore)]
+        public string Boc { get; set; }
+    }
+
+    public class ResultOfGetBocDepth
+    {
+        /// <summary>
+        /// BOC root cell depth
+        /// </summary>
+        [JsonProperty("depth", NullValueHandling = NullValueHandling.Ignore)]
+        public uint Depth { get; set; }
     }
 
     public class ParamsOfGetCodeFromTvc
@@ -373,10 +391,34 @@ namespace TonSdk.Modules
         public string Code { get; set; }
 
         /// <summary>
+        /// Contract code hash
+        /// </summary>
+        [JsonProperty("code_hash", NullValueHandling = NullValueHandling.Ignore)]
+        public string CodeHash { get; set; }
+
+        /// <summary>
+        /// Contract code depth
+        /// </summary>
+        [JsonProperty("code_depth", NullValueHandling = NullValueHandling.Ignore)]
+        public uint? CodeDepth { get; set; }
+
+        /// <summary>
         /// Contract data BOC encoded as base64 or BOC handle
         /// </summary>
         [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
         public string Data { get; set; }
+
+        /// <summary>
+        /// Contract data hash
+        /// </summary>
+        [JsonProperty("data_hash", NullValueHandling = NullValueHandling.Ignore)]
+        public string DataHash { get; set; }
+
+        /// <summary>
+        /// Contract data depth
+        /// </summary>
+        [JsonProperty("data_depth", NullValueHandling = NullValueHandling.Ignore)]
+        public uint? DataDepth { get; set; }
 
         /// <summary>
         /// Contract library BOC encoded as base64 or BOC handle
@@ -401,6 +443,12 @@ namespace TonSdk.Modules
         /// </summary>
         [JsonProperty("split_depth", NullValueHandling = NullValueHandling.Ignore)]
         public uint? SplitDepth { get; set; }
+
+        /// <summary>
+        /// Compiler version, for example 'sol 0.49.0'
+        /// </summary>
+        [JsonProperty("compiler_version", NullValueHandling = NullValueHandling.Ignore)]
+        public string CompilerVersion { get; set; }
     }
 
     public class ParamsOfEncodeTvc
@@ -517,6 +565,11 @@ namespace TonSdk.Modules
         Task<ResultOfGetBocHash> GetBocHashAsync(ParamsOfGetBocHash @params);
 
         /// <summary>
+        /// Calculates BOC depth
+        /// </summary>
+        Task<ResultOfGetBocDepth> GetBocDepthAsync(ParamsOfGetBocDepth @params);
+
+        /// <summary>
         /// Extracts code from TVC contract image
         /// </summary>
         Task<ResultOfGetCodeFromTvc> GetCodeFromTvcAsync(ParamsOfGetCodeFromTvc @params);
@@ -611,6 +664,11 @@ namespace TonSdk.Modules
         public async Task<ResultOfGetBocHash> GetBocHashAsync(ParamsOfGetBocHash @params)
         {
             return await _client.CallFunctionAsync<ResultOfGetBocHash>("boc.get_boc_hash", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfGetBocDepth> GetBocDepthAsync(ParamsOfGetBocDepth @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfGetBocDepth>("boc.get_boc_depth", @params).ConfigureAwait(false);
         }
 
         public async Task<ResultOfGetCodeFromTvc> GetCodeFromTvcAsync(ParamsOfGetCodeFromTvc @params)

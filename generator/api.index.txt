@@ -1,4 +1,4 @@
-1.23.0
+1.24.0
 TYPES
 client.ClientErrorCode
 client.ClientError
@@ -139,6 +139,8 @@ boc.ParamsOfGetBlockchainConfig
 boc.ResultOfGetBlockchainConfig
 boc.ParamsOfGetBocHash
 boc.ResultOfGetBocHash
+boc.ParamsOfGetBocDepth
+boc.ResultOfGetBocDepth
 boc.ParamsOfGetCodeFromTvc
 boc.ResultOfGetCodeFromTvc
 boc.ParamsOfBocCacheGet
@@ -306,6 +308,7 @@ boc.parse_block
 boc.parse_shardstate
 boc.get_blockchain_config
 boc.get_boc_hash
+boc.get_boc_depth
 boc.get_code_from_tvc
 boc.cache_get
 boc.cache_set
