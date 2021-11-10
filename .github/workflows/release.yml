@@ -44,6 +44,7 @@ jobs:
           --skip-duplicate
           --source https://api.nuget.org/v3/index.json
           --no-symbols true
+          --timeout 1000
       - name: Send Telegram Notification
         uses: appleboy/telegram-action@master
         with:
