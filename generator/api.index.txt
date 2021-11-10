@@ -1,4 +1,4 @@
-1.24.0
+1.25.0
 TYPES
 client.ClientErrorCode
 client.ClientError
@@ -7,6 +7,7 @@ client.NetworkConfig
 client.CryptoConfig
 client.AbiConfig
 client.BocConfig
+client.ProofsConfig
 client.BuildInfoDependency
 client.ParamsOfAppRequest
 client.AppRequestResult
@@ -125,11 +126,13 @@ abi.ParamsOfDecodeMessageBody
 abi.ParamsOfEncodeAccount
 abi.ResultOfEncodeAccount
 abi.ParamsOfDecodeAccountData
-abi.ResultOfDecodeData
+abi.ResultOfDecodeAccountData
 abi.ParamsOfUpdateInitialData
 abi.ResultOfUpdateInitialData
 abi.ParamsOfDecodeInitialData
 abi.ResultOfDecodeInitialData
+abi.ParamsOfDecodeBoc
+abi.ResultOfDecodeBoc
 boc.BocCacheType
 boc.BocErrorCode
 boc.ParamsOfParse
@@ -241,6 +244,9 @@ debot.ResultOfFetch
 debot.ParamsOfExecute
 debot.ParamsOfSend
 debot.ParamsOfRemove
+proofs.ProofsErrorCode
+proofs.ParamsOfProofBlockData
+proofs.ParamsOfProofTransactionData
 FUNCTIONS
 client.get_api_reference
 client.version
@@ -301,6 +307,7 @@ abi.encode_account
 abi.decode_account_data
 abi.update_initial_data
 abi.decode_initial_data
+abi.decode_boc
 boc.parse_message
 boc.parse_transaction
 boc.parse_account
@@ -357,3 +364,5 @@ debot.fetch
 debot.execute
 debot.send
 debot.remove
+proofs.proof_block_data
+proofs.proof_transaction_data

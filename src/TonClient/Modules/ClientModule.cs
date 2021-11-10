@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.24.0, client module.
+* TON API version 1.25.0, client module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -47,6 +47,7 @@ namespace TonSdk.Modules
         CanNotParseNumber = 32,
         InternalError = 33,
         InvalidHandle = 34,
+        LocalStorageError = 35,
     }
 
     public class ClientError
@@ -74,6 +75,17 @@ namespace TonSdk.Modules
 
         [JsonProperty("boc", NullValueHandling = NullValueHandling.Ignore)]
         public BocConfig Boc { get; set; }
+
+        [JsonProperty("proofs", NullValueHandling = NullValueHandling.Ignore)]
+        public ProofsConfig Proofs { get; set; }
+
+        /// <summary>
+        /// For file based storage is a folder name where SDK will store its data. For browser based is a
+        /// browser async storage key prefix. Default (recommended) value is "~/.tonclient" for native
+        /// environments and ".tonclient" for web-browser.
+        /// </summary>
+        [JsonProperty("local_storage_path", NullValueHandling = NullValueHandling.Ignore)]
+        public string LocalStoragePath { get; set; }
     }
 
     public class NetworkConfig
@@ -233,6 +245,19 @@ namespace TonSdk.Modules
         /// </summary>
         [JsonProperty("cache_max_size", NullValueHandling = NullValueHandling.Ignore)]
         public uint? CacheMaxSize { get; set; }
+    }
+
+    public class ProofsConfig
+    {
+        /// <summary>
+        /// Default is `true`. If this value is set to `true`, downloaded proofs and master-chain BOCs are saved
+        /// into the
+        /// persistent local storage (e.g. file system for native environments or browser's IndexedDB
+        /// for the web); otherwise all the data is cached only in memory in current client's context
+        /// and will be lost after destruction of the client.
+        /// </summary>
+        [JsonProperty("cache_in_local_storage", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? CacheInLocalStorage { get; set; }
     }
 
     public class BuildInfoDependency

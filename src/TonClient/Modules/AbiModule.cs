@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.24.0, abi module.
+* TON API version 1.25.0, abi module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -840,7 +840,7 @@ namespace TonSdk.Modules
         public string Data { get; set; }
     }
 
-    public class ResultOfDecodeData
+    public class ResultOfDecodeAccountData
     {
         /// <summary>
         /// Decoded data as a JSON structure.
@@ -922,6 +922,33 @@ namespace TonSdk.Modules
         /// </summary>
         [JsonProperty("initial_pubkey", NullValueHandling = NullValueHandling.Ignore)]
         public string InitialPubkey { get; set; }
+    }
+
+    public class ParamsOfDecodeBoc
+    {
+        /// <summary>
+        /// Parameters to decode from BOC
+        /// </summary>
+        [JsonProperty("params", NullValueHandling = NullValueHandling.Ignore)]
+        public AbiParam[] Params { get; set; }
+
+        /// <summary>
+        /// Data BOC or BOC handle
+        /// </summary>
+        [JsonProperty("boc", NullValueHandling = NullValueHandling.Ignore)]
+        public string Boc { get; set; }
+
+        [JsonProperty("allow_partial", NullValueHandling = NullValueHandling.Ignore)]
+        public bool AllowPartial { get; set; }
+    }
+
+    public class ResultOfDecodeBoc
+    {
+        /// <summary>
+        /// Decoded data as a JSON structure.
+        /// </summary>
+        [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
+        public Newtonsoft.Json.Linq.JToken Data { get; set; }
     }
 
     /// <summary>
@@ -1016,7 +1043,7 @@ namespace TonSdk.Modules
         /// <summary>
         /// Note: this feature requires ABI 2.1 or higher.
         /// </summary>
-        Task<ResultOfDecodeData> DecodeAccountDataAsync(ParamsOfDecodeAccountData @params);
+        Task<ResultOfDecodeAccountData> DecodeAccountDataAsync(ParamsOfDecodeAccountData @params);
 
         /// <summary>
         /// Updates initial account data with initial values for the contract's static variables and owner's
@@ -1031,6 +1058,26 @@ namespace TonSdk.Modules
         /// already deployed, its data doesn't contain this data section any more.
         /// </summary>
         Task<ResultOfDecodeInitialData> DecodeInitialDataAsync(ParamsOfDecodeInitialData @params);
+
+        /// <summary>
+        /// Solidity functions use ABI types for [builder
+        /// encoding](https://github.com/tonlabs/TON-Solidity-Compiler/blob/master/API.md#tvmbuilderstore).
+        /// The simplest way to decode such a BOC is to use ABI decoding.
+        /// ABI has it own rules for fields layout in cells so manually encoded
+        /// BOC can not be described in terms of ABI rules.
+        /// 
+        /// To solve this problem we introduce a new ABI type `Ref(<ParamType>)`
+        /// which allows to store `ParamType` ABI parameter in cell reference and, thus,
+        /// decode manually encoded BOCs. This type is available only in `decode_boc` function
+        /// and will not be available in ABI messages encoding until it is included into some ABI revision.
+        /// 
+        /// Such BOC descriptions covers most users needs. If someone wants to decode some BOC which
+        /// can not be described by these rules (i.e. BOC with TLB containing constructors of flags
+        /// defining some parsing conditions) then they can decode the fields up to fork condition,
+        /// check the parsed data manually, expand the parsing schema and then decode the whole BOC
+        /// with the full schema.
+        /// </summary>
+        Task<ResultOfDecodeBoc> DecodeBocAsync(ParamsOfDecodeBoc @params);
     }
 
     internal class AbiModule : IAbiModule
@@ -1082,9 +1129,9 @@ namespace TonSdk.Modules
             return await _client.CallFunctionAsync<ResultOfEncodeAccount>("abi.encode_account", @params).ConfigureAwait(false);
         }
 
-        public async Task<ResultOfDecodeData> DecodeAccountDataAsync(ParamsOfDecodeAccountData @params)
+        public async Task<ResultOfDecodeAccountData> DecodeAccountDataAsync(ParamsOfDecodeAccountData @params)
         {
-            return await _client.CallFunctionAsync<ResultOfDecodeData>("abi.decode_account_data", @params).ConfigureAwait(false);
+            return await _client.CallFunctionAsync<ResultOfDecodeAccountData>("abi.decode_account_data", @params).ConfigureAwait(false);
         }
 
         public async Task<ResultOfUpdateInitialData> UpdateInitialDataAsync(ParamsOfUpdateInitialData @params)
@@ -1095,6 +1142,11 @@ namespace TonSdk.Modules
         public async Task<ResultOfDecodeInitialData> DecodeInitialDataAsync(ParamsOfDecodeInitialData @params)
         {
             return await _client.CallFunctionAsync<ResultOfDecodeInitialData>("abi.decode_initial_data", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfDecodeBoc> DecodeBocAsync(ParamsOfDecodeBoc @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfDecodeBoc>("abi.decode_boc", @params).ConfigureAwait(false);
         }
     }
 }
