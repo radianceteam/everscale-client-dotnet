@@ -29,13 +29,19 @@ namespace TonSdk.Tests
 
         public void Error(string message, Exception ex = null)
         {
-            Log("ERROR", ex == null ?
-                message : $"{message}: {ex}");
+            Log("ERROR", ex == null ? message : $"{message}: {ex}");
         }
 
         private void Log(string level, string message)
         {
-            _outputHelper.WriteLine($"[{level}] {message}");
+            try
+            {
+                _outputHelper.WriteLine($"[{level}] {message}");
+            }
+            catch (Exception)
+            {
+                // Ignore System.InvalidOperationException: There is no currently active test.
+            }
         }
     }
 }
