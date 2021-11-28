@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.25.0, debot module.
+* TON API version 1.26.0, debot module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
