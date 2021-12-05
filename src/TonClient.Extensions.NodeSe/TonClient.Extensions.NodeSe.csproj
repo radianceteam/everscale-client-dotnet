@@ -12,6 +12,7 @@
     <PackageVersion>$(VersionSuffix)</PackageVersion>
     <PackageDescription>TON SDK Client .NET Wrapper NodeSE extensions</PackageDescription>
     <PackageProjectUrl>https://github.com/radianceteam/ton-client-dotnet</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/radianceteam/ton-client-dotnet</RepositoryUrl>
     <InformationalVersion>$(VersionSuffix)</InformationalVersion>
   </PropertyGroup>
 

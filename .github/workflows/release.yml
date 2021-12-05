@@ -38,13 +38,16 @@ jobs:
           release_name: ${{ steps.vars.outputs.version }}
           draft: false
           prerelease: false
+      - name: Authenticate in GitHub Actions
+        run: dotnet nuget add source
+          --username ${{ github.repository_owner }}
+          --password ${{ secrets.GITHUB_TOKEN }}
+          --store-password-in-clear-text
+          --name github
+          "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
       - name: Deploy Nuget Packages
-        run: dotnet nuget push **/*.nupkg
-          --api-key ${{ secrets.NUGET_API_KEY }}
-          --skip-duplicate
-          --source https://api.nuget.org/v3/index.json
-          --no-symbols true
-          --timeout 1000
+        run: |
+          find . -name '*.nupkg' | xargs -I '{}' curl -X PUT -u "$GITHUB_ACTOR:${{ secrets.GITHUB_TOKEN }}" -F package=@{} https://nuget.pkg.github.com/${{ github.repository_owner }}/
       - name: Send Telegram Notification
         uses: appleboy/telegram-action@master
         with:
