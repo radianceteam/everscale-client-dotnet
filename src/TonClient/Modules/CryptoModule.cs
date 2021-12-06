@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.26.1, crypto module.
+* TON API version 1.27.0, crypto module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 

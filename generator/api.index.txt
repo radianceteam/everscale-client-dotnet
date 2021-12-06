@@ -129,6 +129,8 @@ abi.ParamsOfDecodeAccountData
 abi.ResultOfDecodeAccountData
 abi.ParamsOfUpdateInitialData
 abi.ResultOfUpdateInitialData
+abi.ParamsOfEncodeInitialData
+abi.ResultOfEncodeInitialData
 abi.ParamsOfDecodeInitialData
 abi.ResultOfDecodeInitialData
 abi.ParamsOfDecodeBoc
@@ -307,6 +309,7 @@ abi.decode_message_body
 abi.encode_account
 abi.decode_account_data
 abi.update_initial_data
+abi.encode_initial_data
 abi.decode_initial_data
 abi.decode_boc
 boc.parse_message

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.26.1, abi module.
+* TON API version 1.27.0, abi module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -893,6 +893,44 @@ namespace TonSdk.Modules
         public string Data { get; set; }
     }
 
+    public class ParamsOfEncodeInitialData
+    {
+        /// <summary>
+        /// Contract ABI
+        /// </summary>
+        [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
+        public Abi Abi { get; set; }
+
+        /// <summary>
+        /// `abi` parameter should be provided to set initial data
+        /// </summary>
+        [JsonProperty("initial_data", NullValueHandling = NullValueHandling.Ignore)]
+        public Newtonsoft.Json.Linq.JToken InitialData { get; set; }
+
+        /// <summary>
+        /// Initial account owner's public key to set into account data
+        /// </summary>
+        [JsonProperty("initial_pubkey", NullValueHandling = NullValueHandling.Ignore)]
+        public string InitialPubkey { get; set; }
+
+        /// <summary>
+        /// Cache type to put the result. The BOC itself returned if no cache type provided.
+        /// </summary>
+        [JsonProperty("boc_cache", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
+        public BocCacheType BocCache { get; set; }
+    }
+
+    public class ResultOfEncodeInitialData
+    {
+        /// <summary>
+        /// Updated data BOC or BOC handle
+        /// </summary>
+        [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
+        public string Data { get; set; }
+    }
+
     public class ParamsOfDecodeInitialData
     {
         /// <summary>
@@ -1053,6 +1091,11 @@ namespace TonSdk.Modules
         Task<ResultOfUpdateInitialData> UpdateInitialDataAsync(ParamsOfUpdateInitialData @params);
 
         /// <summary>
+        /// This function is analogue of `tvm.buildDataInit` function in Solidity.
+        /// </summary>
+        Task<ResultOfEncodeInitialData> EncodeInitialDataAsync(ParamsOfEncodeInitialData @params);
+
+        /// <summary>
         /// Decodes initial values of a contract's static variables and owner's public key from account initial
         /// data This operation is applicable only for initial account data (before deploy). If the contract is
         /// already deployed, its data doesn't contain this data section any more.
@@ -1137,6 +1180,11 @@ namespace TonSdk.Modules
         public async Task<ResultOfUpdateInitialData> UpdateInitialDataAsync(ParamsOfUpdateInitialData @params)
         {
             return await _client.CallFunctionAsync<ResultOfUpdateInitialData>("abi.update_initial_data", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfEncodeInitialData> EncodeInitialDataAsync(ParamsOfEncodeInitialData @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfEncodeInitialData>("abi.encode_initial_data", @params).ConfigureAwait(false);
         }
 
         public async Task<ResultOfDecodeInitialData> DecodeInitialDataAsync(ParamsOfDecodeInitialData @params)
