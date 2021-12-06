@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.26.0, debot module.
+* TON API version 1.26.1, debot module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -25,6 +25,7 @@ namespace TonSdk.Modules
         DebotExternalCallFailed = 810,
         DebotBrowserCallbackFailed = 811,
         DebotOperationRejected = 812,
+        DebotNoCode = 813,
     }
 
     /// <summary>
@@ -139,6 +140,12 @@ namespace TonSdk.Modules
         /// </summary>
         [JsonProperty("interfaces", NullValueHandling = NullValueHandling.Ignore)]
         public string[] Interfaces { get; set; }
+
+        /// <summary>
+        /// ABI version ("x.y") supported by DeBot
+        /// </summary>
+        [JsonProperty("dabiVersion", NullValueHandling = NullValueHandling.Ignore)]
+        public string DabiVersion { get; set; }
     }
 
     /// <summary>
