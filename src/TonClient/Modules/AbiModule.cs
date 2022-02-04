@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.28.1, abi module.
+* TON API version 1.29.0, abi module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -989,6 +989,37 @@ namespace TonSdk.Modules
         public Newtonsoft.Json.Linq.JToken Data { get; set; }
     }
 
+    public class ParamsOfAbiEncodeBoc
+    {
+        /// <summary>
+        /// Parameters to encode into BOC
+        /// </summary>
+        [JsonProperty("params", NullValueHandling = NullValueHandling.Ignore)]
+        public AbiParam[] Params { get; set; }
+
+        /// <summary>
+        /// Parameters and values as a JSON structure
+        /// </summary>
+        [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
+        public Newtonsoft.Json.Linq.JToken Data { get; set; }
+
+        /// <summary>
+        /// The BOC itself returned if no cache type provided
+        /// </summary>
+        [JsonProperty("boc_cache", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
+        public BocCacheType BocCache { get; set; }
+    }
+
+    public class ResultOfAbiEncodeBoc
+    {
+        /// <summary>
+        /// BOC encoded as base64
+        /// </summary>
+        [JsonProperty("boc", NullValueHandling = NullValueHandling.Ignore)]
+        public string Boc { get; set; }
+    }
+
     /// <summary>
     /// Provides message encoding and decoding according to the ABI specification.
     /// </summary>
@@ -1121,6 +1152,11 @@ namespace TonSdk.Modules
         /// with the full schema.
         /// </summary>
         Task<ResultOfDecodeBoc> DecodeBocAsync(ParamsOfDecodeBoc @params);
+
+        /// <summary>
+        /// Encodes given parameters in JSON into a BOC using param types from ABI.
+        /// </summary>
+        Task<ResultOfAbiEncodeBoc> EncodeBocAsync(ParamsOfAbiEncodeBoc @params);
     }
 
     internal class AbiModule : IAbiModule
@@ -1195,6 +1231,11 @@ namespace TonSdk.Modules
         public async Task<ResultOfDecodeBoc> DecodeBocAsync(ParamsOfDecodeBoc @params)
         {
             return await _client.CallFunctionAsync<ResultOfDecodeBoc>("abi.decode_boc", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfAbiEncodeBoc> EncodeBocAsync(ParamsOfAbiEncodeBoc @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfAbiEncodeBoc>("abi.encode_boc", @params).ConfigureAwait(false);
         }
     }
 }

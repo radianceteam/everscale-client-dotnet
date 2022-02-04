@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.28.1, boc module.
+* TON API version 1.29.0, boc module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -259,12 +259,12 @@ namespace TonSdk.Modules
         }
 
         /// <summary>
-        /// Append ref to nested cells
+        /// Append ref to nested cells.
         /// </summary>
         public class Cell : BuilderOp
         {
             /// <summary>
-            /// Nested cell builder
+            /// Nested cell builder.
             /// </summary>
             [JsonProperty("builder", NullValueHandling = NullValueHandling.Ignore,
             ItemConverterType = typeof(PolymorphicTypeConverter))]
@@ -272,7 +272,7 @@ namespace TonSdk.Modules
         }
 
         /// <summary>
-        /// Append ref to nested cell
+        /// Append ref to nested cell.
         /// </summary>
         public class CellBoc : BuilderOp
         {
@@ -281,6 +281,18 @@ namespace TonSdk.Modules
             /// </summary>
             [JsonProperty("boc", NullValueHandling = NullValueHandling.Ignore)]
             public string Boc { get; set; }
+        }
+
+        /// <summary>
+        /// Address.
+        /// </summary>
+        public class Address : BuilderOp
+        {
+            /// <summary>
+            /// Address in a common `workchain:account` or base64 format.
+            /// </summary>
+            [JsonProperty("address", NullValueHandling = NullValueHandling.Ignore)]
+            public string AddressProperty { get; set; }
         }
     }
 
@@ -592,7 +604,7 @@ namespace TonSdk.Modules
         /// <summary>
         /// Encodes bag of cells (BOC) with builder operations. This method provides the same functionality as
         /// Solidity TvmBuilder. Resulting BOC of this method can be passed into Solidity and C++ contracts as
-        /// TvmCell type
+        /// TvmCell type.
         /// </summary>
         Task<ResultOfEncodeBoc> EncodeBocAsync(ParamsOfEncodeBoc @params);
 
