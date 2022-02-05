@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.29.0, boc module.
+* TON API version 1.30.0, boc module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -518,6 +518,55 @@ namespace TonSdk.Modules
         public string Tvc { get; set; }
     }
 
+    public class ParamsOfEncodeExternalInMessage
+    {
+        /// <summary>
+        /// Source address.
+        /// </summary>
+        [JsonProperty("src", NullValueHandling = NullValueHandling.Ignore)]
+        public string Src { get; set; }
+
+        /// <summary>
+        /// Destination address.
+        /// </summary>
+        [JsonProperty("dst", NullValueHandling = NullValueHandling.Ignore)]
+        public string Dst { get; set; }
+
+        /// <summary>
+        /// Bag of cells with state init (used in deploy messages).
+        /// </summary>
+        [JsonProperty("init", NullValueHandling = NullValueHandling.Ignore)]
+        public string Init { get; set; }
+
+        /// <summary>
+        /// Bag of cells with the message body encoded as base64.
+        /// </summary>
+        [JsonProperty("body", NullValueHandling = NullValueHandling.Ignore)]
+        public string Body { get; set; }
+
+        /// <summary>
+        /// The BOC itself returned if no cache type provided
+        /// </summary>
+        [JsonProperty("boc_cache", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
+        public BocCacheType BocCache { get; set; }
+    }
+
+    public class ResultOfEncodeExternalInMessage
+    {
+        /// <summary>
+        /// Message BOC encoded with `base64`.
+        /// </summary>
+        [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
+        public string Message { get; set; }
+
+        /// <summary>
+        /// Message id.
+        /// </summary>
+        [JsonProperty("message_id", NullValueHandling = NullValueHandling.Ignore)]
+        public string MessageId { get; set; }
+    }
+
     public class ParamsOfGetCompilerVersion
     {
         /// <summary>
@@ -629,6 +678,11 @@ namespace TonSdk.Modules
         Task<ResultOfEncodeTvc> EncodeTvcAsync(ParamsOfEncodeTvc @params);
 
         /// <summary>
+        /// Allows to encode any external inbound message.
+        /// </summary>
+        Task<ResultOfEncodeExternalInMessage> EncodeExternalInMessageAsync(ParamsOfEncodeExternalInMessage @params);
+
+        /// <summary>
         /// Returns the compiler version used to compile the code.
         /// </summary>
         Task<ResultOfGetCompilerVersion> GetCompilerVersionAsync(ParamsOfGetCompilerVersion @params);
@@ -726,6 +780,11 @@ namespace TonSdk.Modules
         public async Task<ResultOfEncodeTvc> EncodeTvcAsync(ParamsOfEncodeTvc @params)
         {
             return await _client.CallFunctionAsync<ResultOfEncodeTvc>("boc.encode_tvc", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfEncodeExternalInMessage> EncodeExternalInMessageAsync(ParamsOfEncodeExternalInMessage @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfEncodeExternalInMessage>("boc.encode_external_in_message", @params).ConfigureAwait(false);
         }
 
         public async Task<ResultOfGetCompilerVersion> GetCompilerVersionAsync(ParamsOfGetCompilerVersion @params)

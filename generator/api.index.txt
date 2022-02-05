@@ -1,4 +1,4 @@
-1.29.0
+1.30.0
 TYPES
 client.ClientErrorCode
 client.ClientError
@@ -166,6 +166,8 @@ boc.ParamsOfDecodeTvc
 boc.ResultOfDecodeTvc
 boc.ParamsOfEncodeTvc
 boc.ResultOfEncodeTvc
+boc.ParamsOfEncodeExternalInMessage
+boc.ResultOfEncodeExternalInMessage
 boc.ParamsOfGetCompilerVersion
 boc.ResultOfGetCompilerVersion
 processing.ProcessingErrorCode
@@ -218,6 +220,7 @@ net.ParamsOfWaitForCollection
 net.ResultOfWaitForCollection
 net.ResultOfSubscribeCollection
 net.ParamsOfSubscribeCollection
+net.ParamsOfSubscribe
 net.ParamsOfFindLastShardBlock
 net.ResultOfFindLastShardBlock
 net.EndpointsSet
@@ -332,6 +335,7 @@ boc.get_code_salt
 boc.set_code_salt
 boc.decode_tvc
 boc.encode_tvc
+boc.encode_external_in_message
 boc.get_compiler_version
 processing.send_message
 processing.wait_for_transaction
@@ -351,6 +355,7 @@ net.aggregate_collection
 net.wait_for_collection
 net.unsubscribe
 net.subscribe_collection
+net.subscribe
 net.suspend
 net.resume
 net.find_last_shard_block
