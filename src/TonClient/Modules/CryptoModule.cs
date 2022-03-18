@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.30.0, crypto module.
+* TON API version 1.31.0, crypto module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -41,10 +41,14 @@ namespace TonSdk.Modules
         EncryptDataError = 127,
         DecryptDataError = 128,
         IvRequired = 129,
+        CryptoBoxNotRegistered = 130,
+        InvalidCryptoBoxType = 131,
+        CryptoBoxSecretSerializationError = 132,
+        CryptoBoxSecretDeserializationError = 133,
     }
 
     /// <summary>
-    /// Encryption box information
+    /// Encryption box information.
     /// </summary>
     public class EncryptionBoxInfo
     {
@@ -87,6 +91,39 @@ namespace TonSdk.Modules
             [JsonProperty("iv", NullValueHandling = NullValueHandling.Ignore)]
             public string Iv { get; set; }
         }
+
+        public class ChaCha20 : EncryptionAlgorithm
+        {
+            /// <summary>
+            /// Must be encoded with `hex`.
+            /// </summary>
+            [JsonProperty("nonce", NullValueHandling = NullValueHandling.Ignore)]
+            public string Nonce { get; set; }
+        }
+
+        public class NaclBox : EncryptionAlgorithm
+        {
+            /// <summary>
+            /// Must be encoded with `hex`.
+            /// </summary>
+            [JsonProperty("their_public", NullValueHandling = NullValueHandling.Ignore)]
+            public string TheirPublic { get; set; }
+
+            /// <summary>
+            /// Must be encoded with `hex`.
+            /// </summary>
+            [JsonProperty("nonce", NullValueHandling = NullValueHandling.Ignore)]
+            public string Nonce { get; set; }
+        }
+
+        public class NaclSecretBox : EncryptionAlgorithm
+        {
+            /// <summary>
+            /// Nonce in `hex`
+            /// </summary>
+            [JsonProperty("nonce", NullValueHandling = NullValueHandling.Ignore)]
+            public string Nonce { get; set; }
+        }
     }
 
     public enum CipherMode
@@ -98,7 +135,7 @@ namespace TonSdk.Modules
         OFB,
     }
 
-    public class AesParams
+    public class AesParamsEB
     {
         [JsonProperty("mode", NullValueHandling = NullValueHandling.Ignore)]
         [JsonConverter(typeof(StringEnumConverter))]
@@ -119,6 +156,182 @@ namespace TonSdk.Modules
 
         [JsonProperty("iv", NullValueHandling = NullValueHandling.Ignore)]
         public string Iv { get; set; }
+    }
+
+    public class ChaCha20ParamsEB
+    {
+        /// <summary>
+        /// Must be encoded with `hex`.
+        /// </summary>
+        [JsonProperty("key", NullValueHandling = NullValueHandling.Ignore)]
+        public string Key { get; set; }
+
+        /// <summary>
+        /// Must be encoded with `hex`.
+        /// </summary>
+        [JsonProperty("nonce", NullValueHandling = NullValueHandling.Ignore)]
+        public string Nonce { get; set; }
+    }
+
+    public class NaclBoxParamsEB
+    {
+        /// <summary>
+        /// Must be encoded with `hex`.
+        /// </summary>
+        [JsonProperty("their_public", NullValueHandling = NullValueHandling.Ignore)]
+        public string TheirPublic { get; set; }
+
+        /// <summary>
+        /// Must be encoded with `hex`.
+        /// </summary>
+        [JsonProperty("secret", NullValueHandling = NullValueHandling.Ignore)]
+        public string Secret { get; set; }
+
+        /// <summary>
+        /// Must be encoded with `hex`.
+        /// </summary>
+        [JsonProperty("nonce", NullValueHandling = NullValueHandling.Ignore)]
+        public string Nonce { get; set; }
+    }
+
+    public class NaclSecretBoxParamsEB
+    {
+        /// <summary>
+        /// Secret key - unprefixed 0-padded to 64 symbols hex string
+        /// </summary>
+        [JsonProperty("key", NullValueHandling = NullValueHandling.Ignore)]
+        public string Key { get; set; }
+
+        /// <summary>
+        /// Nonce in `hex`
+        /// </summary>
+        [JsonProperty("nonce", NullValueHandling = NullValueHandling.Ignore)]
+        public string Nonce { get; set; }
+    }
+
+    /// <summary>
+    /// Crypto Box Secret.
+    /// </summary>
+    public abstract class CryptoBoxSecret
+    {
+        /// <summary>
+        /// This type should be used upon the first wallet initialization, all further initializations
+        /// should use `EncryptedSecret` type instead.
+        /// 
+        /// Get `encrypted_secret` with `get_crypto_box_info` function and store it on your side.
+        /// </summary>
+        public class RandomSeedPhrase : CryptoBoxSecret
+        {
+            [JsonProperty("dictionary", NullValueHandling = NullValueHandling.Ignore)]
+            public byte Dictionary { get; set; }
+
+            [JsonProperty("wordcount", NullValueHandling = NullValueHandling.Ignore)]
+            public byte Wordcount { get; set; }
+        }
+
+        /// <summary>
+        /// This type should be used only upon the first wallet initialization, all further
+        /// initializations should use `EncryptedSecret` type instead.
+        /// 
+        /// Get `encrypted_secret` with `get_crypto_box_info` function and store it on your side.
+        /// </summary>
+        public class PredefinedSeedPhrase : CryptoBoxSecret
+        {
+            [JsonProperty("phrase", NullValueHandling = NullValueHandling.Ignore)]
+            public string Phrase { get; set; }
+
+            [JsonProperty("dictionary", NullValueHandling = NullValueHandling.Ignore)]
+            public byte Dictionary { get; set; }
+
+            [JsonProperty("wordcount", NullValueHandling = NullValueHandling.Ignore)]
+            public byte Wordcount { get; set; }
+        }
+
+        /// <summary>
+        /// It is an object, containing seed phrase or private key, encrypted with
+        /// `secret_encryption_salt` and password from `password_provider`.
+        /// 
+        /// Note that if you want to change salt or password provider, then you need to reinitialize
+        /// the wallet with `PredefinedSeedPhrase`, then get `EncryptedSecret` via `get_crypto_box_info`,
+        /// store it somewhere, and only after that initialize the wallet with `EncryptedSecret` type.
+        /// </summary>
+        public class EncryptedSecret : CryptoBoxSecret
+        {
+            /// <summary>
+            /// It is an object, containing encrypted seed phrase or private key (now we support only seed phrase).
+            /// </summary>
+            [JsonProperty("encrypted_secret", NullValueHandling = NullValueHandling.Ignore)]
+            public string EncryptedSecretProperty { get; set; }
+        }
+    }
+
+    public abstract class BoxEncryptionAlgorithm
+    {
+        public class ChaCha20 : BoxEncryptionAlgorithm
+        {
+            /// <summary>
+            /// Must be encoded with `hex`.
+            /// </summary>
+            [JsonProperty("nonce", NullValueHandling = NullValueHandling.Ignore)]
+            public string Nonce { get; set; }
+        }
+
+        public class NaclBox : BoxEncryptionAlgorithm
+        {
+            /// <summary>
+            /// Must be encoded with `hex`.
+            /// </summary>
+            [JsonProperty("their_public", NullValueHandling = NullValueHandling.Ignore)]
+            public string TheirPublic { get; set; }
+
+            /// <summary>
+            /// Must be encoded with `hex`.
+            /// </summary>
+            [JsonProperty("nonce", NullValueHandling = NullValueHandling.Ignore)]
+            public string Nonce { get; set; }
+        }
+
+        public class NaclSecretBox : BoxEncryptionAlgorithm
+        {
+            /// <summary>
+            /// Nonce in `hex`
+            /// </summary>
+            [JsonProperty("nonce", NullValueHandling = NullValueHandling.Ignore)]
+            public string Nonce { get; set; }
+        }
+    }
+
+    public class ChaCha20ParamsCB
+    {
+        /// <summary>
+        /// Must be encoded with `hex`.
+        /// </summary>
+        [JsonProperty("nonce", NullValueHandling = NullValueHandling.Ignore)]
+        public string Nonce { get; set; }
+    }
+
+    public class NaclBoxParamsCB
+    {
+        /// <summary>
+        /// Must be encoded with `hex`.
+        /// </summary>
+        [JsonProperty("their_public", NullValueHandling = NullValueHandling.Ignore)]
+        public string TheirPublic { get; set; }
+
+        /// <summary>
+        /// Must be encoded with `hex`.
+        /// </summary>
+        [JsonProperty("nonce", NullValueHandling = NullValueHandling.Ignore)]
+        public string Nonce { get; set; }
+    }
+
+    public class NaclSecretBoxParamsCB
+    {
+        /// <summary>
+        /// Nonce in `hex`
+        /// </summary>
+        [JsonProperty("nonce", NullValueHandling = NullValueHandling.Ignore)]
+        public string Nonce { get; set; }
     }
 
     public class ParamsOfFactorize
@@ -509,6 +722,9 @@ namespace TonSdk.Modules
         [JsonProperty("encrypted", NullValueHandling = NullValueHandling.Ignore)]
         public string Encrypted { get; set; }
 
+        /// <summary>
+        /// Nonce
+        /// </summary>
         [JsonProperty("nonce", NullValueHandling = NullValueHandling.Ignore)]
         public string Nonce { get; set; }
 
@@ -570,7 +786,7 @@ namespace TonSdk.Modules
         public string Nonce { get; set; }
 
         /// <summary>
-        /// Public key - unprefixed 0-padded to 64 symbols hex string
+        /// Secret key - unprefixed 0-padded to 64 symbols hex string
         /// </summary>
         [JsonProperty("key", NullValueHandling = NullValueHandling.Ignore)]
         public string Key { get; set; }
@@ -855,10 +1071,156 @@ namespace TonSdk.Modules
         public string Data { get; set; }
     }
 
+    public class ParamsOfCreateCryptoBox
+    {
+        /// <summary>
+        /// Salt used for secret encryption. For example, a mobile device can use device ID as salt.
+        /// </summary>
+        [JsonProperty("secret_encryption_salt", NullValueHandling = NullValueHandling.Ignore)]
+        public string SecretEncryptionSalt { get; set; }
+
+        /// <summary>
+        /// Cryptobox secret
+        /// </summary>
+        [JsonProperty("secret", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
+        public CryptoBoxSecret Secret { get; set; }
+    }
+
+    public class RegisteredCryptoBox
+    {
+        [JsonProperty("handle", NullValueHandling = NullValueHandling.Ignore)]
+        public uint Handle { get; set; }
+    }
+
+    /// <summary>
+    /// To secure the password while passing it from application to the library,
+    /// the library generates a temporary key pair, passes the pubkey
+    /// to the passwordProvider, decrypts the received password with private key,
+    /// and deletes the key pair right away.
+    /// 
+    /// Application should generate a temporary nacl_box_keypair
+    /// and encrypt the password with naclbox function using nacl_box_keypair.secret
+    /// and encryption_public_key keys + nonce = 24-byte prefix of encryption_public_key.
+    /// </summary>
+    public abstract class ParamsOfAppPasswordProvider
+    {
+        public class GetPassword : ParamsOfAppPasswordProvider
+        {
+            /// <summary>
+            /// Temporary library pubkey, that is used on application side for password encryption, along with
+            /// application temporary private key and nonce. Used for password decryption on library side.
+            /// </summary>
+            [JsonProperty("encryption_public_key", NullValueHandling = NullValueHandling.Ignore)]
+            public string EncryptionPublicKey { get; set; }
+        }
+    }
+
+    public abstract class ResultOfAppPasswordProvider
+    {
+        public class GetPassword : ResultOfAppPasswordProvider
+        {
+            /// <summary>
+            /// Password, encrypted and encoded to base64. Crypto box uses this password to decrypt its secret (seed
+            /// phrase).
+            /// </summary>
+            [JsonProperty("encrypted_password", NullValueHandling = NullValueHandling.Ignore)]
+            public string EncryptedPassword { get; set; }
+
+            /// <summary>
+            /// Used together with `encryption_public_key` to decode `encrypted_password`.
+            /// </summary>
+            [JsonProperty("app_encryption_pubkey", NullValueHandling = NullValueHandling.Ignore)]
+            public string AppEncryptionPubkey { get; set; }
+        }
+    }
+
+    public class ResultOfGetCryptoBoxInfo
+    {
+        /// <summary>
+        /// Secret (seed phrase) encrypted with salt and password.
+        /// </summary>
+        [JsonProperty("encrypted_secret", NullValueHandling = NullValueHandling.Ignore)]
+        public string EncryptedSecret { get; set; }
+    }
+
+    public class ResultOfGetCryptoBoxSeedPhrase
+    {
+        [JsonProperty("phrase", NullValueHandling = NullValueHandling.Ignore)]
+        public string Phrase { get; set; }
+
+        [JsonProperty("dictionary", NullValueHandling = NullValueHandling.Ignore)]
+        public byte Dictionary { get; set; }
+
+        [JsonProperty("wordcount", NullValueHandling = NullValueHandling.Ignore)]
+        public byte Wordcount { get; set; }
+    }
+
+    public class ParamsOfGetSigningBoxFromCryptoBox
+    {
+        /// <summary>
+        /// Crypto Box Handle.
+        /// </summary>
+        [JsonProperty("handle", NullValueHandling = NullValueHandling.Ignore)]
+        public uint Handle { get; set; }
+
+        /// <summary>
+        /// By default, Everscale HD path is used.
+        /// </summary>
+        [JsonProperty("hdpath", NullValueHandling = NullValueHandling.Ignore)]
+        public string Hdpath { get; set; }
+
+        /// <summary>
+        /// Store derived secret for this lifetime (in ms). The timer starts after each signing box operation.
+        /// Secrets will be deleted immediately after each signing box operation, if this value is not set.
+        /// </summary>
+        [JsonProperty("secret_lifetime", NullValueHandling = NullValueHandling.Ignore)]
+        public uint? SecretLifetime { get; set; }
+    }
+
     public class RegisteredSigningBox
     {
         /// <summary>
         /// Handle of the signing box.
+        /// </summary>
+        [JsonProperty("handle", NullValueHandling = NullValueHandling.Ignore)]
+        public uint Handle { get; set; }
+    }
+
+    public class ParamsOfGetEncryptionBoxFromCryptoBox
+    {
+        /// <summary>
+        /// Crypto Box Handle.
+        /// </summary>
+        [JsonProperty("handle", NullValueHandling = NullValueHandling.Ignore)]
+        public uint Handle { get; set; }
+
+        /// <summary>
+        /// By default, Everscale HD path is used.
+        /// </summary>
+        [JsonProperty("hdpath", NullValueHandling = NullValueHandling.Ignore)]
+        public string Hdpath { get; set; }
+
+        /// <summary>
+        /// Encryption algorithm.
+        /// </summary>
+        [JsonProperty("algorithm", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
+        public BoxEncryptionAlgorithm Algorithm { get; set; }
+
+        /// <summary>
+        /// Store derived secret for encryption algorithm for this lifetime (in ms). The timer starts after each
+        /// encryption box operation. Secrets will be deleted (overwritten with zeroes) after each encryption
+        /// operation, if this value is not set.
+        /// </summary>
+        [JsonProperty("secret_lifetime", NullValueHandling = NullValueHandling.Ignore)]
+        public uint? SecretLifetime { get; set; }
+    }
+
+    public class RegisteredEncryptionBox
+    {
+        /// <summary>
+        /// Handle of the encryption box.
         /// </summary>
         [JsonProperty("handle", NullValueHandling = NullValueHandling.Ignore)]
         public uint Handle { get; set; }
@@ -952,17 +1314,8 @@ namespace TonSdk.Modules
         public string Signature { get; set; }
     }
 
-    public class RegisteredEncryptionBox
-    {
-        /// <summary>
-        /// Handle of the encryption box
-        /// </summary>
-        [JsonProperty("handle", NullValueHandling = NullValueHandling.Ignore)]
-        public uint Handle { get; set; }
-    }
-
     /// <summary>
-    /// Encryption box callbacks.
+    /// Interface for data encryption/decryption
     /// </summary>
     public abstract class ParamsOfAppEncryptionBox
     {
@@ -1312,6 +1665,56 @@ namespace TonSdk.Modules
         Task<ResultOfChaCha20> Chacha20Async(ParamsOfChaCha20 @params);
 
         /// <summary>
+        /// Crypto Box is a root crypto object, that encapsulates some secret (seed phrase usually)
+        /// in encrypted form and acts as a factory for all crypto primitives used in SDK:
+        /// keys for signing and encryption, derived from this secret.
+        /// 
+        /// Crypto Box encrypts original Seed Phrase with salt and password that is retrieved
+        /// from `password_provider` callback, implemented on Application side.
+        /// 
+        /// When used, decrypted secret shows up in core library's memory for a very short period
+        /// of time and then is immediately overwritten with zeroes.
+        /// </summary>
+        Task<RegisteredCryptoBox> CreateCryptoBoxAsync(ParamsOfCreateCryptoBox @params, Func<ParamsOfAppPasswordProvider, Task<ResultOfAppPasswordProvider>> password_provider);
+
+        /// <summary>
+        /// Removes Crypto Box. Clears all secret data.
+        /// </summary>
+        Task RemoveCryptoBoxAsync(RegisteredCryptoBox @params);
+
+        /// <summary>
+        /// Get Crypto Box Info. Used to get `encrypted_secret` that should be used for all the cryptobox
+        /// initializations except the first one.
+        /// </summary>
+        Task<ResultOfGetCryptoBoxInfo> GetCryptoBoxInfoAsync(RegisteredCryptoBox @params);
+
+        /// <summary>
+        /// Attention! Store this data in your application for a very short period of time and overwrite it with
+        /// zeroes ASAP.
+        /// </summary>
+        Task<ResultOfGetCryptoBoxSeedPhrase> GetCryptoBoxSeedPhraseAsync(RegisteredCryptoBox @params);
+
+        /// <summary>
+        /// Get handle of Signing Box derived from Crypto Box.
+        /// </summary>
+        Task<RegisteredSigningBox> GetSigningBoxFromCryptoBoxAsync(ParamsOfGetSigningBoxFromCryptoBox @params);
+
+        /// <summary>
+        /// Derives encryption keypair from cryptobox secret and hdpath and
+        /// stores it in cache for `secret_lifetime`
+        /// or until explicitly cleared by `clear_crypto_box_secret_cache` method.
+        /// If `secret_lifetime` is not specified - overwrites encryption secret with zeroes immediately after
+        /// encryption operation.
+        /// </summary>
+        Task<RegisteredEncryptionBox> GetEncryptionBoxFromCryptoBoxAsync(ParamsOfGetEncryptionBoxFromCryptoBox @params);
+
+        /// <summary>
+        /// Removes cached secrets (overwrites with zeroes) from all signing and encryption boxes, derived from
+        /// crypto box.
+        /// </summary>
+        Task ClearCryptoBoxSecretCacheAsync(RegisteredCryptoBox @params);
+
+        /// <summary>
         /// Register an application implemented signing box.
         /// </summary>
         Task<RegisteredSigningBox> RegisterSigningBoxAsync(Func<ParamsOfAppSigningBox, Task<ResultOfAppSigningBox>> app_object);
@@ -1543,6 +1946,41 @@ namespace TonSdk.Modules
         public async Task<ResultOfChaCha20> Chacha20Async(ParamsOfChaCha20 @params)
         {
             return await _client.CallFunctionAsync<ResultOfChaCha20>("crypto.chacha20", @params).ConfigureAwait(false);
+        }
+
+        public async Task<RegisteredCryptoBox> CreateCryptoBoxAsync(ParamsOfCreateCryptoBox @params, Func<ParamsOfAppPasswordProvider, Task<ResultOfAppPasswordProvider>> password_provider)
+        {
+            return await _client.CallFunctionAsync<RegisteredCryptoBox, ParamsOfAppPasswordProvider, ResultOfAppPasswordProvider>("crypto.create_crypto_box", @params, password_provider).ConfigureAwait(false);
+        }
+
+        public async Task RemoveCryptoBoxAsync(RegisteredCryptoBox @params)
+        {
+            await _client.CallFunctionAsync("crypto.remove_crypto_box", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfGetCryptoBoxInfo> GetCryptoBoxInfoAsync(RegisteredCryptoBox @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfGetCryptoBoxInfo>("crypto.get_crypto_box_info", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfGetCryptoBoxSeedPhrase> GetCryptoBoxSeedPhraseAsync(RegisteredCryptoBox @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfGetCryptoBoxSeedPhrase>("crypto.get_crypto_box_seed_phrase", @params).ConfigureAwait(false);
+        }
+
+        public async Task<RegisteredSigningBox> GetSigningBoxFromCryptoBoxAsync(ParamsOfGetSigningBoxFromCryptoBox @params)
+        {
+            return await _client.CallFunctionAsync<RegisteredSigningBox>("crypto.get_signing_box_from_crypto_box", @params).ConfigureAwait(false);
+        }
+
+        public async Task<RegisteredEncryptionBox> GetEncryptionBoxFromCryptoBoxAsync(ParamsOfGetEncryptionBoxFromCryptoBox @params)
+        {
+            return await _client.CallFunctionAsync<RegisteredEncryptionBox>("crypto.get_encryption_box_from_crypto_box", @params).ConfigureAwait(false);
+        }
+
+        public async Task ClearCryptoBoxSecretCacheAsync(RegisteredCryptoBox @params)
+        {
+            await _client.CallFunctionAsync("crypto.clear_crypto_box_secret_cache", @params).ConfigureAwait(false);
         }
 
         public async Task<RegisteredSigningBox> RegisterSigningBoxAsync(Func<ParamsOfAppSigningBox, Task<ResultOfAppSigningBox>> app_object)
