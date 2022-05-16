@@ -1,11 +1,12 @@
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Numerics;
 using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.31.0, client module.
+* TON API version 1.32.0, client module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -184,10 +185,33 @@ namespace TonSdk.Modules
         public uint? QueryTimeout { get; set; }
 
         /// <summary>
+        /// `HTTP` or `WS`. 
+        /// Default is `HTTP`.
+        /// </summary>
+        [JsonProperty("queries_protocol", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public NetworkQueriesProtocol QueriesProtocol { get; set; }
+
+        /// <summary>
         /// At the moment is not used in production.
         /// </summary>
         [JsonProperty("access_key", NullValueHandling = NullValueHandling.Ignore)]
         public string AccessKey { get; set; }
+    }
+
+    /// <summary>
+    /// Network protocol used to perform GraphQL queries.
+    /// </summary>
+    public enum NetworkQueriesProtocol
+    {
+        /// <summary>
+        /// Each GraphQL query uses separate HTTP request.
+        /// </summary>
+        HTTP,
+        /// <summary>
+        /// All GraphQL queries will be served using single web socket connection.
+        /// </summary>
+        WS,
     }
 
     /// <summary>

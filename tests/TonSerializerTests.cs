@@ -76,7 +76,7 @@ namespace TonSdk.Tests
         [Fact]
         public void Should_Serialize_Complex_Library_Type()
         {
-            Assert.Equal("{\"network\":{\"server_address\":\"https://test:1234\"}}",
+            Assert.Equal("{\"network\":{\"server_address\":\"https://test:1234\",\"queries_protocol\":\"HTTP\"}}",
                 _serializer.Serialize(new ClientConfig
                 {
                     Network = new NetworkConfig
@@ -139,12 +139,12 @@ namespace TonSdk.Tests
         {
             Assert.Equal("[{\"collection\":\"test\",\"type\":\"QueryCollection\"}]",
                 _serializer.Serialize(new ParamsOfQueryOperation[]
-            {
-                new ParamsOfQueryOperation.QueryCollection
                 {
-                    Collection = "test"
-                },
-            }));
+                    new ParamsOfQueryOperation.QueryCollection
+                    {
+                        Collection = "test"
+                    },
+                }));
         }
 
         [Fact]
@@ -204,7 +204,7 @@ namespace TonSdk.Tests
                         {
                             body_type = "Output",
                             name = "one",
-                            value = new {test = "value"},
+                            value = new { test = "value" },
                             header = new
                             {
                                 time = 100001,
@@ -216,7 +216,7 @@ namespace TonSdk.Tests
                         {
                             body_type = "Output",
                             name = "two",
-                            value = new {test = "another value"},
+                            value = new { test = "another value" },
                             header = new
                             {
                                 time = 200001,

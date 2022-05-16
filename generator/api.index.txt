@@ -1,9 +1,10 @@
-1.31.0
+1.32.0
 TYPES
 client.ClientErrorCode
 client.ClientError
 client.ClientConfig
 client.NetworkConfig
+client.NetworkQueriesProtocol
 client.CryptoConfig
 client.AbiConfig
 client.BocConfig
