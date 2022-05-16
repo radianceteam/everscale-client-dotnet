@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.32.0, abi module.
+* TON API version 1.33.0, abi module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -722,6 +722,14 @@ namespace TonSdk.Modules
         /// </summary>
         [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
         public string Message { get; set; }
+
+        /// <summary>
+        /// Flag allowing partial BOC decoding when ABI doesn't describe the full body BOC. Controls decoder
+        /// behaviour when after decoding all described in ABI params there are some data left in BOC: `true` -
+        /// return decoded values `false` - return error of incomplete BOC deserialization (default)
+        /// </summary>
+        [JsonProperty("allow_partial", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? AllowPartial { get; set; }
     }
 
     public class DecodedMessageBody
@@ -772,6 +780,14 @@ namespace TonSdk.Modules
         /// </summary>
         [JsonProperty("is_internal", NullValueHandling = NullValueHandling.Ignore)]
         public bool IsInternal { get; set; }
+
+        /// <summary>
+        /// Flag allowing partial BOC decoding when ABI doesn't describe the full body BOC. Controls decoder
+        /// behaviour when after decoding all described in ABI params there are some data left in BOC: `true` -
+        /// return decoded values `false` - return error of incomplete BOC deserialization (default)
+        /// </summary>
+        [JsonProperty("allow_partial", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? AllowPartial { get; set; }
     }
 
     public class ParamsOfEncodeAccount
@@ -838,6 +854,14 @@ namespace TonSdk.Modules
         /// </summary>
         [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
         public string Data { get; set; }
+
+        /// <summary>
+        /// Flag allowing partial BOC decoding when ABI doesn't describe the full body BOC. Controls decoder
+        /// behaviour when after decoding all described in ABI params there are some data left in BOC: `true` -
+        /// return decoded values `false` - return error of incomplete BOC deserialization (default)
+        /// </summary>
+        [JsonProperty("allow_partial", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? AllowPartial { get; set; }
     }
 
     public class ResultOfDecodeAccountData
@@ -945,6 +969,14 @@ namespace TonSdk.Modules
         /// </summary>
         [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
         public string Data { get; set; }
+
+        /// <summary>
+        /// Flag allowing partial BOC decoding when ABI doesn't describe the full body BOC. Controls decoder
+        /// behaviour when after decoding all described in ABI params there are some data left in BOC: `true` -
+        /// return decoded values `false` - return error of incomplete BOC deserialization (default)
+        /// </summary>
+        [JsonProperty("allow_partial", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? AllowPartial { get; set; }
     }
 
     public class ResultOfDecodeInitialData

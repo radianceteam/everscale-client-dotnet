@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.32.0, crypto module.
+* TON API version 1.33.0, crypto module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -45,6 +45,7 @@ namespace TonSdk.Modules
         InvalidCryptoBoxType = 131,
         CryptoBoxSecretSerializationError = 132,
         CryptoBoxSecretDeserializationError = 133,
+        InvalidNonceSize = 134,
     }
 
     /// <summary>

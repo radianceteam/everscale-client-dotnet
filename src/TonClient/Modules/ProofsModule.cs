@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.32.0, proofs module.
+* TON API version 1.33.0, proofs module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -96,7 +96,7 @@ namespace TonSdk.Modules
         /// a trusted validator set. So we need to check all key-blocks' proofs, started from the zero-state
         /// and until the block, which we want to prove. But it can take a lot of time and traffic to
         /// download and prove all key-blocks on a client. For solving this, special trusted blocks are used
-        /// in TON-SDK.
+        /// in Ever-SDK.
         /// 
         /// The trusted block is the authority root, as well, as the zero-state. Each trusted block is the
         /// `id` (e.g. `root_hash`) of the already proven key-block. There can be plenty of trusted

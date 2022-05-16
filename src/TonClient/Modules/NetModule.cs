@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.32.0, net module.
+* TON API version 1.33.0, net module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -963,10 +963,9 @@ namespace TonSdk.Modules
 
         /// <summary>
         /// *Attention* this query retrieves data from 'Counterparties' service which is not supported in
-        /// the opensource version of DApp Server (and will not be supported) as well as in TON OS SE (will be
+        /// the opensource version of DApp Server (and will not be supported) as well as in Evernode SE (will be
         /// supported in SE in future),
-        /// but is always accessible via [TON OS Devnet/Mainnet
-        /// Clouds](https://docs.ton.dev/86757ecb2/p/85c869-networks)
+        /// but is always accessible via [EVER OS Clouds](../ton-os-api/networks.md)
         /// </summary>
         Task<ResultOfQueryCollection> QueryCounterpartiesAsync(ParamsOfQueryCounterparties @params);
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.32.0, client module.
+* TON API version 1.33.0, client module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -92,15 +92,15 @@ namespace TonSdk.Modules
     public class NetworkConfig
     {
         /// <summary>
-        /// DApp Server public address. For instance, for `net.ton.dev/graphql` GraphQL endpoint the server
-        /// address will be net.ton.dev
+        /// **This field is deprecated, but left for backward-compatibility.** DApp Server public address.
         /// </summary>
         [JsonProperty("server_address", NullValueHandling = NullValueHandling.Ignore)]
         public string ServerAddress { get; set; }
 
         /// <summary>
-        /// Any correct URL format can be specified, including IP addresses This parameter is prevailing over
+        /// Any correct URL format can be specified, including IP addresses. This parameter is prevailing over
         /// `server_address`.
+        /// Check the full list of [supported network endpoints](../ton-os-api/networks.md).
         /// </summary>
         [JsonProperty("endpoints", NullValueHandling = NullValueHandling.Ignore)]
         public string[] Endpoints { get; set; }
@@ -153,7 +153,7 @@ namespace TonSdk.Modules
         public uint? OutOfSyncThreshold { get; set; }
 
         /// <summary>
-        /// Default is 2.
+        /// Default is 1.
         /// </summary>
         [JsonProperty("sending_endpoint_count", NullValueHandling = NullValueHandling.Ignore)]
         public byte? SendingEndpointCount { get; set; }
@@ -191,6 +191,24 @@ namespace TonSdk.Modules
         [JsonProperty("queries_protocol", NullValueHandling = NullValueHandling.Ignore)]
         [JsonConverter(typeof(StringEnumConverter))]
         public NetworkQueriesProtocol QueriesProtocol { get; set; }
+
+        /// <summary>
+        /// First REMP status awaiting timeout. If no status recieved during the timeout than fallback
+        /// transaction scenario is activated.
+        /// 
+        /// Must be specified in milliseconds. Default is 1000 (1 sec).
+        /// </summary>
+        [JsonProperty("first_remp_status_timeout", NullValueHandling = NullValueHandling.Ignore)]
+        public uint? FirstRempStatusTimeout { get; set; }
+
+        /// <summary>
+        /// Subsequent REMP status awaiting timeout. If no status recieved during the timeout than fallback
+        /// transaction scenario is activated.
+        /// 
+        /// Must be specified in milliseconds. Default is 5000 (5 sec).
+        /// </summary>
+        [JsonProperty("next_remp_status_timeout", NullValueHandling = NullValueHandling.Ignore)]
+        public uint? NextRempStatusTimeout { get; set; }
 
         /// <summary>
         /// At the moment is not used in production.

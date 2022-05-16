@@ -1,4 +1,4 @@
-1.32.0
+1.33.0
 TYPES
 client.ClientErrorCode
 client.ClientError

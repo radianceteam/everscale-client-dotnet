@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.32.0, processing module.
+* TON API version 1.33.0, processing module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -26,6 +26,9 @@ namespace TonSdk.Modules
         BlockNotFound = 511,
         InvalidData = 512,
         ExternalSignerMustNotBeUsed = 513,
+        MessageRejected = 514,
+        InvalidRempStatus = 515,
+        NextRempStatusTimeout = 516,
     }
 
     public abstract class ProcessingEvent
@@ -167,6 +170,78 @@ namespace TonSdk.Modules
             [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
             public string Message { get; set; }
 
+            [JsonProperty("error", NullValueHandling = NullValueHandling.Ignore)]
+            public ClientError Error { get; set; }
+        }
+
+        /// <summary>
+        /// Notifies the app that the message has been delivered to the thread's validators
+        /// </summary>
+        public class RempSentToValidators : ProcessingEvent
+        {
+            [JsonProperty("message_id", NullValueHandling = NullValueHandling.Ignore)]
+            public string MessageId { get; set; }
+
+            [JsonProperty("timestamp", NullValueHandling = NullValueHandling.Ignore)]
+            public BigInteger Timestamp { get; set; }
+
+            [JsonProperty("json", NullValueHandling = NullValueHandling.Ignore)]
+            public Newtonsoft.Json.Linq.JToken Json { get; set; }
+        }
+
+        /// <summary>
+        /// Notifies the app that the message has been successfully included into a block candidate by the
+        /// thread's collator
+        /// </summary>
+        public class RempIncludedIntoBlock : ProcessingEvent
+        {
+            [JsonProperty("message_id", NullValueHandling = NullValueHandling.Ignore)]
+            public string MessageId { get; set; }
+
+            [JsonProperty("timestamp", NullValueHandling = NullValueHandling.Ignore)]
+            public BigInteger Timestamp { get; set; }
+
+            [JsonProperty("json", NullValueHandling = NullValueHandling.Ignore)]
+            public Newtonsoft.Json.Linq.JToken Json { get; set; }
+        }
+
+        /// <summary>
+        /// Notifies the app that the block candicate with the message has been accepted by the thread's
+        /// validators
+        /// </summary>
+        public class RempIncludedIntoAcceptedBlock : ProcessingEvent
+        {
+            [JsonProperty("message_id", NullValueHandling = NullValueHandling.Ignore)]
+            public string MessageId { get; set; }
+
+            [JsonProperty("timestamp", NullValueHandling = NullValueHandling.Ignore)]
+            public BigInteger Timestamp { get; set; }
+
+            [JsonProperty("json", NullValueHandling = NullValueHandling.Ignore)]
+            public Newtonsoft.Json.Linq.JToken Json { get; set; }
+        }
+
+        /// <summary>
+        /// Notifies the app about some other minor REMP statuses occurring during message processing
+        /// </summary>
+        public class RempOther : ProcessingEvent
+        {
+            [JsonProperty("message_id", NullValueHandling = NullValueHandling.Ignore)]
+            public string MessageId { get; set; }
+
+            [JsonProperty("timestamp", NullValueHandling = NullValueHandling.Ignore)]
+            public BigInteger Timestamp { get; set; }
+
+            [JsonProperty("json", NullValueHandling = NullValueHandling.Ignore)]
+            public Newtonsoft.Json.Linq.JToken Json { get; set; }
+        }
+
+        /// <summary>
+        /// Notifies the app about any problem that has occured in REMP processing - in this case library
+        /// switches to the fallback transaction awaiting scenario (sequential block reading).
+        /// </summary>
+        public class RempError : ProcessingEvent
+        {
             [JsonProperty("error", NullValueHandling = NullValueHandling.Ignore)]
             public ClientError Error { get; set; }
         }
