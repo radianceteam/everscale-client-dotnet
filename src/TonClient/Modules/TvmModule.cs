@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.33.1, tvm module.
+* TON API version 1.34.0, tvm module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -95,23 +95,69 @@ namespace TonSdk.Modules
 
     public class TransactionFees
     {
+        /// <summary>
+        /// Left for backward compatibility. Does not participate in account transaction fees calculation.
+        /// </summary>
         [JsonProperty("in_msg_fwd_fee", NullValueHandling = NullValueHandling.Ignore)]
         public BigInteger InMsgFwdFee { get; set; }
 
+        /// <summary>
+        /// Fee for account storage
+        /// </summary>
         [JsonProperty("storage_fee", NullValueHandling = NullValueHandling.Ignore)]
         public BigInteger StorageFee { get; set; }
 
+        /// <summary>
+        /// Fee for processing
+        /// </summary>
         [JsonProperty("gas_fee", NullValueHandling = NullValueHandling.Ignore)]
         public BigInteger GasFee { get; set; }
 
+        /// <summary>
+        /// Contains the same data as total_fwd_fees field. Deprecated because of its confusing name, that is
+        /// not the same with GraphQL API Transaction type's field.
+        /// </summary>
         [JsonProperty("out_msgs_fwd_fee", NullValueHandling = NullValueHandling.Ignore)]
         public BigInteger OutMsgsFwdFee { get; set; }
 
+        /// <summary>
+        /// This is the field that is named as `total_fees` in GraphQL API Transaction type.
+        /// `total_account_fees` name is misleading, because it does not mean account fees, instead it means
+        /// validators total fees received for the transaction execution. It does not include some forward fees
+        /// that account
+        /// actually pays now, but validators will receive later during value delivery to another account (not
+        /// even in the receiving
+        /// transaction).
+        /// Because of all of this, this field is not interesting for those who wants to understand
+        /// the real account fees, this is why it is deprecated and left for backward compatibility.
+        /// </summary>
         [JsonProperty("total_account_fees", NullValueHandling = NullValueHandling.Ignore)]
         public BigInteger TotalAccountFees { get; set; }
 
+        /// <summary>
+        /// Deprecated because it means total value sent in the transaction, which does not relate to any fees.
+        /// </summary>
         [JsonProperty("total_output", NullValueHandling = NullValueHandling.Ignore)]
         public BigInteger TotalOutput { get; set; }
+
+        /// <summary>
+        /// Fee for inbound external message import.
+        /// </summary>
+        [JsonProperty("ext_in_msg_fee", NullValueHandling = NullValueHandling.Ignore)]
+        public BigInteger ExtInMsgFee { get; set; }
+
+        /// <summary>
+        /// Total fees the account pays for message forwarding
+        /// </summary>
+        [JsonProperty("total_fwd_fees", NullValueHandling = NullValueHandling.Ignore)]
+        public BigInteger TotalFwdFees { get; set; }
+
+        /// <summary>
+        /// Total account fees for the transaction execution. Compounds of storage_fee + gas_fee +
+        /// ext_in_msg_fee + total_fwd_fees
+        /// </summary>
+        [JsonProperty("account_fees", NullValueHandling = NullValueHandling.Ignore)]
+        public BigInteger AccountFees { get; set; }
     }
 
     public class ParamsOfRunExecutor

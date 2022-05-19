@@ -1,4 +1,4 @@
-1.33.1
+1.34.0
 TYPES
 client.ClientErrorCode
 client.ClientError
@@ -276,6 +276,7 @@ proofs.ParamsOfProofMessageData
 FUNCTIONS
 client.get_api_reference
 client.version
+client.config
 client.build_info
 client.resolve_app_request
 crypto.factorize

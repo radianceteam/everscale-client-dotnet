@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.33.1, client module.
+* TON API version 1.34.0, client module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -421,6 +421,11 @@ namespace TonSdk.Modules
         Task<ResultOfVersion> VersionAsync();
 
         /// <summary>
+        /// Returns Core Library API reference
+        /// </summary>
+        Task<ClientConfig> ConfigAsync();
+
+        /// <summary>
         /// Returns detailed information about this build.
         /// </summary>
         Task<ResultOfBuildInfo> BuildInfoAsync();
@@ -448,6 +453,11 @@ namespace TonSdk.Modules
         public async Task<ResultOfVersion> VersionAsync()
         {
             return await _client.CallFunctionAsync<ResultOfVersion>("client.version").ConfigureAwait(false);
+        }
+
+        public async Task<ClientConfig> ConfigAsync()
+        {
+            return await _client.CallFunctionAsync<ClientConfig>("client.config").ConfigureAwait(false);
         }
 
         public async Task<ResultOfBuildInfo> BuildInfoAsync()
