@@ -1,4 +1,4 @@
-1.34.3
+1.35.0
 TYPES
 client.ClientErrorCode
 client.ClientError
@@ -155,6 +155,8 @@ abi.ParamsOfDecodeBoc
 abi.ResultOfDecodeBoc
 abi.ParamsOfAbiEncodeBoc
 abi.ResultOfAbiEncodeBoc
+abi.ParamsOfCalcFunctionId
+abi.ResultOfCalcFunctionId
 boc.BocCacheType
 boc.BocErrorCode
 boc.ParamsOfParse
@@ -344,6 +346,7 @@ abi.encode_initial_data
 abi.decode_initial_data
 abi.decode_boc
 abi.encode_boc
+abi.calc_function_id
 boc.parse_message
 boc.parse_transaction
 boc.parse_account

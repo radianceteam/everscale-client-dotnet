@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.34.3, tvm module.
+* TON API version 1.35.0, tvm module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -54,6 +54,12 @@ namespace TonSdk.Modules
         /// </summary>
         [JsonProperty("transaction_lt", NullValueHandling = NullValueHandling.Ignore)]
         public BigInteger TransactionLt { get; set; }
+
+        /// <summary>
+        /// Overrides standard TVM behaviour. If set to `true` then CHKSIG always will return `true`.
+        /// </summary>
+        [JsonProperty("chksig_always_succeed", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? ChksigAlwaysSucceed { get; set; }
     }
 
     public abstract class AccountForExecutor

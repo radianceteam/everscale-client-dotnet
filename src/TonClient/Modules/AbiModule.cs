@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.34.3, abi module.
+* TON API version 1.35.0, abi module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -28,6 +28,7 @@ namespace TonSdk.Modules
         InvalidFunctionId = 312,
         InvalidData = 313,
         EncodeInitialDataFailed = 314,
+        InvalidFunctionName = 315,
     }
 
     public abstract class Abi
@@ -1052,6 +1053,38 @@ namespace TonSdk.Modules
         public string Boc { get; set; }
     }
 
+    public class ParamsOfCalcFunctionId
+    {
+        /// <summary>
+        /// Contract ABI.
+        /// </summary>
+        [JsonProperty("abi", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(PolymorphicTypeConverter))]
+        public Abi Abi { get; set; }
+
+        /// <summary>
+        /// Contract function name
+        /// </summary>
+        [JsonProperty("function_name", NullValueHandling = NullValueHandling.Ignore)]
+        public string FunctionName { get; set; }
+
+        /// <summary>
+        /// If set to `true` output function ID will be returned which is used in contract response. Default is
+        /// `false`
+        /// </summary>
+        [JsonProperty("output", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? Output { get; set; }
+    }
+
+    public class ResultOfCalcFunctionId
+    {
+        /// <summary>
+        /// Contract function ID
+        /// </summary>
+        [JsonProperty("function_id", NullValueHandling = NullValueHandling.Ignore)]
+        public uint FunctionId { get; set; }
+    }
+
     /// <summary>
     /// Provides message encoding and decoding according to the ABI specification.
     /// </summary>
@@ -1189,6 +1222,11 @@ namespace TonSdk.Modules
         /// Encodes given parameters in JSON into a BOC using param types from ABI.
         /// </summary>
         Task<ResultOfAbiEncodeBoc> EncodeBocAsync(ParamsOfAbiEncodeBoc @params);
+
+        /// <summary>
+        /// Calculates contract function ID by contract ABI
+        /// </summary>
+        Task<ResultOfCalcFunctionId> CalcFunctionIdAsync(ParamsOfCalcFunctionId @params);
     }
 
     internal class AbiModule : IAbiModule
@@ -1268,6 +1306,11 @@ namespace TonSdk.Modules
         public async Task<ResultOfAbiEncodeBoc> EncodeBocAsync(ParamsOfAbiEncodeBoc @params)
         {
             return await _client.CallFunctionAsync<ResultOfAbiEncodeBoc>("abi.encode_boc", @params).ConfigureAwait(false);
+        }
+
+        public async Task<ResultOfCalcFunctionId> CalcFunctionIdAsync(ParamsOfCalcFunctionId @params)
+        {
+            return await _client.CallFunctionAsync<ResultOfCalcFunctionId>("abi.calc_function_id", @params).ConfigureAwait(false);
         }
     }
 }
