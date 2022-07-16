@@ -35,6 +35,7 @@ namespace TonSdk.Tests.Modules
                     Language = "en",
                     Dabi = ((Abi.Contract)_fixture.Debot.Abi).Value.ToJson().ToString(),
                     Icon = "",
+                    DabiVersion = "2.0",
                     Interfaces = new string[] {
                         "0x8796536366ee21852db56dccb60bc564598b618c865fc50c8b1ab740bba128e3",
                         "0xe38aed5884dc3e4426a87c083faaf4fa08109189fbc0c79281112f52e062d8ee",

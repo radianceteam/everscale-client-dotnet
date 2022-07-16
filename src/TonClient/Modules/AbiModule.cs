@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.35.1, abi module.
+* TON API version 1.36.0, abi module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -453,6 +453,14 @@ namespace TonSdk.Modules
         /// </summary>
         [JsonProperty("processing_try_index", NullValueHandling = NullValueHandling.Ignore)]
         public byte? ProcessingTryIndex { get; set; }
+
+        /// <summary>
+        /// Since ABI version 2.3 destination address of external inbound message is used in message
+        /// body signature calculation. Should be provided when signed external inbound message body is
+        /// created. Otherwise can be omitted.
+        /// </summary>
+        [JsonProperty("address", NullValueHandling = NullValueHandling.Ignore)]
+        public string Address { get; set; }
     }
 
     public class ResultOfEncodeMessageBody
