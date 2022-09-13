@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.37.0, net module.
+* TON API version 1.37.1, net module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -899,7 +899,7 @@ namespace TonSdk.Modules
         /// 
         /// ### Important Notes on Subscriptions
         /// 
-        /// Unfortunately sometimes the connection with the network brakes down.
+        /// Unfortunately sometimes the connection with the network breakes down.
         /// In this situation the library attempts to reconnect to the network.
         /// This reconnection sequence can take significant time.
         /// All of this time the client is disconnected from the network.

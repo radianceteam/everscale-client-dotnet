@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.37.0, tvm module.
+* TON API version 1.37.1, tvm module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -102,7 +102,7 @@ namespace TonSdk.Modules
     public class TransactionFees
     {
         /// <summary>
-        /// Left for backward compatibility. Does not participate in account transaction fees calculation.
+        /// Contains the same data as ext_in_msg_fee field
         /// </summary>
         [JsonProperty("in_msg_fwd_fee", NullValueHandling = NullValueHandling.Ignore)]
         public BigInteger InMsgFwdFee { get; set; }
@@ -127,15 +127,7 @@ namespace TonSdk.Modules
         public BigInteger OutMsgsFwdFee { get; set; }
 
         /// <summary>
-        /// This is the field that is named as `total_fees` in GraphQL API Transaction type.
-        /// `total_account_fees` name is misleading, because it does not mean account fees, instead it means
-        /// validators total fees received for the transaction execution. It does not include some forward fees
-        /// that account
-        /// actually pays now, but validators will receive later during value delivery to another account (not
-        /// even in the receiving
-        /// transaction).
-        /// Because of all of this, this field is not interesting for those who wants to understand
-        /// the real account fees, this is why it is deprecated and left for backward compatibility.
+        /// Contains the same data as account_fees field
         /// </summary>
         [JsonProperty("total_account_fees", NullValueHandling = NullValueHandling.Ignore)]
         public BigInteger TotalAccountFees { get; set; }

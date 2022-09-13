@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.37.0, boc module.
+* TON API version 1.37.1, boc module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -14,7 +14,10 @@ namespace TonSdk.Modules
     public abstract class BocCacheType
     {
         /// <summary>
-        /// Such BOC will not be removed from cache until it is unpinned
+        /// Such BOC will not be removed from cache until it is unpinned BOCs can have several pins and each of
+        /// the pins has reference counter indicating how many
+        /// times the BOC was pinned with the pin. BOC is removed from cache after all references for all
+        /// pins are unpinned with `cache_unpin` function calls.
         /// </summary>
         public class Pinned : BocCacheType
         {
@@ -23,7 +26,7 @@ namespace TonSdk.Modules
         }
 
         /// <summary>
-        ///  
+        /// BOC resides there until it is replaced with other BOCs if it is not used
         /// </summary>
         public class Unpinned : BocCacheType
         {
@@ -641,12 +644,14 @@ namespace TonSdk.Modules
         Task<ResultOfBocCacheGet> CacheGetAsync(ParamsOfBocCacheGet @params);
 
         /// <summary>
-        /// Save BOC into cache
+        /// Save BOC into cache or increase pin counter for existing pinned BOC
         /// </summary>
         Task<ResultOfBocCacheSet> CacheSetAsync(ParamsOfBocCacheSet @params);
 
         /// <summary>
-        /// BOCs which don't have another pins will be removed from cache
+        /// Unpin BOCs with specified pin defined in the `cache_set`. Decrease pin reference counter for BOCs
+        /// with specified pin defined in the `cache_set`. BOCs which have only 1 pin and its reference counter
+        /// become 0 will be removed from cache
         /// </summary>
         Task CacheUnpinAsync(ParamsOfBocCacheUnpin @params);
 
