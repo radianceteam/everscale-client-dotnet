@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.37.1, client module.
+* TON API version 1.37.2, client module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -211,7 +211,9 @@ namespace TonSdk.Modules
         public uint? NextRempStatusTimeout { get; set; }
 
         /// <summary>
-        /// You can specify here Evercloud project secret ot serialized JWT.
+        /// You can specify here Basic Auth secret (Evercloud project secret) in hex string
+        /// or serialized JWT in base64 string.
+        /// Will be passed on as Authorization: Basic ... or Authorization: Bearer ... header.
         /// </summary>
         [JsonProperty("access_key", NullValueHandling = NullValueHandling.Ignore)]
         public string AccessKey { get; set; }

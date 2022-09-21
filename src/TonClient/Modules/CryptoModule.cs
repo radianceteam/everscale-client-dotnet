@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.37.1, crypto module.
+* TON API version 1.37.2, crypto module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -82,48 +82,26 @@ namespace TonSdk.Modules
     {
         public class AES : EncryptionAlgorithm
         {
-            [JsonProperty("mode", NullValueHandling = NullValueHandling.Ignore)]
-            [JsonConverter(typeof(StringEnumConverter))]
-            public CipherMode Mode { get; set; }
-
-            [JsonProperty("key", NullValueHandling = NullValueHandling.Ignore)]
-            public string Key { get; set; }
-
-            [JsonProperty("iv", NullValueHandling = NullValueHandling.Ignore)]
-            public string Iv { get; set; }
+            [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
+            public AesParamsEB Value { get; set; }
         }
 
         public class ChaCha20 : EncryptionAlgorithm
         {
-            /// <summary>
-            /// Must be encoded with `hex`.
-            /// </summary>
-            [JsonProperty("nonce", NullValueHandling = NullValueHandling.Ignore)]
-            public string Nonce { get; set; }
+            [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
+            public ChaCha20ParamsEB Value { get; set; }
         }
 
         public class NaclBox : EncryptionAlgorithm
         {
-            /// <summary>
-            /// Must be encoded with `hex`.
-            /// </summary>
-            [JsonProperty("their_public", NullValueHandling = NullValueHandling.Ignore)]
-            public string TheirPublic { get; set; }
-
-            /// <summary>
-            /// Must be encoded with `hex`.
-            /// </summary>
-            [JsonProperty("nonce", NullValueHandling = NullValueHandling.Ignore)]
-            public string Nonce { get; set; }
+            [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
+            public NaclBoxParamsEB Value { get; set; }
         }
 
         public class NaclSecretBox : EncryptionAlgorithm
         {
-            /// <summary>
-            /// Nonce in `hex`
-            /// </summary>
-            [JsonProperty("nonce", NullValueHandling = NullValueHandling.Ignore)]
-            public string Nonce { get; set; }
+            [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
+            public NaclSecretBoxParamsEB Value { get; set; }
         }
     }
 
@@ -270,35 +248,20 @@ namespace TonSdk.Modules
     {
         public class ChaCha20 : BoxEncryptionAlgorithm
         {
-            /// <summary>
-            /// Must be encoded with `hex`.
-            /// </summary>
-            [JsonProperty("nonce", NullValueHandling = NullValueHandling.Ignore)]
-            public string Nonce { get; set; }
+            [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
+            public ChaCha20ParamsCB Value { get; set; }
         }
 
         public class NaclBox : BoxEncryptionAlgorithm
         {
-            /// <summary>
-            /// Must be encoded with `hex`.
-            /// </summary>
-            [JsonProperty("their_public", NullValueHandling = NullValueHandling.Ignore)]
-            public string TheirPublic { get; set; }
-
-            /// <summary>
-            /// Must be encoded with `hex`.
-            /// </summary>
-            [JsonProperty("nonce", NullValueHandling = NullValueHandling.Ignore)]
-            public string Nonce { get; set; }
+            [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
+            public NaclBoxParamsCB Value { get; set; }
         }
 
         public class NaclSecretBox : BoxEncryptionAlgorithm
         {
-            /// <summary>
-            /// Nonce in `hex`
-            /// </summary>
-            [JsonProperty("nonce", NullValueHandling = NullValueHandling.Ignore)]
-            public string Nonce { get; set; }
+            [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
+            public NaclSecretBoxParamsCB Value { get; set; }
         }
     }
 
