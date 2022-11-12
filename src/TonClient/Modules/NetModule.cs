@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.37.2, net module.
+* TON API version 1.38.0, net module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -28,6 +28,7 @@ namespace TonSdk.Modules
         NoEndpointsProvided = 612,
         GraphqlWebsocketInitError = 613,
         NetworkModuleResumed = 614,
+        Unauthorized = 615,
     }
 
     public class OrderBy

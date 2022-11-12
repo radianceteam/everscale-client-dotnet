@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TonSdk.Modules;
 
 /*
-* TON API version 1.37.2, client module.
+* TON API version 1.38.0, client module.
 * THIS FILE WAS GENERATED AUTOMATICALLY.
 */
 
@@ -92,7 +92,7 @@ namespace TonSdk.Modules
     public class NetworkConfig
     {
         /// <summary>
-        /// **This field is deprecated, but left for backward-compatibility.** DApp Server public address.
+        /// **This field is deprecated, but left for backward-compatibility.** Evernode endpoint.
         /// </summary>
         [JsonProperty("server_address", NullValueHandling = NullValueHandling.Ignore)]
         public string ServerAddress { get; set; }
@@ -100,7 +100,8 @@ namespace TonSdk.Modules
         /// <summary>
         /// Any correct URL format can be specified, including IP addresses. This parameter is prevailing over
         /// `server_address`.
-        /// Check the full list of [supported network endpoints](../ton-os-api/networks.md).
+        /// Check the full list of [supported network
+        /// endpoints](https://docs.everos.dev/ever-sdk/reference/ever-os-api/networks).
         /// </summary>
         [JsonProperty("endpoints", NullValueHandling = NullValueHandling.Ignore)]
         public string[] Endpoints { get; set; }
@@ -211,9 +212,7 @@ namespace TonSdk.Modules
         public uint? NextRempStatusTimeout { get; set; }
 
         /// <summary>
-        /// You can specify here Basic Auth secret (Evercloud project secret) in hex string
-        /// or serialized JWT in base64 string.
-        /// Will be passed on as Authorization: Basic ... or Authorization: Bearer ... header.
+        /// Access key to GraphQL API (Project secret)
         /// </summary>
         [JsonProperty("access_key", NullValueHandling = NullValueHandling.Ignore)]
         public string AccessKey { get; set; }
